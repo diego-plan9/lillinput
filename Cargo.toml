@@ -1,0 +1,19 @@
+[package]
+name = "lillinput"
+version = "0.1.0"
+authors = ["Diego M. Rodríguez <diego@moreda.io>"]
+edition = "2018"
+description = "Connect libinput gestures to i3 and others"
+repository = "https://github.com/diego-plan9/lillinput/"
+license = "BSD-3-Clause"
+keywords = ["i3", "swipe", "touchpad", "x11", "libinput", "gestures"]
+categories = ["command-line-utilities", "gui"]
+
+[dependencies]
+input = "0.5.0"
+libc = "0.2.84"
+i3ipc = "0.10.1"
+filedescriptor = "0.7.3"
+clap = "3.0.0-beta.2"
+strum = { version = "0.21", features = ["derive"] }
+shlex = "1.0.0"
