@@ -17,6 +17,9 @@ mod events;
 use events::libinput::Interface;
 use events::main_loop;
 
+#[cfg(test)]
+mod test_utils;
+
 /// Possible choices for actions.
 #[derive(Display, EnumString, EnumVariantNames)]
 #[strum(serialize_all = "kebab_case")]
