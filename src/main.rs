@@ -1,7 +1,6 @@
 //! Connect `libinput` gestures to `i3` and others.
 //!
-//! `lillinput` is a small utility written in Rust for connecting `libinput`
-//! gestures into:
+//! `lillinput` is a small for connecting `libinput` gestures into:
 //! * commands for the `i3` tiling window manager IPC interface
 //! * shell commands
 
@@ -20,14 +19,15 @@ use events::main_loop;
 #[cfg(test)]
 mod test_utils;
 
-/// Possible choices for actions.
+/// Possible choices for action types.
 #[derive(Display, EnumString, EnumVariantNames)]
 #[strum(serialize_all = "kebab_case")]
-enum ActionChoices {
+enum ActionTypes {
     I3,
     Command,
 }
 
+/// High-level events that can trigger an action.
 #[allow(clippy::enum_variant_names)]
 enum ActionEvents {
     ThreeFingerSwipeLeft,
@@ -41,20 +41,22 @@ enum ActionEvents {
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 #[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
-    /// libinput seat.
+    /// libinput seat
     #[clap(short, long, default_value = "seat0")]
     seat: String,
-    /// enabled actions.
-    #[clap(short, long, default_value = "i3", possible_values = ActionChoices::VARIANTS)]
-    enabled_actions: Vec<String>,
-    /// minimum threshold for position changes.
+    /// enabled action types
+    #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
+    enabled_action_types: Vec<String>,
+    /// minimum threshold for position changes
     #[clap(short, long, default_value = "1.0")]
     threshold: f64,
     /// actions the three-finger swipe left
-    #[clap(long, validator = is_action_string, default_value_if("enabled-actions", Some("i3"), "i3:workspace prev"))]
+    #[clap(long, validator = is_action_string,
+      default_value_if("enabled-action-types", Some("i3"), "i3:workspace prev"))]
     swipe_left_3: Vec<String>,
     /// actions the three-finger swipe right
-    #[clap(long, validator = is_action_string, default_value_if("enabled-actions", Some("i3"), "i3:workspace next"))]
+    #[clap(long, validator = is_action_string,
+      default_value_if("enabled-action-types", Some("i3"), "i3:workspace next"))]
     swipe_right_3: Vec<String>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]
@@ -81,7 +83,7 @@ pub struct Opts {
 /// A string that specifies an action must conform to the following format:
 /// {action choice}:{value}.
 fn is_action_string(value: &str) -> Result<(), String> {
-    if ActionChoices::VARIANTS
+    if ActionTypes::VARIANTS
         .iter()
         .any(|&i| value.starts_with(&(i.to_owned() + ":")))
     {
@@ -89,7 +91,7 @@ fn is_action_string(value: &str) -> Result<(), String> {
     }
     Err(format!(
         "The value does not start with a valid action ({:?})",
-        ActionChoices::VARIANTS
+        ActionTypes::VARIANTS
     ))
 }
 

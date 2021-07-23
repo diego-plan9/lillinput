@@ -2,7 +2,7 @@
 
 use super::commandaction::CommandAction;
 use super::i3action::{I3Action, I3ActionExt};
-use super::{Action, ActionChoices, ActionController, ActionEvents, ActionExt, ActionMap, Opts};
+use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes, Opts};
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
@@ -13,8 +13,8 @@ impl ActionController for ActionMap {
     fn new(opts: &Opts) -> Self {
         // Create the I3 connection if needed.
         let connection = match opts
-            .enabled_actions
-            .contains(&ActionChoices::I3.to_string())
+            .enabled_action_types
+            .contains(&ActionTypes::I3.to_string())
         {
             true => match I3Connection::connect() {
                 Ok(mut conn) => {
@@ -62,11 +62,11 @@ impl ActionController for ActionMap {
                 let action_value = splitter.next().unwrap();
 
                 // Create new actions and add them to the controller.
-                match ActionChoices::from_str(action_type) {
-                    Ok(ActionChoices::Command) => {
+                match ActionTypes::from_str(action_type) {
+                    Ok(ActionTypes::Command) => {
                         destination.push(Box::new(CommandAction::new(action_value.to_string())));
                     }
-                    Ok(ActionChoices::I3) => match connection {
+                    Ok(ActionTypes::I3) => match connection {
                         Some(conn) => {
                             destination.push(Box::new(I3Action::new(
                                 action_value.to_string(),
