@@ -44,17 +44,17 @@ pub struct Opts {
     /// libinput seat.
     #[clap(short, long, default_value = "seat0")]
     seat: String,
-    /// enabled actions.
+    /// enabled action types.
     #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
-    enabled_actions: Vec<String>,
+    enabled_action_types: Vec<String>,
     /// minimum threshold for position changes.
     #[clap(short, long, default_value = "1.0")]
     threshold: f64,
     /// actions the three-finger swipe left
-    #[clap(long, validator = is_action_string, default_value_if("enabled-actions", Some("i3"), "i3:workspace prev"))]
+    #[clap(long, validator = is_action_string, default_value_if("enabled-action-types", Some("i3"), "i3:workspace prev"))]
     swipe_left_3: Vec<String>,
     /// actions the three-finger swipe right
-    #[clap(long, validator = is_action_string, default_value_if("enabled-actions", Some("i3"), "i3:workspace next"))]
+    #[clap(long, validator = is_action_string, default_value_if("enabled-action-types", Some("i3"), "i3:workspace next"))]
     swipe_right_3: Vec<String>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]

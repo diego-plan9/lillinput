@@ -13,7 +13,7 @@ impl ActionController for ActionMap {
     fn new(opts: &Opts) -> Self {
         // Create the I3 connection if needed.
         let connection = match opts
-            .enabled_actions
+            .enabled_action_types
             .contains(&ActionTypes::I3.to_string())
         {
             true => match I3Connection::connect() {

@@ -78,7 +78,7 @@ mod test {
 
         // Initialize the command line options.
         let mut opts: Opts = Opts::parse();
-        opts.enabled_actions = vec!["command".to_string()];
+        opts.enabled_action_types = vec!["command".to_string()];
         opts.swipe_right_3 = vec!["command:touch /tmp/swipe-right".to_string()];
 
         // Trigger a swipe.
@@ -95,7 +95,7 @@ mod test {
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
         let mut opts: Opts = Opts::parse();
-        opts.enabled_actions = vec!["i3".to_string()];
+        opts.enabled_action_types = vec!["i3".to_string()];
         opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
         opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
         opts.swipe_up_3 = vec!["i3:swipe up".to_string()];
@@ -128,7 +128,7 @@ mod test {
     fn test_i3_swipe_below_threshold() {
         // Initialize the command line options.
         let mut opts: Opts = Opts::parse();
-        opts.enabled_actions = vec!["i3".to_string()];
+        opts.enabled_action_types = vec!["i3".to_string()];
         opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
         opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
         opts.threshold = 5.0;
@@ -158,7 +158,7 @@ mod test {
     fn test_i3_not_available() {
         // Initialize the command line options.
         let mut opts: Opts = Opts::parse();
-        opts.enabled_actions = vec!["i3".to_string(), "command".to_string()];
+        opts.enabled_action_types = vec!["i3".to_string(), "command".to_string()];
         opts.swipe_right_3 = vec![
             "i3:swipe right".to_string(),
             "command:touch /tmp/swipe-right".to_string(),
