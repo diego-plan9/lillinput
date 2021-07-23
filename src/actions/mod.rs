@@ -1,7 +1,7 @@
 //! Traits for actions.
 //!
 //! Provides the interface for defining `Action`s that handle the different
-//! events.
+//! `ActionEvents`.
 
 pub mod commandaction;
 pub mod controller;
@@ -13,7 +13,7 @@ use i3ipc::I3Connection;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-/// Maps between events and actions.
+/// Map between events and actions.
 pub struct ActionMap {
     threshold: f64,
     connection: Option<Rc<RefCell<I3Connection>>>,
@@ -48,13 +48,13 @@ pub trait ActionController {
     fn receive_end_event(&mut self, dx: &f64, dy: &f64);
 }
 
-/// Action handler for events.
+/// Handler for a single action triggered by an event.
 pub trait Action {
     /// Execute the command for this action.
     fn execute_command(&mut self);
 }
 
-/// Extended trait for action handler for events.
+/// Extended trait for construction new actions.
 pub trait ActionExt {
     /// Return a new action.
     fn new(command: String) -> Self;

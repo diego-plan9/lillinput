@@ -1,7 +1,6 @@
 //! Connect `libinput` gestures to `i3` and others.
 //!
-//! `lillinput` is a small utility written in Rust for connecting `libinput`
-//! gestures into:
+//! `lillinput` is a small for connecting `libinput` gestures into:
 //! * commands for the `i3` tiling window manager IPC interface
 //! * shell commands
 
@@ -28,6 +27,7 @@ enum ActionTypes {
     Command,
 }
 
+/// High-level events that can trigger an action.
 #[allow(clippy::enum_variant_names)]
 enum ActionEvents {
     ThreeFingerSwipeLeft,
@@ -41,20 +41,22 @@ enum ActionEvents {
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 #[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
-    /// libinput seat.
+    /// libinput seat
     #[clap(short, long, default_value = "seat0")]
     seat: String,
-    /// enabled action types.
+    /// enabled action types
     #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
     enabled_action_types: Vec<String>,
-    /// minimum threshold for position changes.
+    /// minimum threshold for position changes
     #[clap(short, long, default_value = "1.0")]
     threshold: f64,
     /// actions the three-finger swipe left
-    #[clap(long, validator = is_action_string, default_value_if("enabled-action-types", Some("i3"), "i3:workspace prev"))]
+    #[clap(long, validator = is_action_string,
+      default_value_if("enabled-action-types", Some("i3"), "i3:workspace prev"))]
     swipe_left_3: Vec<String>,
     /// actions the three-finger swipe right
-    #[clap(long, validator = is_action_string, default_value_if("enabled-action-types", Some("i3"), "i3:workspace next"))]
+    #[clap(long, validator = is_action_string,
+      default_value_if("enabled-action-types", Some("i3"), "i3:workspace next"))]
     swipe_right_3: Vec<String>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]
