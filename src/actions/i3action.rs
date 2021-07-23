@@ -6,7 +6,6 @@ use i3ipc::I3Connection;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-
 /// Action that executes `i3` commands.
 pub struct I3Action {
     connection: Rc<RefCell<I3Connection>>,

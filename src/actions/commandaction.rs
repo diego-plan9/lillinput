@@ -4,7 +4,6 @@ use super::{Action, ActionExt};
 use shlex::split;
 use std::process::Command;
 
-
 /// Action that executes shell commands.
 pub struct CommandAction {
     command: String,
