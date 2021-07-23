@@ -7,7 +7,7 @@ pub mod commandaction;
 pub mod controller;
 pub mod i3action;
 
-use super::{ActionChoices, ActionEvents, Opts};
+use super::{ActionEvents, ActionTypes, Opts};
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;

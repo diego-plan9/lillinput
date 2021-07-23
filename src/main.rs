@@ -20,10 +20,10 @@ use events::main_loop;
 #[cfg(test)]
 mod test_utils;
 
-/// Possible choices for actions.
+/// Possible choices for action types.
 #[derive(Display, EnumString, EnumVariantNames)]
 #[strum(serialize_all = "kebab_case")]
-enum ActionChoices {
+enum ActionTypes {
     I3,
     Command,
 }
@@ -45,7 +45,7 @@ pub struct Opts {
     #[clap(short, long, default_value = "seat0")]
     seat: String,
     /// enabled actions.
-    #[clap(short, long, default_value = "i3", possible_values = ActionChoices::VARIANTS)]
+    #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
     enabled_actions: Vec<String>,
     /// minimum threshold for position changes.
     #[clap(short, long, default_value = "1.0")]
@@ -81,7 +81,7 @@ pub struct Opts {
 /// A string that specifies an action must conform to the following format:
 /// {action choice}:{value}.
 fn is_action_string(value: &str) -> Result<(), String> {
-    if ActionChoices::VARIANTS
+    if ActionTypes::VARIANTS
         .iter()
         .any(|&i| value.starts_with(&(i.to_owned() + ":")))
     {
@@ -89,7 +89,7 @@ fn is_action_string(value: &str) -> Result<(), String> {
     }
     Err(format!(
         "The value does not start with a valid action ({:?})",
-        ActionChoices::VARIANTS
+        ActionTypes::VARIANTS
     ))
 }
 
