@@ -7,6 +7,8 @@
 use input::Libinput;
 
 use clap::{AppSettings, Clap};
+use log::info;
+use simplelog::{ColorChoice, Config, LevelFilter, TerminalMode, TermLogger};
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
 
 mod actions;
@@ -102,13 +104,22 @@ fn is_action_string(value: &str) -> Result<(), String> {
 fn main() {
     let opts: Opts = Opts::parse();
 
-    // Create the libinput object.
-    let mut input = Libinput::new_with_udev(Interface {});
-    input.udev_assign_seat(opts.seat.as_str()).unwrap();
+    // Setup logging.
+    let log_level = match opts.verbose {
+        0 => LevelFilter::Info,
+        1 => LevelFilter::Debug,
+        2 | _ => LevelFilter::Trace,
+    };
+    TermLogger::init(log_level, Config::default(), TerminalMode::Mixed, ColorChoice::Auto).unwrap();
 
     // Create the action map controller.
     let mut action_map: ActionMap = ActionController::new(&opts);
     action_map.populate_actions(&opts);
+
+    // Create the libinput object.
+    let mut input = Libinput::new_with_udev(Interface {});
+    input.udev_assign_seat(opts.seat.as_str()).unwrap();
+    info!("Assigned seat {:?} to the libinput context. Listening for events ...", opts.seat);
 
     // Start the main loop.
     main_loop(input, &mut action_map);
