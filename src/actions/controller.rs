@@ -3,7 +3,9 @@
 use super::commandaction::CommandAction;
 use super::i3action::{I3Action, I3ActionExt};
 use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes, Opts};
+
 use i3ipc::I3Connection;
+use log::{info, warn};
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -18,14 +20,14 @@ impl ActionController for ActionMap {
         {
             true => match I3Connection::connect() {
                 Ok(mut conn) => {
-                    println!(
-                        "i3: opened connection ... ({:?})",
+                    info!(
+                        "i3: connection opened (with({:?})",
                         conn.get_version().unwrap().human_readable
                     );
                     Some(Rc::new(RefCell::new(conn)))
                 }
                 Err(error) => {
-                    println!("i3: could not establish a connection: {:?}", error);
+                    info!("i3: could not establish a connection: {:?}", error);
                     None
                 }
             },
@@ -74,7 +76,7 @@ impl ActionController for ActionMap {
                             )));
                         }
                         None => {
-                            println!("ignoring i3 action, as the i3 connection could not be set.")
+                            warn!("ignoring i3 action, as the i3 connection could not be set.")
                         }
                     },
                     Err(_) => {}
@@ -88,8 +90,8 @@ impl ActionController for ActionMap {
         parse_action_list(&opts.swipe_down_3, &mut self.swipe_down, &self.connection);
 
         // Print information.
-        println!(
-            "Controller started: {:?}/{:?}/{:?}/{:?} actions enabled",
+        info!(
+            "Action controller started: {:?}/{:?}/{:?}/{:?} actions enabled",
             self.swipe_left.len(),
             self.swipe_right.len(),
             self.swipe_up.len(),
