@@ -6,6 +6,7 @@ use filedescriptor::{poll, pollfd, POLLIN};
 use input::event::gesture::{GestureEvent, GestureEventCoordinates, GestureSwipeEvent};
 use input::event::Event;
 use input::Libinput;
+use log::warn;
 
 use super::actions::{ActionController, ActionMap};
 
@@ -60,7 +61,7 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) {
     loop {
         // Block until the descriptor is ready.
         if let Err(e) = poll(&mut poll_array, None) {
-            println!("{:?}", e);
+            warn!("{:?}", e);
         }
 
         input.dispatch().unwrap();

@@ -102,7 +102,7 @@ mod test {
         opts.swipe_down_3 = vec!["i3:swipe down".to_string()];
 
         // Create the expected commands (version + 4 swipes).
-        let expected_commands = vec!["", "swipe right", "swipe left", "swipe up", "swipe down"];
+        let expected_commands = vec!["swipe right", "swipe left", "swipe up", "swipe down"];
 
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
@@ -134,7 +134,7 @@ mod test {
         opts.threshold = 5.0;
 
         // Create the expected commands (version + 4 swipes).
-        let expected_commands = vec!["", "swipe left"];
+        let expected_commands = vec!["swipe left"];
 
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
