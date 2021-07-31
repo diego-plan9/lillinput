@@ -42,7 +42,7 @@ OPTIONS:
         --swipe-right-3 <swipe-right-3>...        actions the three-finger swipe right
         --swipe-up-3 <swipe-up-3>...              actions the three-finger swipe up
     -t, --threshold <threshold>
-            minimum threshold for position changes [default: 1.0]
+            minimum threshold for position changes [default: 20.0]
 ```
 
 ### Configuring the swipe actions
