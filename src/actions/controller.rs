@@ -72,7 +72,7 @@ impl ActionController for ActionMap {
                         Some(conn) => {
                             destination.push(Box::new(I3Action::new(
                                 action_value.to_string(),
-                                Rc::clone(&conn),
+                                Rc::clone(conn),
                             )));
                         }
                         None => {

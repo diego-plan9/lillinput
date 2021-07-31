@@ -108,7 +108,7 @@ fn main() {
     let log_level = match opts.verbose {
         0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
-        2 | _ => LevelFilter::Trace,
+        _ => LevelFilter::Trace,
     };
     TermLogger::init(
         log_level,
