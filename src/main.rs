@@ -110,13 +110,13 @@ fn main() {
         1 => LevelFilter::Debug,
         2 | _ => LevelFilter::Trace,
     };
-   TermLogger::init(
-       log_level,
-       Config::default(),
-       TerminalMode::Mixed,
-       ColorChoice::Auto,
-   )
-   .unwrap();
+    TermLogger::init(
+        log_level,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    )
+    .unwrap();
 
     // Create the action map controller.
     let mut action_map: ActionMap = ActionController::new(&opts);
