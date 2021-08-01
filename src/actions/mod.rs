@@ -80,6 +80,7 @@ mod test {
         let mut opts: Opts = Opts::parse();
         opts.enabled_action_types = vec!["command".to_string()];
         opts.swipe_right_3 = vec!["command:touch /tmp/swipe-right".to_string()];
+        opts.threshold = 5.0;
 
         // Trigger a swipe.
         let mut action_map: ActionMap = ActionController::new(&opts);
@@ -100,6 +101,7 @@ mod test {
         opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
         opts.swipe_up_3 = vec!["i3:swipe up".to_string()];
         opts.swipe_down_3 = vec!["i3:swipe down".to_string()];
+        opts.threshold = 5.0;
 
         // Create the expected commands (version + 4 swipes).
         let expected_commands = vec!["swipe right", "swipe left", "swipe up", "swipe down"];
@@ -118,6 +120,7 @@ mod test {
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
+        assert!(messages.len() == 4);
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
             assert!(message == expected_command);
         }

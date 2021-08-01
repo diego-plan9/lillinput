@@ -53,7 +53,7 @@ pub struct Opts {
     #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
     enabled_action_types: Vec<String>,
     /// minimum threshold for position changes
-    #[clap(short, long, default_value = "1.0")]
+    #[clap(short, long, default_value = "20.0")]
     threshold: f64,
     /// actions the three-finger swipe left
     #[clap(long, validator = is_action_string,
