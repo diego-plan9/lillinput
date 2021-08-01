@@ -1,6 +1,9 @@
 # lillinput
 
-![build status]
+[![crates.io]](https://crates.io/crates/lillinput)
+[![docs.rs]](https://docs.rs/lillinput)
+[![license]](LICENSE)
+[![build status]](https://github.com/diego-plan9/lillinput/actions/workflows/default.yml)
 
 
 ## About
@@ -99,4 +102,7 @@ This project is licensed under [BSD-3-Clause].
 [`fusuma`]: https://github.com/iberianpig/fusuma
 [`geebar-libinput`]: https://github.com/Coffee2CodeNL/gebaar-libinput
 
+[crates.io]: https://img.shields.io/crates/v/lillinput
+[docs.rs]: https://img.shields.io/docsrs/lillinput
+[license]: https://img.shields.io/crates/l/lillinput
 [build status]: https://github.com/diego-plan9/lillinput/actions/workflows/default.yml/badge.svg
