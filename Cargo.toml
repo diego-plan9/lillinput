@@ -6,7 +6,7 @@ edition = "2018"
 description = "Connect libinput gestures to i3 and others"
 repository = "https://github.com/diego-plan9/lillinput/"
 license = "BSD-3-Clause"
-keywords = ["i3", "swipe", "touchpad", "x11", "libinput", "gestures"]
+keywords = ["i3", "touchpad", "x11", "libinput", "gestures"]
 categories = ["command-line-utilities", "gui"]
 
 [dependencies]
