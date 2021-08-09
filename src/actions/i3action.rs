@@ -1,9 +1,10 @@
 //! Action for interacting with `i3`.
 
-use super::Action;
+use super::{Action, ActionTypes};
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
+use std::fmt;
 use std::rc::Rc;
 
 /// Action that executes `i3` commands.
@@ -25,6 +26,10 @@ impl Action for I3Action {
             .borrow_mut()
             .run_command(&self.command)
             .unwrap();
+    }
+
+    fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:<{}>", ActionTypes::I3, self.command)
     }
 }
 

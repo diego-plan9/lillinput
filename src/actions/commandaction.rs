@@ -1,7 +1,8 @@
 //! Action for executing commands.
 
-use super::{Action, ActionExt};
+use super::{Action, ActionExt, ActionTypes};
 use shlex::split;
+use std::fmt;
 use std::process::Command;
 
 /// Action that executes shell commands.
@@ -18,6 +19,10 @@ impl Action for CommandAction {
             .args(&split_commands[1..])
             .output()
             .expect("Failed to execute command");
+    }
+
+    fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:<{}>", ActionTypes::Command, self.command)
     }
 }
 
