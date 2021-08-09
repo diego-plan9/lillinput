@@ -5,7 +5,8 @@ use super::i3action::{I3Action, I3ActionExt};
 use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes, Opts};
 
 use i3ipc::I3Connection;
-use log::{info, warn};
+use itertools::Itertools;
+use log::{debug, info, warn};
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -96,6 +97,28 @@ impl ActionController for ActionMap {
             self.swipe_right.len(),
             self.swipe_up.len(),
             self.swipe_down.len(),
+        );
+
+        // Print detailed information about actions.
+        debug!(
+            " * {}: {}",
+            ActionEvents::ThreeFingerSwipeLeft,
+            self.swipe_left.iter().format(", ")
+        );
+        debug!(
+            " * {}: {}",
+            ActionEvents::ThreeFingerSwipeRight,
+            self.swipe_right.iter().format(", ")
+        );
+        debug!(
+            " * {}: {}",
+            ActionEvents::ThreeFingerSwipeUp,
+            self.swipe_up.iter().format(", ")
+        );
+        debug!(
+            " * {}: {}",
+            ActionEvents::ThreeFingerSwipeDown,
+            self.swipe_down.iter().format(", ")
         );
     }
 

@@ -19,3 +19,4 @@ strum = { version = "0.21", features = ["derive"] }
 shlex = "1.0.0"
 log = "0.4.14"
 simplelog = "^0.10.0"
+itertools = "0.10.1"
