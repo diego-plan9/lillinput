@@ -11,6 +11,7 @@ use super::{ActionEvents, ActionTypes, Opts};
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
+use std::fmt;
 use std::rc::Rc;
 
 /// Map between events and actions.
@@ -52,12 +53,21 @@ pub trait ActionController {
 pub trait Action {
     /// Execute the command for this action.
     fn execute_command(&mut self);
+    /// Format the contents of the action as a String.
+    fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result;
 }
 
 /// Extended trait for construction new actions.
 pub trait ActionExt {
     /// Return a new action.
     fn new(command: String) -> Self;
+}
+
+impl fmt::Display for dyn Action {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Delegate on the structs specific `fmt` implementation.
+        self.fmt_command(f)
+    }
 }
 
 #[cfg(test)]

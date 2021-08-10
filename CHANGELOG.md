@@ -13,6 +13,12 @@ Types of changes:
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
 
+## [UNRELEASED]
+
+### Added
+
+* Display more information about the enabled actions during startup (as `debug`
+  information, requiring the `--verbose` flag). (\#25)
 
 ## [0.1.0] - 2021-08-01
 

@@ -30,6 +30,8 @@ enum ActionTypes {
 }
 
 /// High-level events that can trigger an action.
+#[derive(Display, EnumString, EnumVariantNames)]
+#[strum(serialize_all = "kebab_case")]
 #[allow(clippy::enum_variant_names)]
 enum ActionEvents {
     ThreeFingerSwipeLeft,
