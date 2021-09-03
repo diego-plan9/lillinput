@@ -10,10 +10,10 @@ keywords = ["i3", "touchpad", "x11", "libinput", "gestures"]
 categories = ["command-line-utilities", "gui"]
 
 [dependencies]
-clap = "3.0.0-beta.4"
-# If using rustc < 1.54.0, clap 3.0.0-beta.2 is needed.
-# clap = "=3.0.0-beta.2"
-# clap_derive = "=3.0.0-beta.2"
+# Stick to clap 3.0.0-beta.2, as it requires rustc >= 1.54.0 and additional
+# updates to `default_value_if` arguments.
+clap = "=3.0.0-beta.2"
+clap_derive = "=3.0.0-beta.2"
 filedescriptor = "0.7.3"
 i3ipc = "0.10.1"
 input = "0.5.0"
