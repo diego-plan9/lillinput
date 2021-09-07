@@ -96,7 +96,7 @@ mod test {
         // Trigger a swipe.
         let mut action_map: ActionMap = ActionController::new(&opts);
         action_map.populate_actions(&opts);
-        action_map.receive_end_event(&10.0, &0.0);
+        action_map.receive_end_event(&10.0, &0.0, 3);
 
         // Assert.
         assert!(Path::new(expected_file).exists());
@@ -124,10 +124,10 @@ mod test {
         // Trigger swipe in the 4 directions.
         let mut action_map: ActionMap = ActionController::new(&opts);
         action_map.populate_actions(&opts);
-        action_map.receive_end_event(&10.0, &0.0);
-        action_map.receive_end_event(&-10.0, &0.0);
-        action_map.receive_end_event(&0.0, &10.0);
-        action_map.receive_end_event(&0.0, &-10.0);
+        action_map.receive_end_event(&10.0, &0.0, 3);
+        action_map.receive_end_event(&-10.0, &0.0, 3);
+        action_map.receive_end_event(&0.0, &10.0, 3);
+        action_map.receive_end_event(&0.0, &-10.0, 3);
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
@@ -157,8 +157,8 @@ mod test {
         // Trigger right swipe below threshold, left above threshold.
         let mut action_map: ActionMap = ActionController::new(&opts);
         action_map.populate_actions(&opts);
-        action_map.receive_end_event(&4.0, &0.0);
-        action_map.receive_end_event(&-5.0, &0.0);
+        action_map.receive_end_event(&4.0, &0.0, 3);
+        action_map.receive_end_event(&-5.0, &0.0, 3);
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
