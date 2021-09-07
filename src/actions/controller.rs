@@ -126,6 +126,12 @@ impl ActionController for ActionMap {
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
         // Avoid acting if the displacement is below the threshold.
         if dx.abs() < self.threshold && dy.abs() < self.threshold {
+            debug!("Received end event below threshold, discarding");
+            return;
+        }
+        // Avoid acting if the number of fingers is not supported.
+        if finger_count != 3 {
+            debug!("Received end event with unsupported finger count, discarding");
             return;
         }
 
@@ -144,6 +150,8 @@ impl ActionController for ActionMap {
                 command = ActionEvents::ThreeFingerSwipeDown
             }
         }
+
+        debug!("Received end event: {}, triggering actions", command);
 
         // Invoke actions.
         match command {
