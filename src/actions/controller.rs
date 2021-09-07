@@ -123,7 +123,7 @@ impl ActionController for ActionMap {
     }
 
     #[allow(clippy::collapsible_else_if)]
-    fn receive_end_event(&mut self, dx: &f64, dy: &f64) {
+    fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
         // Avoid acting if the displacement is below the threshold.
         if dx.abs() < self.threshold && dy.abs() < self.threshold {
             return;

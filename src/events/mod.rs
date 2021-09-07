@@ -3,7 +3,7 @@
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use filedescriptor::{poll, pollfd, POLLIN};
-use input::event::gesture::{GestureEvent, GestureEventCoordinates, GestureSwipeEvent};
+use input::event::gesture::{GestureEvent, GestureEventCoordinates, GestureSwipeEvent, GestureEventTrait};
 use input::event::Event;
 use input::Libinput;
 use log::warn;
@@ -31,8 +31,8 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
                 (*dx) += update_event.dx();
                 (*dy) += update_event.dy();
             }
-            GestureSwipeEvent::End(_end_event) => {
-                action_map.receive_end_event(dx, dy);
+            GestureSwipeEvent::End(ref _end_event) => {
+                action_map.receive_end_event(dx, dy, event.finger_count());
             }
         }
     }
