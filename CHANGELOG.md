@@ -15,6 +15,11 @@ Types of changes:
 
 ## [UNRELEASED]
 
+### Fixed
+
+* Fix finger count for a swipe gesture not being taken into account for
+  determining the final event being emitted. (\#31)
+
 ### Added
 
 * Display more information about the enabled actions during startup (as `debug`
