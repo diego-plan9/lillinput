@@ -3,7 +3,9 @@
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use filedescriptor::{poll, pollfd, POLLIN};
-use input::event::gesture::{GestureEvent, GestureEventCoordinates, GestureSwipeEvent, GestureEventTrait};
+use input::event::gesture::{
+    GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
+};
 use input::event::Event;
 use input::Libinput;
 use log::warn;
