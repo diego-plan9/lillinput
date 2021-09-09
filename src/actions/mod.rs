@@ -18,10 +18,14 @@ use std::rc::Rc;
 pub struct ActionMap {
     threshold: f64,
     connection: Option<Rc<RefCell<I3Connection>>>,
-    swipe_left: Vec<Box<dyn Action>>,
-    swipe_right: Vec<Box<dyn Action>>,
-    swipe_up: Vec<Box<dyn Action>>,
-    swipe_down: Vec<Box<dyn Action>>,
+    swipe_left_3: Vec<Box<dyn Action>>,
+    swipe_right_3: Vec<Box<dyn Action>>,
+    swipe_up_3: Vec<Box<dyn Action>>,
+    swipe_down_3: Vec<Box<dyn Action>>,
+    swipe_left_4: Vec<Box<dyn Action>>,
+    swipe_right_4: Vec<Box<dyn Action>>,
+    swipe_up_4: Vec<Box<dyn Action>>,
+    swipe_down_4: Vec<Box<dyn Action>>,
 }
 
 /// Controller that connects events and actions.
@@ -184,6 +188,6 @@ mod test {
         action_map.populate_actions(&opts);
 
         // Assert that only the command action is created.
-        assert!(action_map.swipe_right.len() == 1);
+        assert!(action_map.swipe_right_3.len() == 1);
     }
 }

@@ -38,6 +38,10 @@ enum ActionEvents {
     ThreeFingerSwipeRight,
     ThreeFingerSwipeUp,
     ThreeFingerSwipeDown,
+    FourFingerSwipeLeft,
+    FourFingerSwipeRight,
+    FourFingerSwipeUp,
+    FourFingerSwipeDown,
 }
 
 /// Connect libinput gestures to i3 and others.
@@ -71,6 +75,18 @@ pub struct Opts {
     /// actions the three-finger swipe down
     #[clap(long, validator = is_action_string)]
     swipe_down_3: Vec<String>,
+    /// actions the four-finger swipe left
+    #[clap(long, validator = is_action_string)]
+    swipe_left_4: Vec<String>,
+    /// actions the four-finger swipe right
+    #[clap(long, validator = is_action_string)]
+    swipe_right_4: Vec<String>,
+    /// actions the four-finger swipe up
+    #[clap(long, validator = is_action_string)]
+    swipe_up_4: Vec<String>,
+    /// actions the four-finger swipe down
+    #[clap(long, validator = is_action_string)]
+    swipe_down_4: Vec<String>,
     /// allow passing nocapture as cargo test argument.
     /// TODO: handle more gracefully.
     #[cfg(test)]
