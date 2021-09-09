@@ -15,6 +15,11 @@ Types of changes:
 
 ## [UNRELEASED]
 
+### Added
+
+* Add support for 4-finger swipe, configurable via the `--swipe-{direction}-4`
+  family of arguments. (\#32)
+
 ### Fixed
 
 * Fix finger count for a swipe gesture not being taken into account for
