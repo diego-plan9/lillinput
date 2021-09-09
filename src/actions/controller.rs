@@ -90,11 +90,19 @@ impl ActionController for ActionMap {
         }
 
         parse_action_list(&opts.swipe_left_3, &mut self.swipe_left_3, &self.connection);
-        parse_action_list(&opts.swipe_right_3, &mut self.swipe_right_3, &self.connection);
+        parse_action_list(
+            &opts.swipe_right_3,
+            &mut self.swipe_right_3,
+            &self.connection,
+        );
         parse_action_list(&opts.swipe_up_3, &mut self.swipe_up_3, &self.connection);
         parse_action_list(&opts.swipe_down_3, &mut self.swipe_down_3, &self.connection);
         parse_action_list(&opts.swipe_left_4, &mut self.swipe_left_4, &self.connection);
-        parse_action_list(&opts.swipe_right_4, &mut self.swipe_right_4, &self.connection);
+        parse_action_list(
+            &opts.swipe_right_4,
+            &mut self.swipe_right_4,
+            &self.connection,
+        );
         parse_action_list(&opts.swipe_up_4, &mut self.swipe_up_4, &self.connection);
         parse_action_list(&opts.swipe_down_4, &mut self.swipe_down_4, &self.connection);
 
@@ -187,7 +195,11 @@ impl ActionController for ActionMap {
             ActionEvents::FourFingerSwipeDown => &mut self.swipe_down_4,
         };
 
-        debug!("Received end event: {}, triggering {} actions", command, actions.len());
+        debug!(
+            "Received end event: {}, triggering {} actions",
+            command,
+            actions.len()
+        );
 
         for action in actions.iter_mut() {
             action.execute_command();
