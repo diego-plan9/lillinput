@@ -38,10 +38,14 @@ impl ActionController for ActionMap {
         ActionMap {
             threshold: opts.threshold,
             connection,
-            swipe_left: vec![],
-            swipe_right: vec![],
-            swipe_up: vec![],
-            swipe_down: vec![],
+            swipe_left_3: vec![],
+            swipe_right_3: vec![],
+            swipe_up_3: vec![],
+            swipe_down_3: vec![],
+            swipe_left_4: vec![],
+            swipe_right_4: vec![],
+            swipe_up_4: vec![],
+            swipe_down_4: vec![],
         }
     }
 
@@ -85,40 +89,44 @@ impl ActionController for ActionMap {
             }
         }
 
-        parse_action_list(&opts.swipe_left_3, &mut self.swipe_left, &self.connection);
-        parse_action_list(&opts.swipe_right_3, &mut self.swipe_right, &self.connection);
-        parse_action_list(&opts.swipe_up_3, &mut self.swipe_up, &self.connection);
-        parse_action_list(&opts.swipe_down_3, &mut self.swipe_down, &self.connection);
+        parse_action_list(&opts.swipe_left_3, &mut self.swipe_left_3, &self.connection);
+        parse_action_list(&opts.swipe_right_3, &mut self.swipe_right_3, &self.connection);
+        parse_action_list(&opts.swipe_up_3, &mut self.swipe_up_3, &self.connection);
+        parse_action_list(&opts.swipe_down_3, &mut self.swipe_down_3, &self.connection);
+        parse_action_list(&opts.swipe_left_4, &mut self.swipe_left_4, &self.connection);
+        parse_action_list(&opts.swipe_right_4, &mut self.swipe_right_4, &self.connection);
+        parse_action_list(&opts.swipe_up_4, &mut self.swipe_up_4, &self.connection);
+        parse_action_list(&opts.swipe_down_4, &mut self.swipe_down_4, &self.connection);
 
         // Print information.
         info!(
             "Action controller started: {:?}/{:?}/{:?}/{:?} actions enabled",
-            self.swipe_left.len(),
-            self.swipe_right.len(),
-            self.swipe_up.len(),
-            self.swipe_down.len(),
+            self.swipe_left_3.len(),
+            self.swipe_right_3.len(),
+            self.swipe_up_3.len(),
+            self.swipe_down_3.len(),
         );
 
         // Print detailed information about actions.
         debug!(
             " * {}: {}",
             ActionEvents::ThreeFingerSwipeLeft,
-            self.swipe_left.iter().format(", ")
+            self.swipe_left_3.iter().format(", ")
         );
         debug!(
             " * {}: {}",
             ActionEvents::ThreeFingerSwipeRight,
-            self.swipe_right.iter().format(", ")
+            self.swipe_right_3.iter().format(", ")
         );
         debug!(
             " * {}: {}",
             ActionEvents::ThreeFingerSwipeUp,
-            self.swipe_up.iter().format(", ")
+            self.swipe_up_3.iter().format(", ")
         );
         debug!(
             " * {}: {}",
             ActionEvents::ThreeFingerSwipeDown,
-            self.swipe_down.iter().format(", ")
+            self.swipe_down_3.iter().format(", ")
         );
     }
 
@@ -151,30 +159,22 @@ impl ActionController for ActionMap {
             }
         }
 
-        debug!("Received end event: {}, triggering actions", command);
-
         // Invoke actions.
-        match command {
-            ActionEvents::ThreeFingerSwipeLeft => {
-                for action in self.swipe_left.iter_mut() {
-                    action.execute_command();
-                }
-            }
-            ActionEvents::ThreeFingerSwipeRight => {
-                for action in self.swipe_right.iter_mut() {
-                    action.execute_command();
-                }
-            }
-            ActionEvents::ThreeFingerSwipeUp => {
-                for action in self.swipe_up.iter_mut() {
-                    action.execute_command();
-                }
-            }
-            ActionEvents::ThreeFingerSwipeDown => {
-                for action in self.swipe_down.iter_mut() {
-                    action.execute_command();
-                }
-            }
+        let actions = match command {
+            ActionEvents::ThreeFingerSwipeLeft => &mut self.swipe_left_3,
+            ActionEvents::ThreeFingerSwipeRight => &mut self.swipe_right_3,
+            ActionEvents::ThreeFingerSwipeUp => &mut self.swipe_up_3,
+            ActionEvents::ThreeFingerSwipeDown => &mut self.swipe_down_3,
+            ActionEvents::FourFingerSwipeLeft => &mut self.swipe_left_3,
+            ActionEvents::FourFingerSwipeRight => &mut self.swipe_right_3,
+            ActionEvents::FourFingerSwipeUp => &mut self.swipe_up_3,
+            ActionEvents::FourFingerSwipeDown => &mut self.swipe_down_3,
+        };
+
+        debug!("Received end event: {}, triggering {} actions", command, actions.len());
+
+        for action in actions.iter_mut() {
+            action.execute_command();
         }
     }
 }
