@@ -138,7 +138,7 @@ impl ActionController for ActionMap {
             return;
         }
         // Avoid acting if the number of fingers is not supported.
-        if finger_count != 3 {
+        if finger_count != 3 && finger_count != 4 {
             debug!("Received end event with unsupported finger count, discarding");
             return;
         }
@@ -147,15 +147,31 @@ impl ActionController for ActionMap {
         let command: ActionEvents;
         if dx.abs() > dy.abs() {
             if dx > &0.0 {
-                command = ActionEvents::ThreeFingerSwipeRight
+                if finger_count == 3 {
+                    command = ActionEvents::ThreeFingerSwipeRight
+                } else {
+                    command = ActionEvents::FourFingerSwipeRight
+                }
             } else {
-                command = ActionEvents::ThreeFingerSwipeLeft
+                if finger_count == 3 {
+                    command = ActionEvents::ThreeFingerSwipeLeft
+                } else {
+                    command = ActionEvents::FourFingerSwipeLeft
+                }
             }
         } else {
             if dy > &0.0 {
-                command = ActionEvents::ThreeFingerSwipeUp
+                if finger_count == 3 {
+                    command = ActionEvents::ThreeFingerSwipeUp
+                } else {
+                    command = ActionEvents::FourFingerSwipeUp
+                }
             } else {
-                command = ActionEvents::ThreeFingerSwipeDown
+                if finger_count == 3 {
+                    command = ActionEvents::ThreeFingerSwipeDown
+                } else {
+                    command = ActionEvents::FourFingerSwipeDown
+                }
             }
         }
 
@@ -165,10 +181,10 @@ impl ActionController for ActionMap {
             ActionEvents::ThreeFingerSwipeRight => &mut self.swipe_right_3,
             ActionEvents::ThreeFingerSwipeUp => &mut self.swipe_up_3,
             ActionEvents::ThreeFingerSwipeDown => &mut self.swipe_down_3,
-            ActionEvents::FourFingerSwipeLeft => &mut self.swipe_left_3,
-            ActionEvents::FourFingerSwipeRight => &mut self.swipe_right_3,
-            ActionEvents::FourFingerSwipeUp => &mut self.swipe_up_3,
-            ActionEvents::FourFingerSwipeDown => &mut self.swipe_down_3,
+            ActionEvents::FourFingerSwipeLeft => &mut self.swipe_left_4,
+            ActionEvents::FourFingerSwipeRight => &mut self.swipe_right_4,
+            ActionEvents::FourFingerSwipeUp => &mut self.swipe_up_4,
+            ActionEvents::FourFingerSwipeDown => &mut self.swipe_down_4,
         };
 
         debug!("Received end event: {}, triggering {} actions", command, actions.len());
