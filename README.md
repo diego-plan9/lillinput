@@ -38,11 +38,15 @@ OPTIONS:
     -e, --enabled-action-types <enabled-action-types>...
             enabled action types [default: i3] [possible values: i3, command]
 
-    -s, --seat <seat>                             libinput seat [default: seat0]
-        --swipe-down-3 <swipe-down-3>...          actions the three-finger swipe down
-        --swipe-left-3 <swipe-left-3>...          actions the three-finger swipe left
-        --swipe-right-3 <swipe-right-3>...        actions the three-finger swipe right
-        --swipe-up-3 <swipe-up-3>...              actions the three-finger swipe up
+    -s, --seat <seat>                                       libinput seat [default: seat0]
+        --swipe-down-3 <swipe-down-3>...                    actions the three-finger swipe down
+        --swipe-down-4 <swipe-down-4>...                    actions the four-finger swipe down
+        --swipe-left-3 <swipe-left-3>...                    actions the three-finger swipe left
+        --swipe-left-4 <swipe-left-4>...                    actions the four-finger swipe left
+        --swipe-right-3 <swipe-right-3>...                  actions the three-finger swipe right
+        --swipe-right-4 <swipe-right-4>...                  actions the four-finger swipe right
+        --swipe-up-3 <swipe-up-3>...                        actions the three-finger swipe up
+        --swipe-up-4 <swipe-up-4>...                        actions the four-finger swipe up
     -t, --threshold <threshold>
             minimum threshold for position changes [default: 20.0]
 ```
@@ -50,12 +54,12 @@ OPTIONS:
 ### Configuring the swipe actions
 
 Each `--swipe-{foo}` argument accepts one or several "actions", in the form
-`{type}:{command}`. For example, the following command specifies an action
-for moving to the next workspace in `i3`, and an action for creating a file
-when swiping up:
+`{type}:{command}`. For example, the following invocation specifies two actions
+for the "three finger swipe up": moving to the next workspace in `i3`, and
+creating a file.
 
 ```
-lillinput --swipe-up-3 "i3:workspace next" --swipe-up-3 "command:touch myfile"
+lillinput --swipe-up-3 "i3:workspace next" --swipe-up-3 "command:touch /tmp/myfile"
 ```
 
 Currently, the available action types are `i3` and `command`.
