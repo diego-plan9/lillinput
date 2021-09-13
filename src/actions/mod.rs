@@ -124,8 +124,14 @@ mod test {
 
         // Create the expected commands (version + 4 swipes).
         let expected_commands = vec![
-            "swipe right 3", "swipe left 3", "swipe up 3", "swipe down 3",
-            "swipe right 4", "swipe left 4", "swipe up 4", "swipe down 4",
+            "swipe right 3",
+            "swipe left 3",
+            "swipe up 3",
+            "swipe down 3",
+            "swipe right 4",
+            "swipe left 4",
+            "swipe up 4",
+            "swipe down 4",
         ];
 
         // Create the listener and the shared storage for the commands.
