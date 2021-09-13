@@ -107,19 +107,26 @@ mod test {
     }
 
     #[test]
-    /// Test the triggering of commands for the 4 swipe actions.
+    /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
         let mut opts: Opts = Opts::parse();
         opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
-        opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
-        opts.swipe_up_3 = vec!["i3:swipe up".to_string()];
-        opts.swipe_down_3 = vec!["i3:swipe down".to_string()];
+        opts.swipe_right_3 = vec!["i3:swipe right 3".to_string()];
+        opts.swipe_left_3 = vec!["i3:swipe left 3".to_string()];
+        opts.swipe_up_3 = vec!["i3:swipe up 3".to_string()];
+        opts.swipe_down_3 = vec!["i3:swipe down 3".to_string()];
+        opts.swipe_right_4 = vec!["i3:swipe right 4".to_string()];
+        opts.swipe_left_4 = vec!["i3:swipe left 4".to_string()];
+        opts.swipe_up_4 = vec!["i3:swipe up 4".to_string()];
+        opts.swipe_down_4 = vec!["i3:swipe down 4".to_string()];
         opts.threshold = 5.0;
 
         // Create the expected commands (version + 4 swipes).
-        let expected_commands = vec!["swipe right", "swipe left", "swipe up", "swipe down"];
+        let expected_commands = vec![
+            "swipe right 3", "swipe left 3", "swipe up 3", "swipe down 3",
+            "swipe right 4", "swipe left 4", "swipe up 4", "swipe down 4",
+        ];
 
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
@@ -132,10 +139,14 @@ mod test {
         action_map.receive_end_event(&-10.0, &0.0, 3);
         action_map.receive_end_event(&0.0, &10.0, 3);
         action_map.receive_end_event(&0.0, &-10.0, 3);
+        action_map.receive_end_event(&10.0, &0.0, 4);
+        action_map.receive_end_event(&-10.0, &0.0, 4);
+        action_map.receive_end_event(&0.0, &10.0, 4);
+        action_map.receive_end_event(&0.0, &-10.0, 4);
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
-        assert!(messages.len() == 4);
+        assert!(messages.len() == 8);
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
             assert!(message == expected_command);
         }
