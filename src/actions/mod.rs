@@ -183,6 +183,7 @@ mod test {
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
+        assert!(messages.len() == 1);
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
             assert!(message == expected_command);
         }
