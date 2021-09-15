@@ -189,6 +189,30 @@ mod test {
     }
 
     #[test]
+    /// Test the reception of events with unsupported finger count.
+    fn test_i3_unsupported_finger_count() {
+        // Initialize the command line options.
+        let mut opts: Opts = Opts::parse();
+        opts.enabled_action_types = vec!["i3".to_string()];
+        opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
+        opts.swipe_right_4 = vec!["i3:swipe right".to_string()];
+        opts.threshold = 5.0;
+
+        // Create the listener and the shared storage for the commands.
+        let message_log = Arc::new(Mutex::new(vec![]));
+        init_listener(Arc::clone(&message_log));
+
+        // Trigger right swipe with unsupported (5) fingers count.
+        let mut action_map: ActionMap = ActionController::new(&opts);
+        action_map.populate_actions(&opts);
+        action_map.receive_end_event(&5.0, &0.0, 5);
+
+        // Assert over the expected messages.
+        let messages = message_log.lock().unwrap();
+        assert!(messages.len() == 0);
+    }
+
+    #[test]
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.
