@@ -188,7 +188,7 @@ impl ActionController for ActionMap {
             }
         }
 
-        return Some(action_event);
+        Some(action_event)
     }
 
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
