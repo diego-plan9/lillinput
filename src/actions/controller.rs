@@ -221,9 +221,9 @@ mod test {
     use clap::Clap;
 
     #[test]
-    /// Test the handling of an event `finger_count` parameter.
+    /// Test the handling of an event `finger_count` argument.
     fn test_parse_finger_count() {
-        // Initialize the command line options.
+        // Initialize the command line options and controller.
         let mut opts: Opts = Opts::parse();
         opts.threshold = 5.0;
         let mut action_map: ActionMap = ActionController::new(&opts);
@@ -243,4 +243,21 @@ mod test {
         assert_eq!(action_event.is_none(), true);
     }
 
+    #[test]
+    /// Test the handling of an event `threshold` argument.
+    fn test_parse_threshold() {
+        // Initialize the command line options and controller.
+        let mut opts: Opts = Opts::parse();
+        opts.threshold = 5.0;
+        let mut action_map: ActionMap = ActionController::new(&opts);
+
+        // Trigger swipe below threshold.
+        let action_event = action_map.end_event_to_action_event(&4.99, &0.0, 3);
+        assert_eq!(action_event.is_none(), true);
+
+        // Trigger swipe above threshold.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight, true);
+    }
 }

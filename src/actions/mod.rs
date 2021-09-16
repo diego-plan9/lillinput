@@ -169,37 +169,6 @@ mod test {
     }
 
     #[test]
-    /// Test the usage of the threshold argument.
-    fn test_i3_swipe_below_threshold() {
-        // Initialize the command line options.
-        let mut opts: Opts = Opts::parse();
-        opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
-        opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
-        opts.threshold = 5.0;
-
-        // Create the expected commands (version + 4 swipes).
-        let expected_commands = vec!["swipe left"];
-
-        // Create the listener and the shared storage for the commands.
-        let message_log = Arc::new(Mutex::new(vec![]));
-        init_listener(Arc::clone(&message_log));
-
-        // Trigger right swipe below threshold, left above threshold.
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
-        action_map.receive_end_event(&4.0, &0.0, 3);
-        action_map.receive_end_event(&-5.0, &0.0, 3);
-
-        // Assert over the expected messages.
-        let messages = message_log.lock().unwrap();
-        assert!(messages.len() == 1);
-        for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
-            assert!(message == expected_command);
-        }
-    }
-
-    #[test]
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.
