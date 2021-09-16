@@ -139,16 +139,21 @@ impl ActionController for ActionMap {
     }
 
     #[allow(clippy::collapsible_else_if)]
-    fn end_event_to_action_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) -> Option<ActionEvents> {
+    fn end_event_to_action_event(
+        &mut self,
+        dx: &f64,
+        dy: &f64,
+        finger_count: i32,
+    ) -> Option<ActionEvents> {
         // Avoid acting if the displacement is below the threshold.
         if dx.abs() < self.threshold && dy.abs() < self.threshold {
             debug!("Received end event below threshold, discarding");
-            return None
+            return None;
         }
         // Avoid acting if the number of fingers is not supported.
         if finger_count != 3 && finger_count != 4 {
             debug!("Received end event with unsupported finger count, discarding");
-            return None
+            return None;
         }
 
         // Determine the command for the event.
@@ -183,9 +188,8 @@ impl ActionController for ActionMap {
             }
         }
 
-        return Some(action_event)
+        return Some(action_event);
     }
-
 
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
         let action_event = self.end_event_to_action_event(dx, dy, finger_count);
@@ -231,12 +235,18 @@ mod test {
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
         assert_eq!(action_event.is_some(), true);
-        assert_eq!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight, true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
+            true
+        );
 
         // Trigger right swipe with supported (4) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 4);
         assert_eq!(action_event.is_some(), true);
-        assert_eq!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight, true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::FourFingerSwipeRight,
+            true
+        );
 
         // Trigger right swipe with unsupported (5) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 5);
@@ -258,6 +268,9 @@ mod test {
         // Trigger swipe above threshold.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
         assert_eq!(action_event.is_some(), true);
-        assert_eq!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight, true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
+            true
+        );
     }
 }

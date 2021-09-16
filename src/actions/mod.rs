@@ -61,7 +61,12 @@ pub trait ActionController {
     /// * `dx` - the current position in the `x` axis
     /// * `dy` - the current position in the `y` axis
     /// * `finger_count` - the number of fingers used for the gesture
-    fn end_event_to_action_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) -> Option<ActionEvents>;
+    fn end_event_to_action_event(
+        &mut self,
+        dx: &f64,
+        dy: &f64,
+        finger_count: i32,
+    ) -> Option<ActionEvents>;
 }
 
 /// Handler for a single action triggered by an event.
