@@ -152,46 +152,46 @@ impl ActionController for ActionMap {
         }
 
         // Determine the command for the event.
-        let command: ActionEvents;
+        let action_event: ActionEvents;
         if dx.abs() > dy.abs() {
             if dx > &0.0 {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeRight
+                    action_event = ActionEvents::ThreeFingerSwipeRight
                 } else {
-                    command = ActionEvents::FourFingerSwipeRight
+                    action_event = ActionEvents::FourFingerSwipeRight
                 }
             } else {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeLeft
+                    action_event = ActionEvents::ThreeFingerSwipeLeft
                 } else {
-                    command = ActionEvents::FourFingerSwipeLeft
+                    action_event = ActionEvents::FourFingerSwipeLeft
                 }
             }
         } else {
             if dy > &0.0 {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeUp
+                    action_event = ActionEvents::ThreeFingerSwipeUp
                 } else {
-                    command = ActionEvents::FourFingerSwipeUp
+                    action_event = ActionEvents::FourFingerSwipeUp
                 }
             } else {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeDown
+                    action_event = ActionEvents::ThreeFingerSwipeDown
                 } else {
-                    command = ActionEvents::FourFingerSwipeDown
+                    action_event = ActionEvents::FourFingerSwipeDown
                 }
             }
         }
 
-        return Some(command)
+        return Some(action_event)
     }
 
 
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
-        let command = self.end_event_to_action_event(dx, dy, finger_count);
+        let action_event = self.end_event_to_action_event(dx, dy, finger_count);
 
         // Invoke actions.
-        let actions = match command {
+        let actions = match action_event {
             Some(ActionEvents::ThreeFingerSwipeLeft) => &mut self.swipe_left_3,
             Some(ActionEvents::ThreeFingerSwipeRight) => &mut self.swipe_right_3,
             Some(ActionEvents::ThreeFingerSwipeUp) => &mut self.swipe_up_3,
@@ -205,7 +205,7 @@ impl ActionController for ActionMap {
 
         debug!(
             "Received end event: {}, triggering {} actions",
-            command.unwrap(),
+            action_event.unwrap(),
             actions.len()
         );
 
