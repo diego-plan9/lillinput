@@ -214,3 +214,33 @@ impl ActionController for ActionMap {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::{ActionController, ActionEvents, ActionMap, Opts};
+    use clap::Clap;
+
+    #[test]
+    /// Test the handling of an event `finger_count` parameter.
+    fn test_parse_finger_count() {
+        // Initialize the command line options.
+        let mut opts: Opts = Opts::parse();
+        opts.threshold = 5.0;
+        let mut action_map: ActionMap = ActionController::new(&opts);
+
+        // Trigger right swipe with supported (3) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight, true);
+
+        // Trigger right swipe with supported (4) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 4);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight, true);
+
+        // Trigger right swipe with unsupported (5) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 5);
+        assert_eq!(action_event.is_none(), true);
+    }
+
+}
