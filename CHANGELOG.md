@@ -17,6 +17,8 @@ Types of changes:
 
 ### Added
 
+* Display more information about the enabled actions during startup (as `debug`
+  information, requiring the `--verbose` flag). (\#25)
 * Add support for 4-finger swipe, configurable via the `--swipe-{direction}-4`
   family of arguments. (\#32)
 
@@ -25,10 +27,6 @@ Types of changes:
 * Fix finger count for a swipe gesture not being taken into account for
   determining the final event being emitted. (\#31)
 
-### Added
-
-* Display more information about the enabled actions during startup (as `debug`
-  information, requiring the `--verbose` flag). (\#25)
 
 ## [0.1.0] - 2021-08-01
 

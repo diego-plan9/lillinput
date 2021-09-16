@@ -139,70 +139,138 @@ impl ActionController for ActionMap {
     }
 
     #[allow(clippy::collapsible_else_if)]
-    fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
+    fn end_event_to_action_event(
+        &mut self,
+        dx: &f64,
+        dy: &f64,
+        finger_count: i32,
+    ) -> Option<ActionEvents> {
         // Avoid acting if the displacement is below the threshold.
         if dx.abs() < self.threshold && dy.abs() < self.threshold {
             debug!("Received end event below threshold, discarding");
-            return;
+            return None;
         }
         // Avoid acting if the number of fingers is not supported.
         if finger_count != 3 && finger_count != 4 {
             debug!("Received end event with unsupported finger count, discarding");
-            return;
+            return None;
         }
 
         // Determine the command for the event.
-        let command: ActionEvents;
+        let action_event: ActionEvents;
         if dx.abs() > dy.abs() {
             if dx > &0.0 {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeRight
+                    action_event = ActionEvents::ThreeFingerSwipeRight
                 } else {
-                    command = ActionEvents::FourFingerSwipeRight
+                    action_event = ActionEvents::FourFingerSwipeRight
                 }
             } else {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeLeft
+                    action_event = ActionEvents::ThreeFingerSwipeLeft
                 } else {
-                    command = ActionEvents::FourFingerSwipeLeft
+                    action_event = ActionEvents::FourFingerSwipeLeft
                 }
             }
         } else {
             if dy > &0.0 {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeUp
+                    action_event = ActionEvents::ThreeFingerSwipeUp
                 } else {
-                    command = ActionEvents::FourFingerSwipeUp
+                    action_event = ActionEvents::FourFingerSwipeUp
                 }
             } else {
                 if finger_count == 3 {
-                    command = ActionEvents::ThreeFingerSwipeDown
+                    action_event = ActionEvents::ThreeFingerSwipeDown
                 } else {
-                    command = ActionEvents::FourFingerSwipeDown
+                    action_event = ActionEvents::FourFingerSwipeDown
                 }
             }
         }
 
+        Some(action_event)
+    }
+
+    fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
+        let action_event = self.end_event_to_action_event(dx, dy, finger_count);
+
         // Invoke actions.
-        let actions = match command {
-            ActionEvents::ThreeFingerSwipeLeft => &mut self.swipe_left_3,
-            ActionEvents::ThreeFingerSwipeRight => &mut self.swipe_right_3,
-            ActionEvents::ThreeFingerSwipeUp => &mut self.swipe_up_3,
-            ActionEvents::ThreeFingerSwipeDown => &mut self.swipe_down_3,
-            ActionEvents::FourFingerSwipeLeft => &mut self.swipe_left_4,
-            ActionEvents::FourFingerSwipeRight => &mut self.swipe_right_4,
-            ActionEvents::FourFingerSwipeUp => &mut self.swipe_up_4,
-            ActionEvents::FourFingerSwipeDown => &mut self.swipe_down_4,
+        let actions = match action_event {
+            Some(ActionEvents::ThreeFingerSwipeLeft) => &mut self.swipe_left_3,
+            Some(ActionEvents::ThreeFingerSwipeRight) => &mut self.swipe_right_3,
+            Some(ActionEvents::ThreeFingerSwipeUp) => &mut self.swipe_up_3,
+            Some(ActionEvents::ThreeFingerSwipeDown) => &mut self.swipe_down_3,
+            Some(ActionEvents::FourFingerSwipeLeft) => &mut self.swipe_left_4,
+            Some(ActionEvents::FourFingerSwipeRight) => &mut self.swipe_right_4,
+            Some(ActionEvents::FourFingerSwipeUp) => &mut self.swipe_up_4,
+            Some(ActionEvents::FourFingerSwipeDown) => &mut self.swipe_down_4,
+            None => return,
         };
 
         debug!(
             "Received end event: {}, triggering {} actions",
-            command,
+            action_event.unwrap(),
             actions.len()
         );
 
         for action in actions.iter_mut() {
             action.execute_command();
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::{ActionController, ActionEvents, ActionMap, Opts};
+    use clap::Clap;
+
+    #[test]
+    /// Test the handling of an event `finger_count` argument.
+    fn test_parse_finger_count() {
+        // Initialize the command line options and controller.
+        let mut opts: Opts = Opts::parse();
+        opts.threshold = 5.0;
+        let mut action_map: ActionMap = ActionController::new(&opts);
+
+        // Trigger right swipe with supported (3) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
+            true
+        );
+
+        // Trigger right swipe with supported (4) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 4);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::FourFingerSwipeRight,
+            true
+        );
+
+        // Trigger right swipe with unsupported (5) fingers count.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 5);
+        assert_eq!(action_event.is_none(), true);
+    }
+
+    #[test]
+    /// Test the handling of an event `threshold` argument.
+    fn test_parse_threshold() {
+        // Initialize the command line options and controller.
+        let mut opts: Opts = Opts::parse();
+        opts.threshold = 5.0;
+        let mut action_map: ActionMap = ActionController::new(&opts);
+
+        // Trigger swipe below threshold.
+        let action_event = action_map.end_event_to_action_event(&4.99, &0.0, 3);
+        assert_eq!(action_event.is_none(), true);
+
+        // Trigger swipe above threshold.
+        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        assert_eq!(action_event.is_some(), true);
+        assert_eq!(
+            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
+            true
+        );
     }
 }

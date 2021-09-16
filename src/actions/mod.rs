@@ -52,6 +52,21 @@ pub trait ActionController {
     /// * `dy` - the current position in the `y` axis
     /// * `finger_count` - the number of fingers used for the gesture
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32);
+
+    /// Parse a swipe gesture end event into an action event.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - action controller.
+    /// * `dx` - the current position in the `x` axis
+    /// * `dy` - the current position in the `y` axis
+    /// * `finger_count` - the number of fingers used for the gesture
+    fn end_event_to_action_event(
+        &mut self,
+        dx: &f64,
+        dy: &f64,
+        finger_count: i32,
+    ) -> Option<ActionEvents>;
 }
 
 /// Handler for a single action triggered by an event.
@@ -156,61 +171,6 @@ mod test {
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
             assert!(message == expected_command);
         }
-    }
-
-    #[test]
-    /// Test the usage of the threshold argument.
-    fn test_i3_swipe_below_threshold() {
-        // Initialize the command line options.
-        let mut opts: Opts = Opts::parse();
-        opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
-        opts.swipe_left_3 = vec!["i3:swipe left".to_string()];
-        opts.threshold = 5.0;
-
-        // Create the expected commands (version + 4 swipes).
-        let expected_commands = vec!["swipe left"];
-
-        // Create the listener and the shared storage for the commands.
-        let message_log = Arc::new(Mutex::new(vec![]));
-        init_listener(Arc::clone(&message_log));
-
-        // Trigger right swipe below threshold, left above threshold.
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
-        action_map.receive_end_event(&4.0, &0.0, 3);
-        action_map.receive_end_event(&-5.0, &0.0, 3);
-
-        // Assert over the expected messages.
-        let messages = message_log.lock().unwrap();
-        assert!(messages.len() == 1);
-        for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
-            assert!(message == expected_command);
-        }
-    }
-
-    #[test]
-    /// Test the reception of events with unsupported finger count.
-    fn test_i3_unsupported_finger_count() {
-        // Initialize the command line options.
-        let mut opts: Opts = Opts::parse();
-        opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec!["i3:swipe right".to_string()];
-        opts.swipe_right_4 = vec!["i3:swipe right".to_string()];
-        opts.threshold = 5.0;
-
-        // Create the listener and the shared storage for the commands.
-        let message_log = Arc::new(Mutex::new(vec![]));
-        init_listener(Arc::clone(&message_log));
-
-        // Trigger right swipe with unsupported (5) fingers count.
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
-        action_map.receive_end_event(&5.0, &0.0, 5);
-
-        // Assert over the expected messages.
-        let messages = message_log.lock().unwrap();
-        assert!(messages.len() == 0);
     }
 
     #[test]
