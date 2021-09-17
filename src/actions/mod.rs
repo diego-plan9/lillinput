@@ -167,9 +167,9 @@ mod test {
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
-        assert!(messages.len() == 8);
+        assert_eq!(messages.len(), 8);
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
-            assert!(message == expected_command);
+            assert_eq!(message, expected_command);
         }
     }
 
@@ -190,6 +190,6 @@ mod test {
         action_map.populate_actions(&opts);
 
         // Assert that only the command action is created.
-        assert!(action_map.swipe_right_3.len() == 1);
+        assert_eq!(action_map.swipe_right_3.len(), 1);
     }
 }
