@@ -9,8 +9,35 @@ use itertools::Itertools;
 use log::{debug, info, warn};
 
 use std::cell::RefCell;
+use std::convert::TryFrom;
+
 use std::rc::Rc;
 use std::str::FromStr;
+
+/// Possible choices for finger count.
+enum FingerCount {
+    ThreeFinger = 3,
+    FourFinger = 4
+}
+
+impl TryFrom<i32> for FingerCount {
+    type Error = ();
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            3 => Ok(FingerCount::ThreeFinger),
+            4 => Ok(FingerCount::FourFinger),
+            _ => Err(())
+        }
+    }
+}
+
+// Axis of a swipe action.
+enum Axis {
+    X,
+    Y
+}
+
 
 impl ActionController for ActionMap {
     fn new(opts: &Opts) -> Self {
