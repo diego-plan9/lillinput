@@ -9,8 +9,34 @@ use itertools::Itertools;
 use log::{debug, info, warn};
 
 use std::cell::RefCell;
+use std::convert::TryFrom;
+
 use std::rc::Rc;
 use std::str::FromStr;
+
+/// Possible choices for finger count.
+enum FingerCount {
+    ThreeFinger = 3,
+    FourFinger = 4,
+}
+
+impl TryFrom<i32> for FingerCount {
+    type Error = ();
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            3 => Ok(FingerCount::ThreeFinger),
+            4 => Ok(FingerCount::FourFinger),
+            _ => Err(()),
+        }
+    }
+}
+
+// Axis of a swipe action.
+enum Axis {
+    X,
+    Y,
+}
 
 impl ActionController for ActionMap {
     fn new(opts: &Opts) -> Self {
@@ -138,7 +164,6 @@ impl ActionController for ActionMap {
         );
     }
 
-    #[allow(clippy::collapsible_else_if)]
     fn end_event_to_action_event(
         &mut self,
         dx: &f64,
@@ -150,45 +175,33 @@ impl ActionController for ActionMap {
             debug!("Received end event below threshold, discarding");
             return None;
         }
-        // Avoid acting if the number of fingers is not supported.
-        if finger_count != 3 && finger_count != 4 {
-            debug!("Received end event with unsupported finger count, discarding");
-            return None;
-        }
+
+        // Determine finger count and avoid acting if the number of fingers is not supported.
+        let finger_count_as_enum = match FingerCount::try_from(finger_count) {
+            Ok(count) => count,
+            Err(_) => {
+                debug!("Received end event with unsupported finger count, discarding");
+                return None;
+            }
+        };
+
+        // Determine the axis and direction.
+        let (axis, positive) = match dx.abs() > dy.abs() {
+            true => (Axis::X, dx > &0.0),
+            false => (Axis::Y, dy > &0.0),
+        };
 
         // Determine the command for the event.
-        let action_event: ActionEvents;
-        if dx.abs() > dy.abs() {
-            if dx > &0.0 {
-                if finger_count == 3 {
-                    action_event = ActionEvents::ThreeFingerSwipeRight
-                } else {
-                    action_event = ActionEvents::FourFingerSwipeRight
-                }
-            } else {
-                if finger_count == 3 {
-                    action_event = ActionEvents::ThreeFingerSwipeLeft
-                } else {
-                    action_event = ActionEvents::FourFingerSwipeLeft
-                }
-            }
-        } else {
-            if dy > &0.0 {
-                if finger_count == 3 {
-                    action_event = ActionEvents::ThreeFingerSwipeUp
-                } else {
-                    action_event = ActionEvents::FourFingerSwipeUp
-                }
-            } else {
-                if finger_count == 3 {
-                    action_event = ActionEvents::ThreeFingerSwipeDown
-                } else {
-                    action_event = ActionEvents::FourFingerSwipeDown
-                }
-            }
+        match (axis, positive, finger_count_as_enum) {
+            (Axis::X, true, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeRight),
+            (Axis::X, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeLeft),
+            (Axis::X, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeRight),
+            (Axis::X, false, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeLeft),
+            (Axis::Y, true, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeUp),
+            (Axis::Y, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeDown),
+            (Axis::Y, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeUp),
+            (Axis::Y, false, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeDown),
         }
-
-        Some(action_event)
     }
 
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
