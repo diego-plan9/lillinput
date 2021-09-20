@@ -192,7 +192,7 @@ impl ActionController for ActionMap {
         };
 
         // Determine the command for the event.
-        let action_event = match (axis, positive, finger_count_as_enum) {
+        match (axis, positive, finger_count_as_enum) {
             (Axis::X, true, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeRight),
             (Axis::X, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeLeft),
             (Axis::X, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeRight),
@@ -201,9 +201,7 @@ impl ActionController for ActionMap {
             (Axis::Y, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeDown),
             (Axis::Y, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeUp),
             (Axis::Y, false, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeDown),
-        };
-
-        action_event
+        }
     }
 
     fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
