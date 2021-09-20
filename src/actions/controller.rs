@@ -17,7 +17,7 @@ use std::str::FromStr;
 /// Possible choices for finger count.
 enum FingerCount {
     ThreeFinger = 3,
-    FourFinger = 4
+    FourFinger = 4,
 }
 
 impl TryFrom<i32> for FingerCount {
@@ -27,7 +27,7 @@ impl TryFrom<i32> for FingerCount {
         match value {
             3 => Ok(FingerCount::ThreeFinger),
             4 => Ok(FingerCount::FourFinger),
-            _ => Err(())
+            _ => Err(()),
         }
     }
 }
@@ -35,9 +35,8 @@ impl TryFrom<i32> for FingerCount {
 // Axis of a swipe action.
 enum Axis {
     X,
-    Y
+    Y,
 }
-
 
 impl ActionController for ActionMap {
     fn new(opts: &Opts) -> Self {
