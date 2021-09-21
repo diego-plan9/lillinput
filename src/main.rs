@@ -10,6 +10,7 @@ use clap::{AppSettings, Clap};
 use log::info;
 use simplelog::{ColorChoice, Config, LevelFilter, TermLogger, TerminalMode};
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
+use strum_macros::EnumIter;
 
 mod actions;
 use actions::{ActionController, ActionMap};
@@ -30,7 +31,7 @@ enum ActionTypes {
 }
 
 /// High-level events that can trigger an action.
-#[derive(Display, EnumString, EnumVariantNames, PartialEq)]
+#[derive(Display, EnumIter, EnumString, EnumVariantNames, PartialEq)]
 #[strum(serialize_all = "kebab_case")]
 #[allow(clippy::enum_variant_names)]
 pub enum ActionEvents {
