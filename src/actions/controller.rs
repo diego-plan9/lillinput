@@ -120,18 +120,22 @@ impl ActionController for ActionMap {
         for action_event in ActionEvents::iter() {
             let (opts_field, self_field) = match action_event {
                 ActionEvents::ThreeFingerSwipeLeft => (&opts.swipe_left_3, &mut self.swipe_left_3),
-                ActionEvents::ThreeFingerSwipeRight => (&opts.swipe_right_3, &mut self.swipe_right_3),
+                ActionEvents::ThreeFingerSwipeRight => {
+                    (&opts.swipe_right_3, &mut self.swipe_right_3),
+                }
                 ActionEvents::ThreeFingerSwipeUp => (&opts.swipe_up_3, &mut self.swipe_up_3),
                 ActionEvents::ThreeFingerSwipeDown => (&opts.swipe_down_3, &mut self.swipe_down_3),
                 ActionEvents::FourFingerSwipeLeft => (&opts.swipe_left_4, &mut self.swipe_left_4),
-                ActionEvents::FourFingerSwipeRight => (&opts.swipe_right_4, &mut self.swipe_right_4),
+                ActionEvents::FourFingerSwipeRight => {
+                    (&opts.swipe_right_4, &mut self.swipe_right_4),
+                }
                 ActionEvents::FourFingerSwipeUp => (&opts.swipe_up_4, &mut self.swipe_up_4),
                 ActionEvents::FourFingerSwipeDown => (&opts.swipe_down_4, &mut self.swipe_down_4),
             };
 
             parse_action_list(opts_field, self_field, &self.connection);
             debug!(" * {}: {}", action_event, self_field.iter().format(", "));
-        };
+        }
 
         // Print information.
         info!(
