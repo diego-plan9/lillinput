@@ -10,9 +10,10 @@ use log::{debug, info, warn};
 
 use std::cell::RefCell;
 use std::convert::TryFrom;
-
 use std::rc::Rc;
 use std::str::FromStr;
+
+use strum::IntoEnumIterator;
 
 /// Possible choices for finger count.
 enum FingerCount {
@@ -115,22 +116,22 @@ impl ActionController for ActionMap {
             }
         }
 
-        parse_action_list(&opts.swipe_left_3, &mut self.swipe_left_3, &self.connection);
-        parse_action_list(
-            &opts.swipe_right_3,
-            &mut self.swipe_right_3,
-            &self.connection,
-        );
-        parse_action_list(&opts.swipe_up_3, &mut self.swipe_up_3, &self.connection);
-        parse_action_list(&opts.swipe_down_3, &mut self.swipe_down_3, &self.connection);
-        parse_action_list(&opts.swipe_left_4, &mut self.swipe_left_4, &self.connection);
-        parse_action_list(
-            &opts.swipe_right_4,
-            &mut self.swipe_right_4,
-            &self.connection,
-        );
-        parse_action_list(&opts.swipe_up_4, &mut self.swipe_up_4, &self.connection);
-        parse_action_list(&opts.swipe_down_4, &mut self.swipe_down_4, &self.connection);
+        // Populate the fields for each `ActionEvent`, printing debug info in the process.
+        for action_event in ActionEvents::iter() {
+            let (opts_field, self_field) = match action_event {
+                ActionEvents::ThreeFingerSwipeLeft => (&opts.swipe_left_3, &mut self.swipe_left_3),
+                ActionEvents::ThreeFingerSwipeRight => (&opts.swipe_right_3, &mut self.swipe_right_3),
+                ActionEvents::ThreeFingerSwipeUp => (&opts.swipe_up_3, &mut self.swipe_up_3),
+                ActionEvents::ThreeFingerSwipeDown => (&opts.swipe_down_3, &mut self.swipe_down_3),
+                ActionEvents::FourFingerSwipeLeft => (&opts.swipe_left_4, &mut self.swipe_left_4),
+                ActionEvents::FourFingerSwipeRight => (&opts.swipe_right_4, &mut self.swipe_right_4),
+                ActionEvents::FourFingerSwipeUp => (&opts.swipe_up_4, &mut self.swipe_up_4),
+                ActionEvents::FourFingerSwipeDown => (&opts.swipe_down_4, &mut self.swipe_down_4),
+            };
+
+            parse_action_list(opts_field, self_field, &self.connection);
+            debug!(" * {}: {}", action_event, self_field.iter().format(", "));
+        };
 
         // Print information.
         info!(
@@ -139,28 +140,6 @@ impl ActionController for ActionMap {
             self.swipe_right_3.len(),
             self.swipe_up_3.len(),
             self.swipe_down_3.len(),
-        );
-
-        // Print detailed information about actions.
-        debug!(
-            " * {}: {}",
-            ActionEvents::ThreeFingerSwipeLeft,
-            self.swipe_left_3.iter().format(", ")
-        );
-        debug!(
-            " * {}: {}",
-            ActionEvents::ThreeFingerSwipeRight,
-            self.swipe_right_3.iter().format(", ")
-        );
-        debug!(
-            " * {}: {}",
-            ActionEvents::ThreeFingerSwipeUp,
-            self.swipe_up_3.iter().format(", ")
-        );
-        debug!(
-            " * {}: {}",
-            ActionEvents::ThreeFingerSwipeDown,
-            self.swipe_down_3.iter().format(", ")
         );
     }
 
