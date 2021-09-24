@@ -58,5 +58,6 @@ mod test {
 
         // Assert.
         assert!(Path::new(expected_file).exists());
+        std::fs::remove_file(expected_file).ok();
     }
 }
