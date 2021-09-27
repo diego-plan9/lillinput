@@ -88,18 +88,6 @@ pub struct Opts {
     /// actions the four-finger swipe down
     #[clap(long, validator = is_action_string)]
     swipe_down_4: Vec<String>,
-    /// allow passing nocapture as cargo test argument.
-    /// TODO: handle more gracefully.
-    #[cfg(test)]
-    #[allow(dead_code)]
-    #[clap(long)]
-    nocapture: bool,
-    /// allow passing test-threads as cargo test argument.
-    /// TODO: handle more gracefully.
-    #[cfg(test)]
-    #[allow(dead_code)]
-    #[clap(long, default_value = "1")]
-    test_threads: u8,
 }
 
 /// Validator for arguments that specify an action.
