@@ -31,7 +31,7 @@ pub fn default_test_opts() -> Opts {
         swipe_down_4: vec![],
         threshold: 5.0,
         seat: "seat0".to_string(),
-        verbose: 0
+        verbose: 0,
     }
 }
 
