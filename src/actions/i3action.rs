@@ -45,8 +45,7 @@ impl I3ActionExt for I3Action {
 #[cfg(test)]
 mod test {
     use crate::actions::{ActionController, ActionMap, Opts};
-    use crate::test_utils::init_listener;
-    use clap::Clap;
+    use crate::test_utils::{default_test_opts, init_listener};
     use std::env;
     use std::sync::{Arc, Mutex};
 
@@ -54,7 +53,7 @@ mod test {
     /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
-        let mut opts: Opts = Opts::parse();
+        let mut opts: Opts = default_test_opts();
         opts.enabled_action_types = vec!["i3".to_string()];
         opts.swipe_right_3 = vec!["i3:swipe right 3".to_string()];
         opts.swipe_left_3 = vec!["i3:swipe left 3".to_string()];
@@ -64,7 +63,6 @@ mod test {
         opts.swipe_left_4 = vec!["i3:swipe left 4".to_string()];
         opts.swipe_up_4 = vec!["i3:swipe up 4".to_string()];
         opts.swipe_down_4 = vec!["i3:swipe down 4".to_string()];
-        opts.threshold = 5.0;
 
         // Create the expected commands (version + 4 swipes).
         let expected_commands = vec![
@@ -106,8 +104,8 @@ mod test {
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.
-        let mut opts: Opts = Opts::parse();
-        opts.enabled_action_types = vec!["i3".to_string(), "command".to_string()];
+        let mut opts: Opts = default_test_opts();
+        opts.enabled_action_types = vec!["i3".to_string()];
         opts.swipe_right_3 = vec![
             "i3:swipe right".to_string(),
             "command:touch /tmp/swipe-right".to_string(),
