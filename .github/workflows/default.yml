@@ -60,6 +60,7 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+        continue-on-error: true
 
       - name: Install dependencies for clippy
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
