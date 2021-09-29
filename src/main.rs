@@ -7,7 +7,7 @@
 use input::Libinput;
 
 use clap::{AppSettings, Clap};
-use log::info;
+use log::{error, info};
 use simplelog::{ColorChoice, Config, LevelFilter, TermLogger, TerminalMode};
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
 use strum_macros::EnumIter;
@@ -138,5 +138,7 @@ fn main() {
     );
 
     // Start the main loop.
-    main_loop(input, &mut action_map);
+    if let Err(e) = main_loop(input, &mut action_map) {
+        error!("Unhandled error during the main loop: {}", e)
+    }
 }
