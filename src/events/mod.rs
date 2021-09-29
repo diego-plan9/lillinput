@@ -1,5 +1,6 @@
 //! Components for capturing and handling events.
 
+use std::io;
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use filedescriptor::{poll, pollfd, POLLIN};
@@ -8,7 +9,6 @@ use input::event::gesture::{
 };
 use input::event::Event;
 use input::Libinput;
-use log::warn;
 
 use super::actions::{ActionController, ActionMap};
 
@@ -46,7 +46,7 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
 ///
 /// * `input` - the libinput object
 /// * `action_map` - the action map that will process the event
-pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) {
+pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), io::Error> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;
     let mut dy: f64 = 0.0;
@@ -63,10 +63,11 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) {
     loop {
         // Block until the descriptor is ready.
         if let Err(e) = poll(&mut poll_array, None) {
-            warn!("{:?}", e);
+            return Err(e.downcast::<io::Error>().unwrap())
         }
 
-        input.dispatch().unwrap();
+        // Dispatch, bubbling up in case of an error.
+        input.dispatch()?;
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
                 process_event(gesture_event, &mut dx, &mut dy, action_map);
