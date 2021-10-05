@@ -29,7 +29,7 @@ impl Action for I3Action {
             Err(error) => warn!("i3 command invocation resulted in error: {}", error),
             Ok(command_reply) => {
                 for outcome in command_reply.outcomes.iter()
-                    .filter(|x| x.success == false) {
+                    .filter(|x| !x.success) {
                         warn!(
                             "i3 command execution resulted in error: {:?}",
                             outcome.error
