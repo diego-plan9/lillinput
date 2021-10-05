@@ -2,6 +2,7 @@
 
 use super::{Action, ActionTypes};
 use i3ipc::I3Connection;
+use log::warn;
 
 use std::cell::RefCell;
 use std::fmt;
@@ -21,11 +22,21 @@ pub trait I3ActionExt {
 impl Action for I3Action {
     fn execute_command(&mut self) {
         // Perform the command, if specified.
-        // TODO: capture result.
-        Rc::clone(&self.connection)
+        match Rc::clone(&self.connection)
             .borrow_mut()
             .run_command(&self.command)
-            .unwrap();
+        {
+            Err(error) => warn!("i3 command invocation resulted in error: {}", error),
+            Ok(command_reply) => {
+                for outcome in command_reply.outcomes.iter()
+                    .filter(|x| !x.success) {
+                        warn!(
+                            "i3 command execution resulted in error: {:?}",
+                            outcome.error
+                        );
+                    }
+                }
+        }
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
