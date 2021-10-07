@@ -24,7 +24,7 @@ Types of changes:
 
 ### Changed
 
-* The output of each `i3` action and `command` action is now parsed and a
+* The output of each `i3` action and `command` action is now inspected and a
   warning is emitted in case of an error (instead of panicking in case of
   failure). (\#46, \#47)
 
