@@ -22,6 +22,12 @@ Types of changes:
 * Add support for 4-finger swipe, configurable via the `--swipe-{direction}-4`
   family of arguments. (\#32)
 
+### Changed
+
+* The output of each `i3` action and `command` action is now parsed and a
+  warning is emitted in case of an error (instead of panicking in case of
+  failure). (\#46, \#47)
+
 ### Fixed
 
 * Fix finger count for a swipe gesture not being taken into account for
