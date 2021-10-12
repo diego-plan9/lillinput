@@ -64,11 +64,11 @@ pub struct Opts {
     threshold: f64,
     /// actions the three-finger swipe left
     #[clap(long, validator = is_action_string,
-      default_value_if("enabled-action-types", Some("i3"), "i3:workspace prev"))]
+      default_value_if("enabled-action-types", Some("i3"), Some("i3:workspace prev")))]
     swipe_left_3: Vec<String>,
     /// actions the three-finger swipe right
     #[clap(long, validator = is_action_string,
-      default_value_if("enabled-action-types", Some("i3"), "i3:workspace next"))]
+      default_value_if("enabled-action-types", Some("i3"), Some("i3:workspace next")))]
     swipe_right_3: Vec<String>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]
