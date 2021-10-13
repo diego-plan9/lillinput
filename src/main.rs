@@ -8,7 +8,6 @@ use input::Libinput;
 
 use clap::{AppSettings, Clap};
 use log::{error, info};
-use simplelog::{ColorChoice, Config, LevelFilter, TermLogger, TerminalMode};
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
 use strum_macros::EnumIter;
 
@@ -18,6 +17,9 @@ use actions::{ActionController, ActionMap};
 mod events;
 use events::libinput::Interface;
 use events::main_loop;
+
+mod settings;
+use settings::setup_logging;
 
 #[cfg(test)]
 mod test_utils;
@@ -94,6 +96,10 @@ pub struct Opts {
 ///
 /// A string that specifies an action must conform to the following format:
 /// {action choice}:{value}.
+///
+/// # Arguments
+///
+/// * `value` - argument to be parsed.
 fn is_action_string(value: &str) -> Result<(), String> {
     if ActionTypes::VARIANTS
         .iter()
@@ -110,20 +116,7 @@ fn is_action_string(value: &str) -> Result<(), String> {
 /// Main entry point.
 fn main() {
     let opts: Opts = Opts::parse();
-
-    // Setup logging.
-    let log_level = match opts.verbose {
-        0 => LevelFilter::Info,
-        1 => LevelFilter::Debug,
-        _ => LevelFilter::Trace,
-    };
-    TermLogger::init(
-        log_level,
-        Config::default(),
-        TerminalMode::Mixed,
-        ColorChoice::Auto,
-    )
-    .unwrap();
+    setup_logging(opts.verbose);
 
     // Create the action map controller.
     let mut action_map: ActionMap = ActionController::new(&opts);
