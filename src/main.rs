@@ -19,7 +19,7 @@ use events::libinput::Interface;
 use events::main_loop;
 
 mod settings;
-use settings::setup_logging;
+use settings::{setup_logging, Settings};
 
 #[cfg(test)]
 mod test_utils;
@@ -56,40 +56,38 @@ pub struct Opts {
     #[clap(short, long, parse(from_occurrences))]
     verbose: u8,
     /// libinput seat
-    #[clap(short, long, default_value = "seat0")]
-    seat: String,
+    #[clap(short, long)]
+    seat: Option<String>,
     /// enabled action types
-    #[clap(short, long, default_value = "i3", possible_values = ActionTypes::VARIANTS)]
-    enabled_action_types: Vec<String>,
-    /// minimum threshold for position changes
-    #[clap(short, long, default_value = "20.0")]
-    threshold: f64,
+    #[clap(short, long, possible_values = ActionTypes::VARIANTS)]
+    enabled_action_types: Option<Vec<String>>,
+    /// minimum threshold for displacement changes
+    #[clap(short, long)]
+    threshold: Option<f64>,
     /// actions the three-finger swipe left
-    #[clap(long, validator = is_action_string,
-      default_value_if("enabled-action-types", Some("i3"), Some("i3:workspace prev")))]
-    swipe_left_3: Vec<String>,
+    #[clap(long, validator = is_action_string)]
+    swipe_left_3: Option<Vec<String>>,
     /// actions the three-finger swipe right
-    #[clap(long, validator = is_action_string,
-      default_value_if("enabled-action-types", Some("i3"), Some("i3:workspace next")))]
-    swipe_right_3: Vec<String>,
+    #[clap(long, validator = is_action_string)]
+    swipe_right_3: Option<Vec<String>>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]
-    swipe_up_3: Vec<String>,
+    swipe_up_3: Option<Vec<String>>,
     /// actions the three-finger swipe down
     #[clap(long, validator = is_action_string)]
-    swipe_down_3: Vec<String>,
+    swipe_down_3: Option<Vec<String>>,
     /// actions the four-finger swipe left
     #[clap(long, validator = is_action_string)]
-    swipe_left_4: Vec<String>,
+    swipe_left_4: Option<Vec<String>>,
     /// actions the four-finger swipe right
     #[clap(long, validator = is_action_string)]
-    swipe_right_4: Vec<String>,
+    swipe_right_4: Option<Vec<String>>,
     /// actions the four-finger swipe up
     #[clap(long, validator = is_action_string)]
-    swipe_up_4: Vec<String>,
+    swipe_up_4: Option<Vec<String>>,
     /// actions the four-finger swipe down
     #[clap(long, validator = is_action_string)]
-    swipe_down_4: Vec<String>,
+    swipe_down_4: Option<Vec<String>>,
 }
 
 /// Validator for arguments that specify an action.
@@ -116,18 +114,19 @@ fn is_action_string(value: &str) -> Result<(), String> {
 /// Main entry point.
 fn main() {
     let opts: Opts = Opts::parse();
-    setup_logging(opts.verbose);
+    let settings: Settings = Settings::from(opts);
+    setup_logging(settings.verbose);
 
     // Create the action map controller.
-    let mut action_map: ActionMap = ActionController::new(&opts);
-    action_map.populate_actions(&opts);
+    let mut action_map: ActionMap = ActionController::new(&settings);
+    action_map.populate_actions(&settings);
 
     // Create the libinput object.
     let mut input = Libinput::new_with_udev(Interface {});
-    input.udev_assign_seat(opts.seat.as_str()).unwrap();
+    input.udev_assign_seat(settings.seat.as_str()).unwrap();
     info!(
         "Assigned seat {:?} to the libinput context. Listening for events ...",
-        opts.seat
+        settings.seat
     );
 
     // Start the main loop.

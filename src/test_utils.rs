@@ -5,7 +5,7 @@ use std::os::unix::net::{UnixListener, UnixStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use crate::Opts;
+use crate::Settings;
 
 static SOCKET_PATH: &'static str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
@@ -17,9 +17,9 @@ struct I3IpcMessage {
     message_payload: String,
 }
 
-/// Return an `Opts` with default test arguments.
-pub fn default_test_opts() -> Opts {
-    Opts {
+/// Return an `Settings` with default test arguments.
+pub fn default_test_settings() -> Settings {
+    Settings {
         enabled_action_types: vec![],
         swipe_right_3: vec![],
         swipe_left_3: vec![],

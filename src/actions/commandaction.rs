@@ -38,8 +38,8 @@ impl ActionExt for CommandAction {
 
 #[cfg(test)]
 mod test {
-    use crate::actions::{ActionController, ActionMap, Opts};
-    use crate::test_utils::default_test_opts;
+    use crate::actions::{ActionController, ActionMap, Settings};
+    use crate::test_utils::default_test_settings;
     use std::path::Path;
 
     #[test]
@@ -50,13 +50,13 @@ mod test {
         std::fs::remove_file(expected_file).ok();
 
         // Initialize the command line options.
-        let mut opts: Opts = default_test_opts();
-        opts.enabled_action_types = vec!["command".to_string()];
-        opts.swipe_right_3 = vec!["command:touch /tmp/swipe-right".to_string()];
+        let mut settings: Settings = default_test_settings();
+        settings.enabled_action_types = vec!["command".to_string()];
+        settings.swipe_right_3 = vec!["command:touch /tmp/swipe-right".to_string()];
 
         // Trigger a swipe.
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
+        let mut action_map: ActionMap = ActionController::new(&settings);
+        action_map.populate_actions(&settings);
         action_map.receive_end_event(&10.0, &0.0, 3);
 
         // Assert.

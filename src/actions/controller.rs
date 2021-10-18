@@ -1,8 +1,9 @@
 //! Controller for actions.
 
+use crate::Settings;
 use super::commandaction::CommandAction;
 use super::i3action::{I3Action, I3ActionExt};
-use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes, Opts};
+use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
 
 use i3ipc::I3Connection;
 use itertools::Itertools;
@@ -40,9 +41,9 @@ enum Axis {
 }
 
 impl ActionController for ActionMap {
-    fn new(opts: &Opts) -> Self {
+    fn new(settings: &Settings) -> Self {
         // Create the I3 connection if needed.
-        let connection = match opts
+        let connection = match settings
             .enabled_action_types
             .contains(&ActionTypes::I3.to_string())
         {
@@ -63,7 +64,7 @@ impl ActionController for ActionMap {
         };
 
         ActionMap {
-            threshold: opts.threshold,
+            threshold: settings.threshold,
             connection,
             swipe_left_3: vec![],
             swipe_right_3: vec![],
@@ -76,7 +77,7 @@ impl ActionController for ActionMap {
         }
     }
 
-    fn populate_actions(&mut self, opts: &Opts) {
+    fn populate_actions(&mut self, settings: &Settings) {
         /// Add actions to a destination vector.
         ///
         /// # Arguments
@@ -118,22 +119,22 @@ impl ActionController for ActionMap {
 
         // Populate the fields for each `ActionEvent`, printing debug info in the process.
         for action_event in ActionEvents::iter() {
-            let (opts_field, self_field) = match action_event {
-                ActionEvents::ThreeFingerSwipeLeft => (&opts.swipe_left_3, &mut self.swipe_left_3),
+            let (settings_field, self_field) = match action_event {
+                ActionEvents::ThreeFingerSwipeLeft => (&settings.swipe_left_3, &mut self.swipe_left_3),
                 ActionEvents::ThreeFingerSwipeRight => {
-                    (&opts.swipe_right_3, &mut self.swipe_right_3)
+                    (&settings.swipe_right_3, &mut self.swipe_right_3)
                 }
-                ActionEvents::ThreeFingerSwipeUp => (&opts.swipe_up_3, &mut self.swipe_up_3),
-                ActionEvents::ThreeFingerSwipeDown => (&opts.swipe_down_3, &mut self.swipe_down_3),
-                ActionEvents::FourFingerSwipeLeft => (&opts.swipe_left_4, &mut self.swipe_left_4),
+                ActionEvents::ThreeFingerSwipeUp => (&settings.swipe_up_3, &mut self.swipe_up_3),
+                ActionEvents::ThreeFingerSwipeDown => (&settings.swipe_down_3, &mut self.swipe_down_3),
+                ActionEvents::FourFingerSwipeLeft => (&settings.swipe_left_4, &mut self.swipe_left_4),
                 ActionEvents::FourFingerSwipeRight => {
-                    (&opts.swipe_right_4, &mut self.swipe_right_4)
+                    (&settings.swipe_right_4, &mut self.swipe_right_4)
                 }
-                ActionEvents::FourFingerSwipeUp => (&opts.swipe_up_4, &mut self.swipe_up_4),
-                ActionEvents::FourFingerSwipeDown => (&opts.swipe_down_4, &mut self.swipe_down_4),
+                ActionEvents::FourFingerSwipeUp => (&settings.swipe_up_4, &mut self.swipe_up_4),
+                ActionEvents::FourFingerSwipeDown => (&settings.swipe_down_4, &mut self.swipe_down_4),
             };
 
-            parse_action_list(opts_field, self_field, &self.connection);
+            parse_action_list(settings_field, self_field, &self.connection);
             debug!(" * {}: {}", action_event, self_field.iter().format(", "));
         }
 
@@ -217,15 +218,15 @@ impl ActionController for ActionMap {
 
 #[cfg(test)]
 mod test {
-    use super::{ActionController, ActionEvents, ActionMap, Opts};
-    use crate::test_utils::default_test_opts;
+    use super::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::test_utils::default_test_settings;
 
     #[test]
     /// Test the handling of an event `finger_count` argument.
     fn test_parse_finger_count() {
         // Initialize the command line options and controller.
-        let opts: Opts = default_test_opts();
-        let mut action_map: ActionMap = ActionController::new(&opts);
+        let settings: Settings = default_test_settings();
+        let mut action_map: ActionMap = ActionController::new(&settings);
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
@@ -252,8 +253,8 @@ mod test {
     /// Test the handling of an event `threshold` argument.
     fn test_parse_threshold() {
         // Initialize the command line options and controller.
-        let opts: Opts = default_test_opts();
-        let mut action_map: ActionMap = ActionController::new(&opts);
+        let settings: Settings = default_test_settings();
+        let mut action_map: ActionMap = ActionController::new(&settings);
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(&4.99, &0.0, 3);

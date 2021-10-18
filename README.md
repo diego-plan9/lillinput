@@ -34,21 +34,27 @@ lillinput --help
 
 ```
 ...
-OPTIONS:
-    -e, --enabled-action-types <enabled-action-types>...
-            enabled action types [default: i3] [possible values: i3, command]
+USAGE:
+    lillinput [FLAGS] [OPTIONS]
 
-    -s, --seat <seat>                                       libinput seat [default: seat0]
-        --swipe-down-3 <swipe-down-3>...                    actions the three-finger swipe down
-        --swipe-down-4 <swipe-down-4>...                    actions the four-finger swipe down
-        --swipe-left-3 <swipe-left-3>...                    actions the three-finger swipe left
-        --swipe-left-4 <swipe-left-4>...                    actions the four-finger swipe left
-        --swipe-right-3 <swipe-right-3>...                  actions the three-finger swipe right
-        --swipe-right-4 <swipe-right-4>...                  actions the four-finger swipe right
-        --swipe-up-3 <swipe-up-3>...                        actions the three-finger swipe up
-        --swipe-up-4 <swipe-up-4>...                        actions the four-finger swipe up
-    -t, --threshold <threshold>
-            minimum threshold for position changes [default: 20.0]
+FLAGS:
+    -h, --help       Print help information
+    -v, --verbose    Level of verbosity (additive, can be used up to 3 times)
+    -V, --version    Print version information
+
+OPTIONS:
+    -e, --enabled-action-types <ENABLED_ACTION_TYPES>...
+            enabled action types [possible values: i3, command]
+    -s, --seat <SEAT>                       libinput seat
+        --swipe-down-3 <SWIPE_DOWN_3>...    actions the three-finger swipe down
+        --swipe-down-4 <SWIPE_DOWN_4>...    actions the four-finger swipe down
+        --swipe-left-3 <SWIPE_LEFT_3>...    actions the three-finger swipe left
+        --swipe-left-4 <SWIPE_LEFT_4>...    actions the four-finger swipe left
+        --swipe-right-3 <SWIPE_RIGHT_3>...  actions the three-finger swipe right
+        --swipe-right-4 <SWIPE_RIGHT_4>...  actions the four-finger swipe right
+        --swipe-up-3 <SWIPE_UP_3>...        actions the three-finger swipe up
+        --swipe-up-4 <SWIPE_UP_4>...        actions the four-finger swipe up
+    -t, --threshold <THRESHOLD>             minimum threshold for displacement changes
 ```
 
 ### Configuring the swipe actions

@@ -7,7 +7,8 @@ pub mod commandaction;
 pub mod controller;
 pub mod i3action;
 
-use super::{ActionEvents, ActionTypes, Opts};
+use crate::Settings;
+use super::{ActionEvents, ActionTypes};
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
@@ -30,7 +31,7 @@ pub struct ActionMap {
 
 /// Controller that connects events and actions.
 pub trait ActionController {
-    fn new(opts: &Opts) -> Self;
+    fn new(settings: &Settings) -> Self;
 
     /// Create the individual actions used by this controller.
     ///
@@ -40,8 +41,8 @@ pub trait ActionController {
     /// # Arguments
     ///
     /// * `self` - action controller.
-    /// * `opts` - command line arguments.
-    fn populate_actions(&mut self, opts: &Opts);
+    /// * `settings` - application settings.
+    fn populate_actions(&mut self, settings: &Settings);
 
     /// Receive the end of swipe gesture event.
     ///

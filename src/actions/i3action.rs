@@ -55,8 +55,8 @@ impl I3ActionExt for I3Action {
 
 #[cfg(test)]
 mod test {
-    use crate::actions::{ActionController, ActionMap, Opts};
-    use crate::test_utils::{default_test_opts, init_listener};
+    use crate::actions::{ActionController, ActionMap, Settings};
+    use crate::test_utils::{default_test_settings, init_listener};
     use std::env;
     use std::sync::{Arc, Mutex};
 
@@ -64,16 +64,16 @@ mod test {
     /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
-        let mut opts: Opts = default_test_opts();
-        opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec!["i3:swipe right 3".to_string()];
-        opts.swipe_left_3 = vec!["i3:swipe left 3".to_string()];
-        opts.swipe_up_3 = vec!["i3:swipe up 3".to_string()];
-        opts.swipe_down_3 = vec!["i3:swipe down 3".to_string()];
-        opts.swipe_right_4 = vec!["i3:swipe right 4".to_string()];
-        opts.swipe_left_4 = vec!["i3:swipe left 4".to_string()];
-        opts.swipe_up_4 = vec!["i3:swipe up 4".to_string()];
-        opts.swipe_down_4 = vec!["i3:swipe down 4".to_string()];
+        let mut settings: Settings = default_test_settings();
+        settings.enabled_action_types = vec!["i3".to_string()];
+        settings.swipe_right_3 = vec!["i3:swipe right 3".to_string()];
+        settings.swipe_left_3 = vec!["i3:swipe left 3".to_string()];
+        settings.swipe_up_3 = vec!["i3:swipe up 3".to_string()];
+        settings.swipe_down_3 = vec!["i3:swipe down 3".to_string()];
+        settings.swipe_right_4 = vec!["i3:swipe right 4".to_string()];
+        settings.swipe_left_4 = vec!["i3:swipe left 4".to_string()];
+        settings.swipe_up_4 = vec!["i3:swipe up 4".to_string()];
+        settings.swipe_down_4 = vec!["i3:swipe down 4".to_string()];
 
         // Create the expected commands (version + 4 swipes).
         let expected_commands = vec![
@@ -92,8 +92,8 @@ mod test {
         init_listener(Arc::clone(&message_log));
 
         // Trigger swipe in the 4 directions.
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
+        let mut action_map: ActionMap = ActionController::new(&settings);
+        action_map.populate_actions(&settings);
         action_map.receive_end_event(&10.0, &0.0, 3);
         action_map.receive_end_event(&-10.0, &0.0, 3);
         action_map.receive_end_event(&0.0, &10.0, 3);
@@ -115,17 +115,17 @@ mod test {
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.
-        let mut opts: Opts = default_test_opts();
-        opts.enabled_action_types = vec!["i3".to_string()];
-        opts.swipe_right_3 = vec![
+        let mut settings: Settings = default_test_settings();
+        settings.enabled_action_types = vec!["i3".to_string()];
+        settings.swipe_right_3 = vec![
             "i3:swipe right".to_string(),
             "command:touch /tmp/swipe-right".to_string(),
         ];
 
         // Create the action map.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
-        let mut action_map: ActionMap = ActionController::new(&opts);
-        action_map.populate_actions(&opts);
+        let mut action_map: ActionMap = ActionController::new(&settings);
+        action_map.populate_actions(&settings);
 
         // Assert that only the command action is created.
         assert_eq!(action_map.swipe_right_3.len(), 1);
