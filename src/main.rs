@@ -6,7 +6,7 @@
 
 use input::Libinput;
 
-use clap::{AppSettings, Clap};
+use clap::Parser;
 use log::{error, info};
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
 use strum_macros::EnumIter;
@@ -48,9 +48,8 @@ pub enum ActionEvents {
 }
 
 /// Connect libinput gestures to i3 and others.
-#[derive(Clap)]
+#[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
-#[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
     /// Level of verbosity (additive, can be used up to 3 times)
     #[clap(short, long, parse(from_occurrences))]
