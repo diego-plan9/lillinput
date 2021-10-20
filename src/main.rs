@@ -19,7 +19,7 @@ use events::libinput::Interface;
 use events::main_loop;
 
 mod settings;
-use settings::{setup_logging, Settings};
+use settings::{get_settings, setup_logging, Settings};
 
 #[cfg(test)]
 mod test_utils;
@@ -51,6 +51,9 @@ pub enum ActionEvents {
 #[derive(Parser)]
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 pub struct Opts {
+    /// Configuration file.
+    #[clap(short, long)]
+    config_file: Option<String>,
     /// Level of verbosity (additive, can be used up to 3 times)
     #[clap(short, long, parse(from_occurrences))]
     verbose: u8,
@@ -113,7 +116,7 @@ fn is_action_string(value: &str) -> Result<(), String> {
 /// Main entry point.
 fn main() {
     let opts: Opts = Opts::parse();
-    let settings: Settings = Settings::from(opts);
+    let settings: Settings = get_settings(opts);
     setup_logging(settings.verbose);
 
     // Create the action map controller.
