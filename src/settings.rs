@@ -114,8 +114,8 @@ pub fn get_settings(opts: Opts) -> Settings {
     let cli_settings = Settings::from(opts);
 
     // Try to read from the config file, if provided.
-    if config_file.is_some() {
-        return match parse_config_file(config_file.unwrap()) {
+    if let Some(filename) = config_file {
+        return match parse_config_file(filename) {
             Ok(file_settings) => file_settings,
             Err(e) => {
                 println!("Unable to parse config file: {}", e);
