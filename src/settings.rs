@@ -1,9 +1,13 @@
 //! Functionality related to settings and other tooling.
 
 use crate::{ActionTypes, Opts};
-use simplelog::{ColorChoice, Config, LevelFilter, TermLogger, TerminalMode};
+
+use config::{Config, ConfigError, File};
+use serde::Deserialize;
+use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 
 /// Application settings.
+#[derive(Deserialize)]
 pub struct Settings {
     /// Level of verbosity.
     pub verbose: u8,
@@ -82,9 +86,44 @@ pub fn setup_logging(verbosity: u8) {
     };
     TermLogger::init(
         log_level,
-        Config::default(),
+        LogConfig::default(),
         TerminalMode::Mixed,
         ColorChoice::Auto,
     )
     .unwrap();
+}
+
+/// Return the application settings.
+///
+/// The application settings are parsed from:
+/// 1. Configuration file
+/// 2. Command line arguments
+///
+/// # Arguments
+///
+/// * `opts` - command line arguments.
+pub fn get_settings(opts: Opts) -> Settings {
+    /// Parse a config file.
+    fn parse_config_file(config_file: String) -> Result<Settings, ConfigError>{
+        let mut config = Config::default();
+        config.merge(File::with_name(&config_file))?;
+        config.try_into::<Settings>()
+    }
+
+    let config_file = opts.config_file.clone();
+    let cli_settings = Settings::from(opts);
+
+    // Try to read from the config file, if provided.
+    if config_file.is_some() {
+        return match parse_config_file(config_file.unwrap()) {
+            Ok(file_settings) => file_settings,
+            Err(e) => {
+                println!("Unable to parse config file: {}", e);
+                cli_settings
+            }
+        }
+    }
+
+    // Return the settings from the command line.
+    cli_settings
 }
