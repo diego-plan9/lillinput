@@ -21,6 +21,8 @@ Types of changes:
   information, requiring the `--verbose` flag). (\#25)
 * Add support for 4-finger swipe, configurable via the `--swipe-{direction}-4`
   family of arguments. (\#32)
+* Settings can now be read from a configuration file using the `--config-file`
+  optional argument. (\#54)
 
 ### Changed
 

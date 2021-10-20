@@ -43,6 +43,7 @@ FLAGS:
     -V, --version    Print version information
 
 OPTIONS:
+    -c, --config-file <CONFIG_FILE>         Configuration file
     -e, --enabled-action-types <ENABLED_ACTION_TYPES>...
             enabled action types [possible values: i3, command]
     -s, --seat <SEAT>                       libinput seat
