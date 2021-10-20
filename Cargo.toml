@@ -12,6 +12,7 @@ categories = ["command-line-utilities", "gui"]
 [dependencies]
 clap = "3.0.0-beta.5"
 clap_derive = "3.0.0-beta.5"
+config = "0.11"
 # Stick to filedescriptor 0.7.3, as 0.8.0+ require feature resolve.
 filedescriptor = "0.7.3"
 i3ipc = "0.10.1"
@@ -19,6 +20,7 @@ input = "0.7.0"
 itertools = "0.10.1"
 libc = "0.2.103"
 log = "0.4.14"
+serde = { version= "1.0.130", features = ["derive"] }
 shlex = "1.1.0"
 simplelog = "0.10.2"
 strum = { version = "0.21.0", features = ["derive"] }
