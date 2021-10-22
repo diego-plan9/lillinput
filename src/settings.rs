@@ -3,6 +3,7 @@
 use crate::{ActionTypes, Opts};
 
 use config::{Config, ConfigError, File};
+use log::{warn};
 use serde::Deserialize;
 use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 
@@ -93,7 +94,7 @@ pub fn setup_logging(verbosity: u8) {
     .unwrap();
 }
 
-/// Return the application settings.
+/// Setup the application logging and return the application settings.
 ///
 /// The application settings are parsed from:
 /// 1. Configuration file
@@ -102,7 +103,7 @@ pub fn setup_logging(verbosity: u8) {
 /// # Arguments
 ///
 /// * `opts` - command line arguments.
-pub fn get_settings(opts: Opts) -> Settings {
+pub fn setup_application(opts: Opts) -> Settings {
     /// Parse a config file.
     fn parse_config_file(config_file: String) -> Result<Settings, ConfigError>{
         let mut config = Config::default();
@@ -113,17 +114,30 @@ pub fn get_settings(opts: Opts) -> Settings {
     let config_file = opts.config_file.clone();
     let cli_settings = Settings::from(opts);
 
+    let final_settings: Settings;
+    let mut config_file_error: Option<ConfigError> = None;
+
     // Try to read from the config file, if provided.
     if let Some(filename) = config_file {
-        return match parse_config_file(filename) {
-            Ok(file_settings) => file_settings,
+        match parse_config_file(filename) {
+            Ok(file_settings) => final_settings = file_settings,
             Err(e) => {
-                println!("Unable to parse config file: {}", e);
-                cli_settings
-            }
+                final_settings = cli_settings;
+                config_file_error = Some(e)
+            },
         }
+    } else {
+        final_settings = cli_settings
+    };
+
+    // Setup logging.
+    setup_logging(final_settings.verbose);
+
+    // Log any pending error messages.
+    if let Some(e) = config_file_error {
+        warn!("Unable to parse config file: {}", e);
     }
 
-    // Return the settings from the command line.
-    cli_settings
+    // Return the final settings.
+    final_settings
 }
