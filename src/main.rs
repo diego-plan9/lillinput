@@ -19,7 +19,7 @@ use events::libinput::Interface;
 use events::main_loop;
 
 mod settings;
-use settings::{get_settings, setup_logging, Settings};
+use settings::{setup_application, Settings};
 
 #[cfg(test)]
 mod test_utils;
@@ -115,9 +115,9 @@ fn is_action_string(value: &str) -> Result<(), String> {
 
 /// Main entry point.
 fn main() {
+    // Retrieve the application settings and setup logging.
     let opts: Opts = Opts::parse();
-    let settings: Settings = get_settings(opts);
-    setup_logging(settings.verbose);
+    let settings: Settings = setup_application(opts);
 
     // Create the action map controller.
     let mut action_map: ActionMap = ActionController::new(&settings);
