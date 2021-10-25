@@ -4,11 +4,11 @@ use crate::{ActionTypes, Opts};
 
 use config::{Config, ConfigError, File};
 use log::{warn};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 
 /// Application settings.
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     /// Level of verbosity.
     pub verbose: u8,
@@ -104,37 +104,57 @@ pub fn setup_logging(verbosity: u8) {
 ///
 /// * `opts` - command line arguments.
 pub fn setup_application(opts: Opts) -> Settings {
-    /// Parse a config file.
-    fn parse_config_file(config_file: String) -> Result<Settings, ConfigError>{
-        let mut config = Config::default();
-        config.merge(File::with_name(&config_file))?;
-        config.try_into::<Settings>()
-    }
-
+    // Determine the config files to use: unless an specific file is provided
+    // from the CLI option, use the default files.
     let config_file = opts.config_file.clone();
     let cli_settings = Settings::from(opts);
-
-    let final_settings: Settings;
-    let mut config_file_error: Option<ConfigError> = None;
-
-    // Try to read from the config file, if provided.
-    if let Some(filename) = config_file {
-        match parse_config_file(filename) {
-            Ok(file_settings) => final_settings = file_settings,
-            Err(e) => {
-                final_settings = cli_settings;
-                config_file_error = Some(e)
-            },
-        }
-    } else {
-        final_settings = cli_settings
+    let files: Vec<String> = match config_file {
+        Some(filename) => vec![filename],
+        None => vec!["/etc/lillinput.toml".to_string()],
     };
+
+    // Initialize the variables to keep track of config files.
+    let final_settings: Settings;
+    let mut config_file_errors : Vec<ConfigError> = Vec::new();
+
+    // Attempt to parse the config files.
+    let mut config = Config::default();
+    for filename in files {
+        match config.merge(File::with_name(&filename)) {
+            Ok(_) => (),
+            Err(e) => config_file_errors.push(e)
+        }
+    }
+
+    // Finalize the config, determining which Settings to use. The CLI options
+    // are merged into the config, defaulting to just using the CLI options in
+    // case of errors.
+    let cli_config = Config::try_from(&cli_settings);
+    match cli_config {
+        Ok(s) => match config.merge(s) {
+            Ok(_) => match config.try_into::<Settings>() {
+                Ok(merged_settings) => final_settings = merged_settings,
+                Err(e) => {
+                    config_file_errors.push(e);
+                    final_settings = cli_settings
+                }
+            },
+            Err(e) => {
+                    config_file_errors.push(e);
+                    final_settings = cli_settings
+            }
+        },
+        Err(e) => {
+            config_file_errors.push(e);
+            final_settings = cli_settings
+        },
+    }
 
     // Setup logging.
     setup_logging(final_settings.verbose);
 
     // Log any pending error messages.
-    if let Some(e) = config_file_error {
+    for e in config_file_errors.iter() {
         warn!("Unable to parse config file: {}", e);
     }
 
