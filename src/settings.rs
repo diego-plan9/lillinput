@@ -96,7 +96,7 @@ pub fn setup_logging(verbosity: u8) {
 
 /// Setup the application logging and return the application settings.
 ///
-/// The application settings are parsed from:
+/// The application settings are merged from:
 /// 1. Configuration file
 /// 2. Command line arguments
 ///
