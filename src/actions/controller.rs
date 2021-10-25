@@ -1,9 +1,9 @@
 //! Controller for actions.
 
-use crate::Settings;
 use super::commandaction::CommandAction;
 use super::i3action::{I3Action, I3ActionExt};
 use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
+use crate::Settings;
 
 use i3ipc::I3Connection;
 use itertools::Itertools;
@@ -120,18 +120,26 @@ impl ActionController for ActionMap {
         // Populate the fields for each `ActionEvent`, printing debug info in the process.
         for action_event in ActionEvents::iter() {
             let (settings_field, self_field) = match action_event {
-                ActionEvents::ThreeFingerSwipeLeft => (&settings.swipe_left_3, &mut self.swipe_left_3),
+                ActionEvents::ThreeFingerSwipeLeft => {
+                    (&settings.swipe_left_3, &mut self.swipe_left_3)
+                }
                 ActionEvents::ThreeFingerSwipeRight => {
                     (&settings.swipe_right_3, &mut self.swipe_right_3)
                 }
                 ActionEvents::ThreeFingerSwipeUp => (&settings.swipe_up_3, &mut self.swipe_up_3),
-                ActionEvents::ThreeFingerSwipeDown => (&settings.swipe_down_3, &mut self.swipe_down_3),
-                ActionEvents::FourFingerSwipeLeft => (&settings.swipe_left_4, &mut self.swipe_left_4),
+                ActionEvents::ThreeFingerSwipeDown => {
+                    (&settings.swipe_down_3, &mut self.swipe_down_3)
+                }
+                ActionEvents::FourFingerSwipeLeft => {
+                    (&settings.swipe_left_4, &mut self.swipe_left_4)
+                }
                 ActionEvents::FourFingerSwipeRight => {
                     (&settings.swipe_right_4, &mut self.swipe_right_4)
                 }
                 ActionEvents::FourFingerSwipeUp => (&settings.swipe_up_4, &mut self.swipe_up_4),
-                ActionEvents::FourFingerSwipeDown => (&settings.swipe_down_4, &mut self.swipe_down_4),
+                ActionEvents::FourFingerSwipeDown => {
+                    (&settings.swipe_down_4, &mut self.swipe_down_4)
+                }
             };
 
             parse_action_list(settings_field, self_field, &self.connection);
