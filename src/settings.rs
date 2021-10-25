@@ -3,7 +3,7 @@
 use crate::{ActionTypes, Opts};
 
 use config::{Config, ConfigError, File};
-use log::{warn};
+use log::warn;
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 
@@ -50,7 +50,7 @@ impl Default for Settings {
             swipe_left_4: vec![],
             swipe_right_4: vec![],
             swipe_up_4: vec![],
-            swipe_down_4: vec![]
+            swipe_down_4: vec![],
         }
     }
 }
@@ -60,16 +60,30 @@ impl From<Opts> for Settings {
         Settings {
             verbose: opts.verbose,
             seat: opts.seat.unwrap_or(Settings::default().seat),
-            enabled_action_types: opts.enabled_action_types.unwrap_or(Settings::default().enabled_action_types),
+            enabled_action_types: opts
+                .enabled_action_types
+                .unwrap_or(Settings::default().enabled_action_types),
             threshold: opts.threshold.unwrap_or(Settings::default().threshold),
-            swipe_left_3: opts.swipe_left_3.unwrap_or(Settings::default().swipe_left_3),
-            swipe_right_3: opts.swipe_right_3.unwrap_or(Settings::default().swipe_right_3),
+            swipe_left_3: opts
+                .swipe_left_3
+                .unwrap_or(Settings::default().swipe_left_3),
+            swipe_right_3: opts
+                .swipe_right_3
+                .unwrap_or(Settings::default().swipe_right_3),
             swipe_up_3: opts.swipe_up_3.unwrap_or(Settings::default().swipe_up_3),
-            swipe_down_3: opts.swipe_down_3.unwrap_or(Settings::default().swipe_down_3),
-            swipe_left_4: opts.swipe_left_4.unwrap_or(Settings::default().swipe_left_4),
-            swipe_right_4: opts.swipe_right_4.unwrap_or(Settings::default().swipe_right_4),
+            swipe_down_3: opts
+                .swipe_down_3
+                .unwrap_or(Settings::default().swipe_down_3),
+            swipe_left_4: opts
+                .swipe_left_4
+                .unwrap_or(Settings::default().swipe_left_4),
+            swipe_right_4: opts
+                .swipe_right_4
+                .unwrap_or(Settings::default().swipe_right_4),
             swipe_up_4: opts.swipe_up_4.unwrap_or(Settings::default().swipe_up_4),
-            swipe_down_4: opts.swipe_down_4.unwrap_or(Settings::default().swipe_down_4),
+            swipe_down_4: opts
+                .swipe_down_4
+                .unwrap_or(Settings::default().swipe_down_4),
         }
     }
 }
@@ -115,14 +129,14 @@ pub fn setup_application(opts: Opts) -> Settings {
 
     // Initialize the variables to keep track of config files.
     let final_settings: Settings;
-    let mut config_file_errors : Vec<ConfigError> = Vec::new();
+    let mut config_file_errors: Vec<ConfigError> = Vec::new();
 
     // Attempt to parse the config files.
     let mut config = Config::default();
     for filename in files {
         match config.merge(File::with_name(&filename)) {
             Ok(_) => (),
-            Err(e) => config_file_errors.push(e)
+            Err(e) => config_file_errors.push(e),
         }
     }
 
@@ -140,14 +154,14 @@ pub fn setup_application(opts: Opts) -> Settings {
                 }
             },
             Err(e) => {
-                    config_file_errors.push(e);
-                    final_settings = cli_settings
+                config_file_errors.push(e);
+                final_settings = cli_settings
             }
         },
         Err(e) => {
             config_file_errors.push(e);
             final_settings = cli_settings
-        },
+        }
     }
 
     // Setup logging.

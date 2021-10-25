@@ -7,8 +7,8 @@ pub mod commandaction;
 pub mod controller;
 pub mod i3action;
 
-use crate::Settings;
 use super::{ActionEvents, ActionTypes};
+use crate::Settings;
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
