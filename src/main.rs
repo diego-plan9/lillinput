@@ -56,7 +56,7 @@ pub struct Opts {
     config_file: Option<String>,
     /// Level of verbosity (additive, can be used up to 3 times)
     #[clap(short, long, parse(from_occurrences))]
-    verbose: u8,
+    verbose: i64,
     /// libinput seat
     #[clap(short, long)]
     seat: Option<String>,

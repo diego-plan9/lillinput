@@ -11,7 +11,7 @@ use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, Termi
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     /// Level of verbosity.
-    pub verbose: u8,
+    pub verbose: i64,
     /// libinput seat.
     pub seat: String,
     /// Enabled action types.
@@ -93,7 +93,7 @@ impl From<Opts> for Settings {
 /// # Arguments
 ///
 /// * `verbosity` - verbosity level.
-pub fn setup_logging(verbosity: u8) {
+pub fn setup_logging(verbosity: i64) {
     let log_level = match verbosity {
         0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
