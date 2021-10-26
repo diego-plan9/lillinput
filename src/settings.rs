@@ -99,19 +99,10 @@ pub fn setup_application(opts: Opts) -> Settings {
 
     default_config.set_default("verbose", 0).ok();
     default_config.set_default("seat", "seat0".to_string()).ok();
-    default_config.set_default("enabled_action_types", vec![ActionTypes::I3.to_string()]).ok();
     default_config
         .set_default("enabled_action_types", vec![ActionTypes::I3.to_string()])
         .ok();
     default_config.set_default("threshold", 20.0).ok();
-    default_config.set_default("swipe_left_3", vec!["i3:workspace prev".to_string()]).ok();
-    default_config.set_default("swipe_right_3", vec!["i3:workspace next".to_string()]).ok();
-    default_config.set_default::<Vec<String>>("swipe_up_3", vec![]).ok();
-    default_config.set_default::<Vec<String>>("swipe_down_3", vec![]).ok();
-    default_config.set_default::<Vec<String>>("swipe_left_4", vec![]).ok();
-    default_config.set_default::<Vec<String>>("swipe_right_4", vec![]).ok();
-    default_config.set_default::<Vec<String>>("swipe_up_4", vec![]).ok();
-    default_config.set_default::<Vec<String>>("swipe_down_4", vec![]).ok();
     default_config
         .set_default("swipe_left_3", vec!["i3:workspace prev".to_string()])
         .ok();
