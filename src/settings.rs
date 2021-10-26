@@ -55,39 +55,6 @@ impl Default for Settings {
     }
 }
 
-impl From<Opts> for Settings {
-    fn from(opts: Opts) -> Self {
-        Settings {
-            verbose: opts.verbose,
-            seat: opts.seat.unwrap_or(Settings::default().seat),
-            enabled_action_types: opts
-                .enabled_action_types
-                .unwrap_or(Settings::default().enabled_action_types),
-            threshold: opts.threshold.unwrap_or(Settings::default().threshold),
-            swipe_left_3: opts
-                .swipe_left_3
-                .unwrap_or(Settings::default().swipe_left_3),
-            swipe_right_3: opts
-                .swipe_right_3
-                .unwrap_or(Settings::default().swipe_right_3),
-            swipe_up_3: opts.swipe_up_3.unwrap_or(Settings::default().swipe_up_3),
-            swipe_down_3: opts
-                .swipe_down_3
-                .unwrap_or(Settings::default().swipe_down_3),
-            swipe_left_4: opts
-                .swipe_left_4
-                .unwrap_or(Settings::default().swipe_left_4),
-            swipe_right_4: opts
-                .swipe_right_4
-                .unwrap_or(Settings::default().swipe_right_4),
-            swipe_up_4: opts.swipe_up_4.unwrap_or(Settings::default().swipe_up_4),
-            swipe_down_4: opts
-                .swipe_down_4
-                .unwrap_or(Settings::default().swipe_down_4),
-        }
-    }
-}
-
 /// Initialize logging, setting the logger and the verbosity.
 ///
 /// # Arguments
