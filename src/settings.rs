@@ -11,7 +11,7 @@ use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, Termi
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     /// Level of verbosity.
-    pub verbose: u8,
+    pub verbose: i64,
     /// libinput seat.
     pub seat: String,
     /// Enabled action types.
@@ -55,45 +55,12 @@ impl Default for Settings {
     }
 }
 
-impl From<Opts> for Settings {
-    fn from(opts: Opts) -> Self {
-        Settings {
-            verbose: opts.verbose,
-            seat: opts.seat.unwrap_or(Settings::default().seat),
-            enabled_action_types: opts
-                .enabled_action_types
-                .unwrap_or(Settings::default().enabled_action_types),
-            threshold: opts.threshold.unwrap_or(Settings::default().threshold),
-            swipe_left_3: opts
-                .swipe_left_3
-                .unwrap_or(Settings::default().swipe_left_3),
-            swipe_right_3: opts
-                .swipe_right_3
-                .unwrap_or(Settings::default().swipe_right_3),
-            swipe_up_3: opts.swipe_up_3.unwrap_or(Settings::default().swipe_up_3),
-            swipe_down_3: opts
-                .swipe_down_3
-                .unwrap_or(Settings::default().swipe_down_3),
-            swipe_left_4: opts
-                .swipe_left_4
-                .unwrap_or(Settings::default().swipe_left_4),
-            swipe_right_4: opts
-                .swipe_right_4
-                .unwrap_or(Settings::default().swipe_right_4),
-            swipe_up_4: opts.swipe_up_4.unwrap_or(Settings::default().swipe_up_4),
-            swipe_down_4: opts
-                .swipe_down_4
-                .unwrap_or(Settings::default().swipe_down_4),
-        }
-    }
-}
-
 /// Initialize logging, setting the logger and the verbosity.
 ///
 /// # Arguments
 ///
 /// * `verbosity` - verbosity level.
-pub fn setup_logging(verbosity: u8) {
+pub fn setup_logging(verbosity: i64) {
     let log_level = match verbosity {
         0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
@@ -121,46 +88,110 @@ pub fn setup_application(opts: Opts) -> Settings {
     // Determine the config files to use: unless an specific file is provided
     // from the CLI option, use the default files.
     let config_file = opts.config_file.clone();
-    let cli_settings = Settings::from(opts);
     let files: Vec<String> = match config_file {
         Some(filename) => vec![filename],
         None => vec!["/etc/lillinput.toml".to_string()],
     };
 
-    // Initialize the variables to keep track of config files.
+    // Prepare the default settings and options.
+    let default_settings = Settings::default();
+    let mut default_config = Config::default();
+
+    default_config.set_default("verbose", 0).ok();
+    default_config.set_default("seat", "seat0".to_string()).ok();
+    default_config
+        .set_default("enabled_action_types", vec![ActionTypes::I3.to_string()])
+        .ok();
+    default_config.set_default("threshold", 20.0).ok();
+    default_config
+        .set_default("swipe_left_3", vec!["i3:workspace prev".to_string()])
+        .ok();
+    default_config
+        .set_default("swipe_right_3", vec!["i3:workspace next".to_string()])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_up_3", vec![])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_down_3", vec![])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_left_4", vec![])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_right_4", vec![])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_up_4", vec![])
+        .ok();
+    default_config
+        .set_default::<Vec<String>>("swipe_down_4", vec![])
+        .ok();
+
+    // Initialize the variables to keep track of config.
     let final_settings: Settings;
     let mut config_file_errors: Vec<ConfigError> = Vec::new();
 
-    // Attempt to parse the config files.
+    // Start a config with the default options.
     let mut config = Config::default();
-    for filename in files {
-        match config.merge(File::with_name(&filename)) {
-            Ok(_) => (),
-            Err(e) => config_file_errors.push(e),
-        }
+    match config.merge(default_config) {
+        Ok(_) => (),
+        Err(e) => config_file_errors.push(e),
     }
 
-    // Finalize the config, determining which Settings to use. The CLI options
-    // are merged into the config, defaulting to just using the CLI options in
-    // case of errors.
-    let cli_config = Config::try_from(&cli_settings);
-    match cli_config {
-        Ok(s) => match config.merge(s) {
-            Ok(_) => match config.try_into::<Settings>() {
-                Ok(merged_settings) => final_settings = merged_settings,
-                Err(e) => {
-                    config_file_errors.push(e);
-                    final_settings = cli_settings
-                }
-            },
-            Err(e) => {
-                config_file_errors.push(e);
-                final_settings = cli_settings
-            }
-        },
+    // Merge the config files.
+    for filename in files {
+        match Config::default().with_merged(File::with_name(&filename)) {
+            Ok(c) => config = c,
+            Err(e) => config_file_errors.push(e),
+        };
+    }
+
+    // Add the CLI options.
+    config.set("verbose", opts.verbose).ok();
+    if opts.seat.is_some() {
+        config.set("seat", opts.seat).ok();
+    }
+    if opts.enabled_action_types.is_some() {
+        config
+            .set("enabled_action_types", opts.enabled_action_types)
+            .ok();
+    }
+    if opts.threshold.is_some() {
+        config.set("threshold", opts.threshold).ok();
+    }
+    if opts.swipe_left_3.is_some() {
+        config.set("swipe_left_3", opts.swipe_left_3).ok();
+    }
+    if opts.swipe_right_3.is_some() {
+        config.set("swipe_right_3", opts.swipe_right_3).ok();
+    }
+    if opts.swipe_up_3.is_some() {
+        config.set("swipe_up_3", opts.swipe_up_3).ok();
+    }
+    if opts.swipe_down_3.is_some() {
+        config.set("swipe_down_3", opts.swipe_down_3).ok();
+    }
+    if opts.swipe_left_4.is_some() {
+        config.set("swipe_left_4", opts.swipe_left_4).ok();
+    }
+    if opts.swipe_right_4.is_some() {
+        config.set("swipe_right_4", opts.swipe_right_4).ok();
+    }
+    if opts.swipe_up_4.is_some() {
+        config.set("swipe_up_4", opts.swipe_up_4).ok();
+    }
+    if opts.swipe_down_4.is_some() {
+        config.set("swipe_down_4", opts.swipe_down_4).ok();
+    }
+
+    // Finalize the config, determining which Settings to use. In case of
+    // errors, revert to the default settings.
+    match config.try_into::<Settings>() {
+        Ok(merged_settings) => final_settings = merged_settings,
         Err(e) => {
             config_file_errors.push(e);
-            final_settings = cli_settings
+            final_settings = default_settings
         }
     }
 
