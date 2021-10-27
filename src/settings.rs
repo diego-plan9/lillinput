@@ -3,7 +3,7 @@
 use crate::{ActionTypes, Opts};
 
 use config::{Config, ConfigError, File};
-use log::warn;
+use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
 
@@ -85,12 +85,26 @@ pub fn setup_logging(verbosity: i64) {
 ///
 /// * `opts` - command line arguments.
 pub fn setup_application(opts: Opts) -> Settings {
+    // Initialize the variables to keep track of config.
+    let final_settings: Settings;
+    let mut config_file_errors: Vec<ConfigError> = Vec::new();
+    let mut config_file_infos: Vec<String> = Vec::new();
+
     // Determine the config files to use: unless an specific file is provided
-    // from the CLI option, use the default files.
+    // from the CLI option, use the default files:
+    // * /etc
+    // * XDG_CONFIG_HOME/lillinput
+    // * cwd
+    let mut config_home = xdg::BaseDirectories::with_prefix("lillinput").unwrap().get_config_home();
+    config_home.push("lillinput.toml");
     let config_file = opts.config_file.clone();
     let files: Vec<String> = match config_file {
         Some(filename) => vec![filename],
-        None => vec!["/etc/lillinput.toml".to_string()],
+        None => vec![
+            "/etc/lillinput.toml".to_string(),
+            config_home.into_os_string().into_string().unwrap(),
+            "./lillinput.toml".to_string(),
+        ],
     };
 
     // Prepare the default settings and options.
@@ -128,10 +142,6 @@ pub fn setup_application(opts: Opts) -> Settings {
         .set_default::<Vec<String>>("swipe_down_4", vec![])
         .ok();
 
-    // Initialize the variables to keep track of config.
-    let final_settings: Settings;
-    let mut config_file_errors: Vec<ConfigError> = Vec::new();
-
     // Start a config with the default options.
     let mut config = Config::default();
     match config.merge(default_config) {
@@ -142,7 +152,10 @@ pub fn setup_application(opts: Opts) -> Settings {
     // Merge the config files.
     for filename in files {
         match Config::default().with_merged(File::with_name(&filename)) {
-            Ok(c) => config = c,
+            Ok(c) => {
+                config_file_infos.push(format!("Read config file '{}'", filename));
+                config = c
+            },
             Err(e) => config_file_errors.push(e),
         };
     }
@@ -199,6 +212,10 @@ pub fn setup_application(opts: Opts) -> Settings {
     setup_logging(final_settings.verbose);
 
     // Log any pending error messages.
+    // Log any pending error messages.
+    for e in config_file_infos.iter() {
+        info!("{}", e);
+    }
     for e in config_file_errors.iter() {
         warn!("Unable to parse config file: {}", e);
     }
