@@ -25,3 +25,4 @@ shlex = "1.1.0"
 simplelog = "0.10.2"
 strum = { version = "0.21.0", features = ["derive"] }
 strum_macros = "0.21.0"
+xdg = "2.4.0"
