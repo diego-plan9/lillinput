@@ -95,7 +95,9 @@ pub fn setup_application(opts: Opts) -> Settings {
     // * /etc
     // * XDG_CONFIG_HOME/lillinput
     // * cwd
-    let mut config_home = xdg::BaseDirectories::with_prefix("lillinput").unwrap().get_config_home();
+    let mut config_home = xdg::BaseDirectories::with_prefix("lillinput")
+        .unwrap()
+        .get_config_home();
     config_home.push("lillinput.toml");
     let config_file = opts.config_file.clone();
     let files: Vec<String> = match config_file {
@@ -155,7 +157,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             Ok(c) => {
                 config_file_infos.push(format!("Read config file '{}'", filename));
                 config = c
-            },
+            }
             Err(e) => config_file_errors.push(e),
         };
     }
