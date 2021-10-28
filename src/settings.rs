@@ -66,7 +66,7 @@ struct LogEntry {
 /// # Arguments
 ///
 /// * `verbosity` - verbosity level.
-pub fn setup_logging(verbosity: i64) {
+fn setup_logging(verbosity: i64) {
     let log_level = match verbosity {
         0 => LevelFilter::Info,
         1 => LevelFilter::Debug,
