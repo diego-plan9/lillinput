@@ -2,10 +2,10 @@
 
 use crate::{ActionTypes, Opts};
 
-use config::{Config, ConfigError, File};
+use config::{Config, File};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
-use simplelog::{ColorChoice, Config as LogConfig, LevelFilter, TermLogger, TerminalMode};
+use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize)]
@@ -55,6 +55,12 @@ impl Default for Settings {
     }
 }
 
+// Log entries emitted during setup_application.
+struct LogEntry {
+    level: Level,
+    message: String,
+}
+
 /// Initialize logging, setting the logger and the verbosity.
 ///
 /// # Arguments
@@ -87,8 +93,7 @@ pub fn setup_logging(verbosity: i64) {
 pub fn setup_application(opts: Opts) -> Settings {
     // Initialize the variables to keep track of config.
     let final_settings: Settings;
-    let mut config_file_errors: Vec<ConfigError> = Vec::new();
-    let mut config_file_infos: Vec<String> = Vec::new();
+    let mut log_entries: Vec<LogEntry> = Vec::new();
 
     // Determine the config files to use: unless an specific file is provided
     // from the CLI option, use the default files:
@@ -148,17 +153,32 @@ pub fn setup_application(opts: Opts) -> Settings {
     let mut config = Config::default();
     match config.merge(default_config) {
         Ok(_) => (),
-        Err(e) => config_file_errors.push(e),
+        Err(e) => log_entries.push(
+            LogEntry {
+                level:Level::Warn,
+                message: format!("Unable to parse default config: {}", e)
+            }
+        ),
     }
 
     // Merge the config files.
     for filename in files {
         match Config::default().with_merged(File::with_name(&filename)) {
             Ok(c) => {
-                config_file_infos.push(format!("Read config file '{}'", filename));
+                log_entries.push(
+                    LogEntry {
+                        level: Level::Info,
+                        message: format!("Read config file '{}'", filename)
+                    }
+                );
                 config = c
             }
-            Err(e) => config_file_errors.push(e),
+            Err(e) => log_entries.push(
+                LogEntry {
+                    level: Level::Warn,
+                    message: format!("Unable to parse config file '{}': {}", filename, e)
+                }
+            ),
         };
     }
 
@@ -205,7 +225,12 @@ pub fn setup_application(opts: Opts) -> Settings {
     match config.try_into::<Settings>() {
         Ok(merged_settings) => final_settings = merged_settings,
         Err(e) => {
-            config_file_errors.push(e);
+            log_entries.push(
+                LogEntry {
+                    level: Level::Warn,
+                    message: format!("Unable to parse settings: {}", e)
+                }
+            );
             final_settings = default_settings
         }
     }
@@ -214,12 +239,12 @@ pub fn setup_application(opts: Opts) -> Settings {
     setup_logging(final_settings.verbose);
 
     // Log any pending error messages.
-    // Log any pending error messages.
-    for e in config_file_infos.iter() {
-        info!("{}", e);
-    }
-    for e in config_file_errors.iter() {
-        warn!("Unable to parse config file: {}", e);
+    for log_entry in log_entries.iter() {
+        match log_entry.level {
+            Level::Info => info!("{}", log_entry.message),
+            Level::Warn => warn!("{}", log_entry.message),
+            _ => (),
+        }
     }
 
     // Return the final settings.
