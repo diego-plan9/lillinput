@@ -153,32 +153,26 @@ pub fn setup_application(opts: Opts) -> Settings {
     let mut config = Config::default();
     match config.merge(default_config) {
         Ok(_) => (),
-        Err(e) => log_entries.push(
-            LogEntry {
-                level:Level::Warn,
-                message: format!("Unable to parse default config: {}", e)
-            }
-        ),
+        Err(e) => log_entries.push(LogEntry {
+            level: Level::Warn,
+            message: format!("Unable to parse default config: {}", e),
+        }),
     }
 
     // Merge the config files.
     for filename in files {
         match Config::default().with_merged(File::with_name(&filename)) {
             Ok(c) => {
-                log_entries.push(
-                    LogEntry {
-                        level: Level::Info,
-                        message: format!("Read config file '{}'", filename)
-                    }
-                );
+                log_entries.push(LogEntry {
+                    level: Level::Info,
+                    message: format!("Read config file '{}'", filename),
+                });
                 config = c
             }
-            Err(e) => log_entries.push(
-                LogEntry {
-                    level: Level::Warn,
-                    message: format!("Unable to parse config file '{}': {}", filename, e)
-                }
-            ),
+            Err(e) => log_entries.push(LogEntry {
+                level: Level::Warn,
+                message: format!("Unable to parse config file '{}': {}", filename, e),
+            }),
         };
     }
 
@@ -225,12 +219,10 @@ pub fn setup_application(opts: Opts) -> Settings {
     match config.try_into::<Settings>() {
         Ok(merged_settings) => final_settings = merged_settings,
         Err(e) => {
-            log_entries.push(
-                LogEntry {
-                    level: Level::Warn,
-                    message: format!("Unable to parse settings: {}", e)
-                }
-            );
+            log_entries.push(LogEntry {
+                level: Level::Warn,
+                message: format!("Unable to parse settings: {}", e),
+            });
             final_settings = default_settings
         }
     }
