@@ -12,6 +12,7 @@ use crate::Settings;
 use i3ipc::I3Connection;
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
@@ -19,14 +20,7 @@ use std::rc::Rc;
 pub struct ActionMap {
     threshold: f64,
     connection: Option<Rc<RefCell<I3Connection>>>,
-    swipe_left_3: Vec<Box<dyn Action>>,
-    swipe_right_3: Vec<Box<dyn Action>>,
-    swipe_up_3: Vec<Box<dyn Action>>,
-    swipe_down_3: Vec<Box<dyn Action>>,
-    swipe_left_4: Vec<Box<dyn Action>>,
-    swipe_right_4: Vec<Box<dyn Action>>,
-    swipe_up_4: Vec<Box<dyn Action>>,
-    swipe_down_4: Vec<Box<dyn Action>>,
+    actions: HashMap<ActionEvents, Vec<Box<dyn Action>>>,
 }
 
 /// Controller that connects events and actions.

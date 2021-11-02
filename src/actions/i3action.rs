@@ -54,7 +54,7 @@ impl I3ActionExt for I3Action {
 
 #[cfg(test)]
 mod test {
-    use crate::actions::{ActionController, ActionMap, Settings};
+    use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
     use crate::test_utils::{default_test_settings, init_listener};
     use std::env;
     use std::sync::{Arc, Mutex};
@@ -127,6 +127,13 @@ mod test {
         action_map.populate_actions(&settings);
 
         // Assert that only the command action is created.
-        assert_eq!(action_map.swipe_right_3.len(), 1);
+        assert_eq!(
+            action_map
+                .actions
+                .get(&ActionEvents::ThreeFingerSwipeRight)
+                .unwrap()
+                .len(),
+            1
+        );
     }
 }
