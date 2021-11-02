@@ -76,7 +76,7 @@ impl ActionController for ActionMap {
                 (ActionEvents::FourFingerSwipeRight, vec![]),
                 (ActionEvents::FourFingerSwipeUp, vec![]),
                 (ActionEvents::FourFingerSwipeDown, vec![]),
-            ])
+            ]),
         }
     }
 
@@ -91,7 +91,7 @@ impl ActionController for ActionMap {
             arguments: &[String],
             connection: &Option<Rc<RefCell<I3Connection>>>,
         ) -> Vec<Box<dyn Action>> {
-            let mut actions_list : Vec<Box<dyn Action>> = vec![];
+            let mut actions_list: Vec<Box<dyn Action>> = vec![];
 
             for value in arguments.iter() {
                 // Split the arguments, in the form "{type}:{value}".
@@ -141,18 +141,46 @@ impl ActionController for ActionMap {
 
         // Print information.
         for action_event in ActionEvents::iter() {
-            debug!(" * {}: {}", action_event, self.actions.get(&action_event).unwrap().iter().format(", "));
+            debug!(
+                " * {}: {}",
+                action_event,
+                self.actions.get(&action_event).unwrap().iter().format(", ")
+            );
         }
         info!(
             "Action controller started: {:?}/{:?}/{:?}/{:?}, {:?}/{:?}/{:?}/{:?} actions enabled",
-            self.actions.get(&ActionEvents::ThreeFingerSwipeLeft).unwrap().len(),
-            self.actions.get(&ActionEvents::ThreeFingerSwipeRight).unwrap().len(),
-            self.actions.get(&ActionEvents::ThreeFingerSwipeUp).unwrap().len(),
-            self.actions.get(&ActionEvents::ThreeFingerSwipeDown).unwrap().len(),
-            self.actions.get(&ActionEvents::FourFingerSwipeLeft).unwrap().len(),
-            self.actions.get(&ActionEvents::FourFingerSwipeRight).unwrap().len(),
-            self.actions.get(&ActionEvents::FourFingerSwipeUp).unwrap().len(),
-            self.actions.get(&ActionEvents::FourFingerSwipeDown).unwrap().len(),
+            self.actions
+            .get(&ActionEvents::ThreeFingerSwipeLeft)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::ThreeFingerSwipeRight)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::ThreeFingerSwipeUp)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::ThreeFingerSwipeDown)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::FourFingerSwipeLeft)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::FourFingerSwipeRight)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::FourFingerSwipeUp)
+                .unwrap()
+                .len(),
+            self.actions
+                .get(&ActionEvents::FourFingerSwipeDown)
+                .unwrap()
+                .len(),
         );
     }
 
@@ -201,8 +229,8 @@ impl ActionController for ActionMap {
 
         // Invoke actions.
         let actions = match action_event {
-            Some(ref event) => self.actions.get_mut(&event).unwrap(),
-            None => return
+            Some(ref event) => self.actions.get_mut(event).unwrap(),
+            None => return,
         };
 
         debug!(

@@ -127,6 +127,13 @@ mod test {
         action_map.populate_actions(&settings);
 
         // Assert that only the command action is created.
-        assert_eq!(action_map.actions.get(&ActionEvents::ThreeFingerSwipeRight).unwrap().len(), 1);
+        assert_eq!(
+            action_map
+                .actions
+                .get(&ActionEvents::ThreeFingerSwipeRight)
+                .unwrap()
+                .len(),
+            1
+        );
     }
 }
