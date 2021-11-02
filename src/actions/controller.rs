@@ -10,6 +10,7 @@ use itertools::Itertools;
 use log::{debug, info, warn};
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::rc::Rc;
 use std::str::FromStr;
@@ -66,44 +67,46 @@ impl ActionController for ActionMap {
         ActionMap {
             threshold: settings.threshold,
             connection,
-            swipe_left_3: vec![],
-            swipe_right_3: vec![],
-            swipe_up_3: vec![],
-            swipe_down_3: vec![],
-            swipe_left_4: vec![],
-            swipe_right_4: vec![],
-            swipe_up_4: vec![],
-            swipe_down_4: vec![],
+            actions: HashMap::from([
+                (ActionEvents::ThreeFingerSwipeLeft, vec![]),
+                (ActionEvents::ThreeFingerSwipeRight, vec![]),
+                (ActionEvents::ThreeFingerSwipeUp, vec![]),
+                (ActionEvents::ThreeFingerSwipeDown, vec![]),
+                (ActionEvents::FourFingerSwipeLeft, vec![]),
+                (ActionEvents::FourFingerSwipeRight, vec![]),
+                (ActionEvents::FourFingerSwipeUp, vec![]),
+                (ActionEvents::FourFingerSwipeDown, vec![]),
+            ])
         }
     }
 
     fn populate_actions(&mut self, settings: &Settings) {
-        /// Add actions to a destination vector.
+        /// Convert an stringified action list into individual actions.
         ///
         /// # Arguments
         ///
         /// * `arguments` - list of command line arguments
-        /// * `destination` - vector to append actions to
         /// * `connection` - optional i3 connection
         fn parse_action_list(
             arguments: &[String],
-            destination: &mut Vec<Box<dyn Action>>,
             connection: &Option<Rc<RefCell<I3Connection>>>,
-        ) {
+        ) -> Vec<Box<dyn Action>> {
+            let mut actions_list : Vec<Box<dyn Action>> = vec![];
+
             for value in arguments.iter() {
                 // Split the arguments, in the form "{type}:{value}".
                 let mut splitter = value.splitn(2, ':');
                 let action_type = splitter.next().unwrap();
                 let action_value = splitter.next().unwrap();
 
-                // Create new actions and add them to the controller.
+                // Create the new actions.
                 match ActionTypes::from_str(action_type) {
                     Ok(ActionTypes::Command) => {
-                        destination.push(Box::new(CommandAction::new(action_value.to_string())));
+                        actions_list.push(Box::new(CommandAction::new(action_value.to_string())));
                     }
                     Ok(ActionTypes::I3) => match connection {
                         Some(conn) => {
-                            destination.push(Box::new(I3Action::new(
+                            actions_list.push(Box::new(I3Action::new(
                                 action_value.to_string(),
                                 Rc::clone(conn),
                             )));
@@ -115,44 +118,41 @@ impl ActionController for ActionMap {
                     Err(_) => {}
                 }
             }
+
+            actions_list
         }
 
-        // Populate the fields for each `ActionEvent`, printing debug info in the process.
+        // Populate the fields for each `ActionEvent`.
         for action_event in ActionEvents::iter() {
-            let (settings_field, self_field) = match action_event {
-                ActionEvents::ThreeFingerSwipeLeft => {
-                    (&settings.swipe_left_3, &mut self.swipe_left_3)
-                }
-                ActionEvents::ThreeFingerSwipeRight => {
-                    (&settings.swipe_right_3, &mut self.swipe_right_3)
-                }
-                ActionEvents::ThreeFingerSwipeUp => (&settings.swipe_up_3, &mut self.swipe_up_3),
-                ActionEvents::ThreeFingerSwipeDown => {
-                    (&settings.swipe_down_3, &mut self.swipe_down_3)
-                }
-                ActionEvents::FourFingerSwipeLeft => {
-                    (&settings.swipe_left_4, &mut self.swipe_left_4)
-                }
-                ActionEvents::FourFingerSwipeRight => {
-                    (&settings.swipe_right_4, &mut self.swipe_right_4)
-                }
-                ActionEvents::FourFingerSwipeUp => (&settings.swipe_up_4, &mut self.swipe_up_4),
-                ActionEvents::FourFingerSwipeDown => {
-                    (&settings.swipe_down_4, &mut self.swipe_down_4)
-                }
+            let settings_field = match action_event {
+                ActionEvents::ThreeFingerSwipeLeft => &settings.swipe_left_3,
+                ActionEvents::ThreeFingerSwipeRight => &settings.swipe_right_3,
+                ActionEvents::ThreeFingerSwipeUp => &settings.swipe_up_3,
+                ActionEvents::ThreeFingerSwipeDown => &settings.swipe_down_3,
+                ActionEvents::FourFingerSwipeLeft => &settings.swipe_left_4,
+                ActionEvents::FourFingerSwipeRight => &settings.swipe_right_4,
+                ActionEvents::FourFingerSwipeUp => &settings.swipe_up_4,
+                ActionEvents::FourFingerSwipeDown => &settings.swipe_down_4,
             };
 
-            parse_action_list(settings_field, self_field, &self.connection);
-            debug!(" * {}: {}", action_event, self_field.iter().format(", "));
+            let parsed_actions = parse_action_list(settings_field, &self.connection);
+            self.actions.insert(action_event, parsed_actions);
         }
 
         // Print information.
+        for action_event in ActionEvents::iter() {
+            debug!(" * {}: {}", action_event, self.actions.get(&action_event).unwrap().iter().format(", "));
+        }
         info!(
-            "Action controller started: {:?}/{:?}/{:?}/{:?} actions enabled",
-            self.swipe_left_3.len(),
-            self.swipe_right_3.len(),
-            self.swipe_up_3.len(),
-            self.swipe_down_3.len(),
+            "Action controller started: {:?}/{:?}/{:?}/{:?}, {:?}/{:?}/{:?}/{:?} actions enabled",
+            self.actions.get(&ActionEvents::ThreeFingerSwipeLeft).unwrap().len(),
+            self.actions.get(&ActionEvents::ThreeFingerSwipeRight).unwrap().len(),
+            self.actions.get(&ActionEvents::ThreeFingerSwipeUp).unwrap().len(),
+            self.actions.get(&ActionEvents::ThreeFingerSwipeDown).unwrap().len(),
+            self.actions.get(&ActionEvents::FourFingerSwipeLeft).unwrap().len(),
+            self.actions.get(&ActionEvents::FourFingerSwipeRight).unwrap().len(),
+            self.actions.get(&ActionEvents::FourFingerSwipeUp).unwrap().len(),
+            self.actions.get(&ActionEvents::FourFingerSwipeDown).unwrap().len(),
         );
     }
 
@@ -201,15 +201,8 @@ impl ActionController for ActionMap {
 
         // Invoke actions.
         let actions = match action_event {
-            Some(ActionEvents::ThreeFingerSwipeLeft) => &mut self.swipe_left_3,
-            Some(ActionEvents::ThreeFingerSwipeRight) => &mut self.swipe_right_3,
-            Some(ActionEvents::ThreeFingerSwipeUp) => &mut self.swipe_up_3,
-            Some(ActionEvents::ThreeFingerSwipeDown) => &mut self.swipe_down_3,
-            Some(ActionEvents::FourFingerSwipeLeft) => &mut self.swipe_left_4,
-            Some(ActionEvents::FourFingerSwipeRight) => &mut self.swipe_right_4,
-            Some(ActionEvents::FourFingerSwipeUp) => &mut self.swipe_up_4,
-            Some(ActionEvents::FourFingerSwipeDown) => &mut self.swipe_down_4,
-            None => return,
+            Some(ref event) => self.actions.get_mut(&event).unwrap(),
+            None => return
         };
 
         debug!(

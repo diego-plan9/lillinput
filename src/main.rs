@@ -33,7 +33,7 @@ enum ActionTypes {
 }
 
 /// High-level events that can trigger an action.
-#[derive(Display, EnumIter, EnumString, EnumVariantNames, PartialEq)]
+#[derive(Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq)]
 #[strum(serialize_all = "kebab_case")]
 #[allow(clippy::enum_variant_names)]
 pub enum ActionEvents {
