@@ -67,14 +67,38 @@ mod test {
         let mut settings: Settings = default_test_settings();
         settings.enabled_action_types = vec!["i3".to_string()];
         settings.actions = HashMap::from([
-            (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec!["i3:swipe left 3".to_string()]),
-            (ActionEvents::ThreeFingerSwipeRight.to_string(), vec!["i3:swipe right 3".to_string()]),
-            (ActionEvents::ThreeFingerSwipeUp.to_string(), vec!["i3:swipe up 3".to_string()]),
-            (ActionEvents::ThreeFingerSwipeDown.to_string(), vec!["i3:swipe down 3".to_string()]),
-            (ActionEvents::FourFingerSwipeLeft.to_string(), vec!["i3:swipe left 4".to_string()]),
-            (ActionEvents::FourFingerSwipeRight.to_string(), vec!["i3:swipe right 4".to_string()]),
-            (ActionEvents::FourFingerSwipeUp.to_string(), vec!["i3:swipe up 4".to_string()]),
-            (ActionEvents::FourFingerSwipeDown.to_string(), vec!["i3:swipe down 4".to_string()]),
+            (
+                ActionEvents::ThreeFingerSwipeLeft.to_string(),
+                vec!["i3:swipe left 3".to_string()],
+            ),
+            (
+                ActionEvents::ThreeFingerSwipeRight.to_string(),
+                vec!["i3:swipe right 3".to_string()],
+            ),
+            (
+                ActionEvents::ThreeFingerSwipeUp.to_string(),
+                vec!["i3:swipe up 3".to_string()],
+            ),
+            (
+                ActionEvents::ThreeFingerSwipeDown.to_string(),
+                vec!["i3:swipe down 3".to_string()],
+            ),
+            (
+                ActionEvents::FourFingerSwipeLeft.to_string(),
+                vec!["i3:swipe left 4".to_string()],
+            ),
+            (
+                ActionEvents::FourFingerSwipeRight.to_string(),
+                vec!["i3:swipe right 4".to_string()],
+            ),
+            (
+                ActionEvents::FourFingerSwipeUp.to_string(),
+                vec!["i3:swipe up 4".to_string()],
+            ),
+            (
+                ActionEvents::FourFingerSwipeDown.to_string(),
+                vec!["i3:swipe down 4".to_string()],
+            ),
         ]);
 
         // Create the expected commands (version + 4 swipes).
@@ -124,7 +148,7 @@ mod test {
             vec![
                 "i3:swipe right".to_string(),
                 "command:touch /tmp/swipe-right".to_string(),
-            ]
+            ],
         );
 
         // Create the action map.

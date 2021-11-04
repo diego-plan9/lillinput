@@ -124,12 +124,9 @@ impl ActionController for ActionMap {
 
         // Populate the fields for each `ActionEvent`.
         for action_event in ActionEvents::iter() {
-            match settings.actions.get(&action_event.to_string()) {
-                Some(arguments) => {
-                    let parsed_actions = parse_action_list(arguments, &self.connection);
-                    self.actions.insert(action_event, parsed_actions);
-                },
-                None => (),
+            if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
+                let parsed_actions = parse_action_list(arguments, &self.connection);
+                self.actions.insert(action_event, parsed_actions);
             }
         }
 
@@ -144,7 +141,7 @@ impl ActionController for ActionMap {
         info!(
             "Action controller started: {:?}/{:?}/{:?}/{:?}, {:?}/{:?}/{:?}/{:?} actions enabled",
             self.actions
-            .get(&ActionEvents::ThreeFingerSwipeLeft)
+                .get(&ActionEvents::ThreeFingerSwipeLeft)
                 .unwrap()
                 .len(),
             self.actions

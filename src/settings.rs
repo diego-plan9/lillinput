@@ -32,8 +32,14 @@ impl Default for Settings {
             enabled_action_types: vec![ActionTypes::I3.to_string()],
             threshold: 20.0,
             actions: HashMap::from([
-                (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec!["i3:workspace prev".to_string()]),
-                (ActionEvents::ThreeFingerSwipeRight.to_string(), vec!["i3:workspace next".to_string()]),
+                (
+                    ActionEvents::ThreeFingerSwipeLeft.to_string(),
+                    vec!["i3:workspace prev".to_string()],
+                ),
+                (
+                    ActionEvents::ThreeFingerSwipeRight.to_string(),
+                    vec!["i3:workspace next".to_string()],
+                ),
                 (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
                 (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
                 (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
@@ -115,8 +121,14 @@ pub fn setup_application(opts: Opts) -> Settings {
         .ok();
     default_config.set_default("threshold", 20.0).ok();
     let actions: HashMap<String, Vec<String>> = HashMap::from([
-        (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec!["i3:workspace prev".to_string()]),
-        (ActionEvents::ThreeFingerSwipeRight.to_string(), vec!["i3:workspace next".to_string()]),
+        (
+            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            vec!["i3:workspace prev".to_string()],
+        ),
+        (
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec!["i3:workspace next".to_string()],
+        ),
         (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
         (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
         (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
@@ -167,28 +179,68 @@ pub fn setup_application(opts: Opts) -> Settings {
         config.set("threshold", opts.threshold).ok();
     }
     if let Some(values) = opts.swipe_left_3 {
-        config.set(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_right_3 {
-        config.set(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::ThreeFingerSwipeRight),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_up_3 {
-        config.set(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::ThreeFingerSwipeUp),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_down_3 {
-        config.set(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::ThreeFingerSwipeDown),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_left_4 {
-        config.set(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::FourFingerSwipeLeft),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_right_4 {
-        config.set(&format!("actions.{}", ActionEvents::FourFingerSwipeRight), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::FourFingerSwipeRight),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_up_4 {
-        config.set(&format!("actions.{}", ActionEvents::FourFingerSwipeUp), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::FourFingerSwipeUp),
+                values,
+            )
+            .ok();
     }
     if let Some(values) = opts.swipe_down_4 {
-        config.set(&format!("actions.{}", ActionEvents::FourFingerSwipeDown), values).ok();
+        config
+            .set(
+                &format!("actions.{}", ActionEvents::FourFingerSwipeDown),
+                values,
+            )
+            .ok();
     }
 
     // Finalize the config, determining which Settings to use. In case of
@@ -198,7 +250,10 @@ pub fn setup_application(opts: Opts) -> Settings {
         Err(e) => {
             log_entries.push(LogEntry {
                 level: Level::Warn,
-                message: format!("Unable to parse settings: {}. Reverting to default settings", e),
+                message: format!(
+                    "Unable to parse settings: {}. Reverting to default settings",
+                    e
+                ),
             });
             final_settings = default_settings
         }

@@ -54,7 +54,7 @@ mod test {
         settings.enabled_action_types = vec!["command".to_string()];
         settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec!["command:touch /tmp/swipe-right".to_string()]
+            vec!["command:touch /tmp/swipe-right".to_string()],
         );
 
         // Trigger a swipe.
