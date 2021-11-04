@@ -1,11 +1,12 @@
 #[cfg(test)]
+use std::collections::HashMap;
 use std::env;
 use std::io::prelude::*;
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use crate::Settings;
+use crate::{ActionEvents, Settings};
 
 static SOCKET_PATH: &'static str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
@@ -21,14 +22,16 @@ struct I3IpcMessage {
 pub fn default_test_settings() -> Settings {
     Settings {
         enabled_action_types: vec![],
-        swipe_right_3: vec![],
-        swipe_left_3: vec![],
-        swipe_up_3: vec![],
-        swipe_down_3: vec![],
-        swipe_right_4: vec![],
-        swipe_left_4: vec![],
-        swipe_up_4: vec![],
-        swipe_down_4: vec![],
+        actions: HashMap::from([
+            (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec![]),
+            (ActionEvents::ThreeFingerSwipeRight.to_string(), vec![]),
+            (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
+            (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
+            (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
+            (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
+            (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
+            (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
+        ]),
         threshold: 5.0,
         seat: "seat0".to_string(),
         verbose: 0,
