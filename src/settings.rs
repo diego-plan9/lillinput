@@ -1,11 +1,13 @@
 //! Functionality related to settings and other tooling.
 
-use crate::{ActionTypes, Opts};
+use crate::{ActionEvents, ActionTypes, Opts};
 
 use config::{Config, File};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
+
+use std::collections::HashMap;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize)]
@@ -18,22 +20,8 @@ pub struct Settings {
     pub enabled_action_types: Vec<String>,
     /// Minimum threshold for displacement changes.
     pub threshold: f64,
-    /// Actions the three-finger swipe left.
-    pub swipe_left_3: Vec<String>,
-    /// Actions the three-finger swipe right.
-    pub swipe_right_3: Vec<String>,
-    /// Actions the three-finger swipe up.
-    pub swipe_up_3: Vec<String>,
-    /// Actions the three-finger swipe down.
-    pub swipe_down_3: Vec<String>,
-    /// Actions the four-finger swipe left.
-    pub swipe_left_4: Vec<String>,
-    /// Actions the four-finger swipe right.
-    pub swipe_right_4: Vec<String>,
-    /// Actions the four-finger swipe up.
-    pub swipe_up_4: Vec<String>,
-    /// Actions the four-finger swipe down.
-    pub swipe_down_4: Vec<String>,
+    /// List of action for each action event.
+    pub actions: HashMap<String, Vec<String>>,
 }
 
 impl Default for Settings {
@@ -43,14 +31,16 @@ impl Default for Settings {
             seat: "seat0".to_string(),
             enabled_action_types: vec![ActionTypes::I3.to_string()],
             threshold: 20.0,
-            swipe_left_3: vec!["i3:workspace prev".to_string()],
-            swipe_right_3: vec!["i3:workspace next".to_string()],
-            swipe_up_3: vec![],
-            swipe_down_3: vec![],
-            swipe_left_4: vec![],
-            swipe_right_4: vec![],
-            swipe_up_4: vec![],
-            swipe_down_4: vec![],
+            actions: HashMap::from([
+                (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec!["i3:workspace prev".to_string()]),
+                (ActionEvents::ThreeFingerSwipeRight.to_string(), vec!["i3:workspace next".to_string()]),
+                (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
+                (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
+                (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
+                (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
+                (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
+                (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
+            ]),
         }
     }
 }
