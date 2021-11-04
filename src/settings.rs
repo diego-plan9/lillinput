@@ -198,7 +198,7 @@ pub fn setup_application(opts: Opts) -> Settings {
         Err(e) => {
             log_entries.push(LogEntry {
                 level: Level::Warn,
-                message: format!("Unable to parse settings: {}", e),
+                message: format!("Unable to parse settings: {}. Reverting to default settings", e),
             });
             final_settings = default_settings
         }
