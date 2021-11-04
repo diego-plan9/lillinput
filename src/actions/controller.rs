@@ -124,19 +124,13 @@ impl ActionController for ActionMap {
 
         // Populate the fields for each `ActionEvent`.
         for action_event in ActionEvents::iter() {
-            let settings_field = match action_event {
-                ActionEvents::ThreeFingerSwipeLeft => &settings.swipe_left_3,
-                ActionEvents::ThreeFingerSwipeRight => &settings.swipe_right_3,
-                ActionEvents::ThreeFingerSwipeUp => &settings.swipe_up_3,
-                ActionEvents::ThreeFingerSwipeDown => &settings.swipe_down_3,
-                ActionEvents::FourFingerSwipeLeft => &settings.swipe_left_4,
-                ActionEvents::FourFingerSwipeRight => &settings.swipe_right_4,
-                ActionEvents::FourFingerSwipeUp => &settings.swipe_up_4,
-                ActionEvents::FourFingerSwipeDown => &settings.swipe_down_4,
-            };
-
-            let parsed_actions = parse_action_list(settings_field, &self.connection);
-            self.actions.insert(action_event, parsed_actions);
+            match settings.actions.get(&action_event.to_string()) {
+                Some(arguments) => {
+                    let parsed_actions = parse_action_list(arguments, &self.connection);
+                    self.actions.insert(action_event, parsed_actions);
+                },
+                None => (),
+            }
         }
 
         // Print information.
