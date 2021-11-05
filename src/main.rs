@@ -68,28 +68,28 @@ pub struct Opts {
     threshold: Option<f64>,
     /// actions the three-finger swipe left
     #[clap(long, validator = is_action_string)]
-    swipe_left_3: Option<Vec<String>>,
+    three_finger_swipe_left: Option<Vec<String>>,
     /// actions the three-finger swipe right
     #[clap(long, validator = is_action_string)]
-    swipe_right_3: Option<Vec<String>>,
+    three_finger_swipe_right: Option<Vec<String>>,
     /// actions the three-finger swipe up
     #[clap(long, validator = is_action_string)]
-    swipe_up_3: Option<Vec<String>>,
+    three_finger_swipe_up: Option<Vec<String>>,
     /// actions the three-finger swipe down
     #[clap(long, validator = is_action_string)]
-    swipe_down_3: Option<Vec<String>>,
+    three_finger_swipe_down: Option<Vec<String>>,
     /// actions the four-finger swipe left
     #[clap(long, validator = is_action_string)]
-    swipe_left_4: Option<Vec<String>>,
+    four_finger_swipe_left: Option<Vec<String>>,
     /// actions the four-finger swipe right
     #[clap(long, validator = is_action_string)]
-    swipe_right_4: Option<Vec<String>>,
+    four_finger_swipe_right: Option<Vec<String>>,
     /// actions the four-finger swipe up
     #[clap(long, validator = is_action_string)]
-    swipe_up_4: Option<Vec<String>>,
+    four_finger_up_down: Option<Vec<String>>,
     /// actions the four-finger swipe down
     #[clap(long, validator = is_action_string)]
-    swipe_down_4: Option<Vec<String>>,
+    four_finger_swipe_down: Option<Vec<String>>,
 }
 
 /// Validator for arguments that specify an action.

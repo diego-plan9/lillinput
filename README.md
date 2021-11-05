@@ -35,38 +35,64 @@ lillinput --help
 ```
 ...
 USAGE:
-    lillinput [FLAGS] [OPTIONS]
-
-FLAGS:
-    -h, --help       Print help information
-    -v, --verbose    Level of verbosity (additive, can be used up to 3 times)
-    -V, --version    Print version information
+    lillinput [OPTIONS]
 
 OPTIONS:
-    -c, --config-file <CONFIG_FILE>         Configuration file
+    -c, --config-file <CONFIG_FILE>
+            Configuration file
+
     -e, --enabled-action-types <ENABLED_ACTION_TYPES>...
             enabled action types [possible values: i3, command]
-    -s, --seat <SEAT>                       libinput seat
-        --swipe-down-3 <SWIPE_DOWN_3>...    actions the three-finger swipe down
-        --swipe-down-4 <SWIPE_DOWN_4>...    actions the four-finger swipe down
-        --swipe-left-3 <SWIPE_LEFT_3>...    actions the three-finger swipe left
-        --swipe-left-4 <SWIPE_LEFT_4>...    actions the four-finger swipe left
-        --swipe-right-3 <SWIPE_RIGHT_3>...  actions the three-finger swipe right
-        --swipe-right-4 <SWIPE_RIGHT_4>...  actions the four-finger swipe right
-        --swipe-up-3 <SWIPE_UP_3>...        actions the three-finger swipe up
-        --swipe-up-4 <SWIPE_UP_4>...        actions the four-finger swipe up
-    -t, --threshold <THRESHOLD>             minimum threshold for displacement changes
+
+        --four-finger-swipe-down <FOUR_FINGER_SWIPE_DOWN>...
+            actions the four-finger swipe down
+
+        --four-finger-swipe-left <FOUR_FINGER_SWIPE_LEFT>...
+            actions the four-finger swipe left
+
+        --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>...
+            actions the four-finger swipe right
+
+        --four-finger-up-down <FOUR_FINGER_UP_DOWN>...
+            actions the four-finger swipe up
+
+    -h, --help
+            Print help information
+
+    -s, --seat <SEAT>
+            libinput seat
+
+    -t, --threshold <THRESHOLD>
+            minimum threshold for displacement changes
+
+        --three-finger-swipe-down <THREE_FINGER_SWIPE_DOWN>...
+            actions the three-finger swipe down
+
+        --three-finger-swipe-left <THREE_FINGER_SWIPE_LEFT>...
+            actions the three-finger swipe left
+
+        --three-finger-swipe-right <THREE_FINGER_SWIPE_RIGHT>...
+            actions the three-finger swipe right
+
+        --three-finger-swipe-up <THREE_FINGER_SWIPE_UP>...
+            actions the three-finger swipe up
+
+    -v, --verbose
+            Level of verbosity (additive, can be used up to 3 times)
+
+    -V, --version
+            Print version information
 ```
 
 ### Configuring the swipe actions
 
-Each `--swipe-{foo}` argument accepts one or several "actions", in the form
-`{type}:{command}`. For example, the following invocation specifies two actions
-for the "three finger swipe up": moving to the next workspace in `i3`, and
-creating a file.
+Each `--{number}-finger-swipe-{direction}` argument accepts one or several
+"actions", in the form `{type}:{command}`. For example, the following
+invocation specifies two actions for the "three finger swipe up": moving to the
+next workspace in `i3`, and creating a file.
 
 ```
-lillinput --swipe-up-3 "i3:workspace next" --swipe-up-3 "command:touch /tmp/myfile"
+lillinput --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
 ```
 
 Currently, the available action types are `i3` and `command`.

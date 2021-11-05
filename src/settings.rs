@@ -178,7 +178,7 @@ pub fn setup_application(opts: Opts) -> Settings {
     if opts.threshold.is_some() {
         config.set("threshold", opts.threshold).ok();
     }
-    if let Some(values) = opts.swipe_left_3 {
+    if let Some(values) = opts.three_finger_swipe_left {
         config
             .set(
                 &format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft),
@@ -186,7 +186,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_right_3 {
+    if let Some(values) = opts.three_finger_swipe_right {
         config
             .set(
                 &format!("actions.{}", ActionEvents::ThreeFingerSwipeRight),
@@ -194,7 +194,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_up_3 {
+    if let Some(values) = opts.three_finger_swipe_up {
         config
             .set(
                 &format!("actions.{}", ActionEvents::ThreeFingerSwipeUp),
@@ -202,7 +202,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_down_3 {
+    if let Some(values) = opts.three_finger_swipe_down {
         config
             .set(
                 &format!("actions.{}", ActionEvents::ThreeFingerSwipeDown),
@@ -210,7 +210,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_left_4 {
+    if let Some(values) = opts.four_finger_swipe_left {
         config
             .set(
                 &format!("actions.{}", ActionEvents::FourFingerSwipeLeft),
@@ -218,7 +218,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_right_4 {
+    if let Some(values) = opts.four_finger_swipe_right {
         config
             .set(
                 &format!("actions.{}", ActionEvents::FourFingerSwipeRight),
@@ -226,7 +226,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_up_4 {
+    if let Some(values) = opts.four_finger_up_down {
         config
             .set(
                 &format!("actions.{}", ActionEvents::FourFingerSwipeUp),
@@ -234,7 +234,7 @@ pub fn setup_application(opts: Opts) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.swipe_down_4 {
+    if let Some(values) = opts.four_finger_swipe_down {
         config
             .set(
                 &format!("actions.{}", ActionEvents::FourFingerSwipeDown),
