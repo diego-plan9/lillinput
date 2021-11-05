@@ -29,6 +29,9 @@ Types of changes:
 * The output of each `i3` action and `command` action is now inspected and a
   warning is emitted in case of an error (instead of panicking if they result
   in a failure). (\#46, \#47)
+* The command line arguments for specifying swipe actions have been renamed to
+  the form `--{number}-finger-swipe-{direction}`, for consistency with the
+  configuration file. (\#65)
 
 ### Fixed
 
