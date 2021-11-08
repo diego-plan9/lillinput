@@ -89,8 +89,8 @@ fn setup_logging(verbosity: i64) {
 /// * `enabled_action_types` - slice of enabled action types.
 fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
     enabled_action_types
-    .iter()
-    .any(|x| x.starts_with(&(action_string.to_owned() + ":")))
+        .iter()
+        .any(|x| x.starts_with(&(action_string.to_owned() + ":")))
 }
 
 /// Setup the application logging and return the application settings.
@@ -281,16 +281,13 @@ pub fn setup_application(opts: Opts) -> Settings {
     for (key, value) in final_settings.actions.iter_mut() {
         let mut prune = false;
         // Check each action string, for debugging purposes.
-        for entry in value.iter(){
-            if !is_enabled_action_string(entry, enabled_action_types)
-            {
+        for entry in value.iter() {
+            if !is_enabled_action_string(entry, enabled_action_types) {
                 log_entries.push(LogEntry {
-                level: Level::Warn,
-                message: format!(
-                    "Removing malformed or disabled action in {}: {}",
-
-                    key,
-                    entry
+                    level: Level::Warn,
+                    message: format!(
+                        "Removing malformed or disabled action in {}: {}",
+                        key, entry
                     ),
                 });
                 prune = true;
