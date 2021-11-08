@@ -115,7 +115,9 @@ impl ActionController for ActionMap {
                             warn!("ignoring i3 action, as the i3 connection could not be set.")
                         }
                     },
-                    Err(_) => {}
+                    Err(_) => {
+                        warn!("Unknown action type: '{}", action_type)
+                    }
                 }
             }
 

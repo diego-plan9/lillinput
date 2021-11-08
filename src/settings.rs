@@ -77,6 +77,22 @@ fn setup_logging(verbosity: i64) {
     .unwrap();
 }
 
+/// Check if an action string is valid and with an enabled action type.
+///
+/// A string that specifies an action must conform to the following format:
+/// {action choice}:{value}.
+/// and {action choice} needs to be in enabled_action_types.
+///
+/// # Arguments
+///
+/// * `value` - argument to be parsed.
+/// * `enabled_action_types` - slice of enabled action types.
+fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
+    enabled_action_types
+        .iter()
+        .any(|x| x.starts_with(&(action_string.to_owned() + ":")))
+}
+
 /// Setup the application logging and return the application settings.
 ///
 /// The application settings are merged from:
@@ -88,7 +104,7 @@ fn setup_logging(verbosity: i64) {
 /// * `opts` - command line arguments.
 pub fn setup_application(opts: Opts) -> Settings {
     // Initialize the variables to keep track of config.
-    let final_settings: Settings;
+    let mut final_settings: Settings;
     let mut log_entries: Vec<LogEntry> = Vec::new();
 
     // Determine the config files to use: unless an specific file is provided
@@ -256,6 +272,30 @@ pub fn setup_application(opts: Opts) -> Settings {
                 ),
             });
             final_settings = default_settings
+        }
+    }
+
+    // Prune action strings, removing the items that are malformed or using
+    // not enaled action types.
+    let enabled_action_types = final_settings.enabled_action_types.as_slice();
+    for (key, value) in final_settings.actions.iter_mut() {
+        let mut prune = false;
+        // Check each action string, for debugging purposes.
+        for entry in value.iter() {
+            if !is_enabled_action_string(entry, enabled_action_types) {
+                log_entries.push(LogEntry {
+                    level: Level::Warn,
+                    message: format!(
+                        "Removing malformed or disabled action in {}: {}",
+                        key, entry
+                    ),
+                });
+                prune = true;
+            }
+        }
+
+        if prune {
+            value.retain(|x| is_enabled_action_string(x, enabled_action_types));
         }
     }
 
