@@ -1,0 +1,14 @@
+verbose = 0
+seat = "seat01"
+threshold = 20.0
+enabled_action_types = ["i3"]
+
+[actions]
+three-finger-swipe-right = ["i3:workspace next"]
+three-finger-swipe-left = ["i3:workspace prev"]
+three-finger-swipe-up = []
+three-finger-swipe-down = []
+four-finger-swipe-right = []
+four-finger-swipe-left = []
+four-finger-swipe-up = []
+four-finger-swipe-down = []

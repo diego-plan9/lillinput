@@ -102,9 +102,9 @@ Currently, the available action types are `i3` and `command`.
 The configuration from the application can be read from a configuration file.
 By default, the following sources will be read in order:
 
-1. `/etc/lillinput.conf`
-2. `${XDG_HOME}/lillinput/lillinput.conf`
-3. `${CWD}/lillinput.conf`
+1. `/etc/lillinput.toml`
+2. `${XDG_HOME}/lillinput/lillinput.toml`
+3. `${CWD}/lillinput.toml`
 
 Alternatively, a different file can be specified via the `--config-file`
 argument. If specified, any other command line arguments will take precedence
