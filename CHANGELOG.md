@@ -17,12 +17,14 @@ Types of changes:
 
 ### Added
 
-* Display more information about the enabled actions during startup (as `debug`
+* More information about the enabled actions during startup (as `debug`
   information, requiring the `--verbose` flag). (\#25)
-* Add support for 4-finger swipe, configurable via the `--swipe-{direction}-4`
-  family of arguments. (\#32)
+* Add support for 4-finger swipe, configurable via the
+  `--four-finger-swipe-{direction}-4` family of arguments. (\#32)
 * Settings can now be read from a configuration file using the `--config-file`
-  optional argument. (\#54)
+  optional argument. If not specified, a `lillinput.toml` file in default
+  locations (`/etc`, `$XDG_CONFIG_HOME/lillinput`, `$CWD`) will be used
+  instead  (\#54).
 
 ### Changed
 
