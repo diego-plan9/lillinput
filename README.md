@@ -28,8 +28,8 @@ for the "three finger right swipe" gesture, and the `workspace prev` for the
 
 The full list of options can be retrieved via:
 
-```
-lillinput --help
+```bash
+$ lillinput --help
 ```
 
 ```
@@ -91,11 +91,42 @@ Each `--{number}-finger-swipe-{direction}` argument accepts one or several
 invocation specifies two actions for the "three finger swipe up": moving to the
 next workspace in `i3`, and creating a file.
 
-```
-lillinput --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
+```bash
+$ lillinput --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
 ```
 
 Currently, the available action types are `i3` and `command`.
+
+### Using a configuration file
+
+The configuration from the application can be read from a configuration file.
+By default, the following sources will be read in order:
+
+1. `/etc/lillinput.conf`
+2. `${XDG_HOME}/lillinput/lillinput.conf`
+3. `${CWD}/lillinput.conf`
+
+Alternatively, a different file can be specified via the `--config-file`
+argument. If specified, any other command line arguments will take precedence
+over values read from the configuration file.
+
+The format of the configuration can be found in the [sample configuration file]:
+```toml
+verbose = 0
+seat = "seat01"
+threshold = 20.0
+enabled_action_types = ["i3"]
+
+[actions]
+three-finger-swipe-right = ["i3:workspace next"]
+three-finger-swipe-left = ["i3:workspace prev"]
+three-finger-swipe-up = []
+three-finger-swipe-down = []
+four-finger-swipe-right = []
+four-finger-swipe-left = []
+four-finger-swipe-up = []
+four-finger-swipe-down = []
+```
 
 ## Compiling
 
@@ -130,6 +161,7 @@ This project is licensed under [BSD-3-Clause].
 [`i3`]: https://i3wm.org/
 [`libinput`]: https://www.freedesktop.org/wiki/Software/libinput/
 [name]: https://en.wikipedia.org/wiki/Lilliput_and_Blefuscu
+[sample configuration file]: lillinput.toml.sample
 
 [`i3ipc`]: https://github.com/tmerr/i3ipc-rs
 [`input`]: https://github.com/Smithay/input.rs
