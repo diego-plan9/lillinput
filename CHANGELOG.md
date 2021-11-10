@@ -13,7 +13,7 @@ Types of changes:
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
 
-## [UNRELEASED]
+## [0.2.0] - 2021-11-10
 
 ### Added
 
@@ -47,7 +47,8 @@ Types of changes:
 
 * Initial release.
 
-[UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.1.0...HEAD
+[UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/diego-plan9/lillinput/releases/tag/v0.1.0
 
 [Keep a Changelog]: https://keepachangelog.com/en/1.0.0/
