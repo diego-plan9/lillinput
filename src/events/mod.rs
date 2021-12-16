@@ -1,9 +1,9 @@
 //! Components for capturing and handling events.
 
-use std::io;
+use std::io::Error as IoError;
 use std::os::unix::io::{AsRawFd, RawFd};
 
-use filedescriptor::{poll, pollfd, POLLIN};
+use filedescriptor::{poll, pollfd, Error as FileDescriptorError, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
@@ -42,13 +42,40 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
     }
 }
 
+/// Custom error issued during the main loop.
+///
+/// This custom error message captures the errors emitted during the main loop:
+/// * filedescriptor::Error
+/// * std::io::Error
+#[derive(Debug, Clone)]
+pub struct MainLoopError {
+    /// Content of the original error.
+    pub message: String,
+}
+
+impl From<FileDescriptorError> for MainLoopError {
+    fn from(e: FileDescriptorError) -> Self {
+        MainLoopError {
+            message: e.to_string(),
+        }
+    }
+}
+
+impl From<IoError> for MainLoopError {
+    fn from(e: IoError) -> Self {
+        MainLoopError {
+            message: e.to_string(),
+        }
+    }
+}
+
 /// Run the main loop for parsing the libinput events.
 ///
 /// # Arguments
 ///
 /// * `input` - the libinput object
 /// * `action_map` - the action map that will process the event
-pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), io::Error> {
+pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), MainLoopError> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;
     let mut dy: f64 = 0.0;
@@ -64,9 +91,7 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), 
 
     loop {
         // Block until the descriptor is ready.
-        if let Err(e) = poll(&mut poll_array, None) {
-            return Err(e.downcast::<io::Error>().unwrap());
-        }
+        poll(&mut poll_array, None)?;
 
         // Dispatch, bubbling up in case of an error.
         input.dispatch()?;
