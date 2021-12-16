@@ -133,6 +133,6 @@ fn main() {
 
     // Start the main loop.
     if let Err(e) = main_loop(input, &mut action_map) {
-        error!("Unhandled error during the main loop: {}", e)
+        error!("Unhandled error during the main loop: {}", e.message)
     }
 }
