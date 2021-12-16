@@ -42,9 +42,14 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
     }
 }
 
-
+/// Custom error issued during the main loop.
+///
+/// This custom error message captures the errors emitted during the main loop:
+/// * filedescriptor::Error
+/// * std::io::Error
 #[derive(Debug, Clone)]
 pub struct MainLoopError {
+    /// Content of the original error.
     pub message: String,
 }
 
