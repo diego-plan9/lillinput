@@ -10,8 +10,8 @@ keywords = ["i3", "touchpad", "x11", "libinput", "gestures"]
 categories = ["command-line-utilities", "gui"]
 
 [dependencies]
-clap = "3.0.0-beta.5"
-clap_derive = "3.0.0-beta.5"
+clap = "=3.0.0-beta.5"
+clap_derive = "=3.0.0-beta.5"
 config = "0.11.0"
 # Stick to filedescriptor 0.7.3, as 0.8.0+ require feature resolve.
 filedescriptor = "0.7.3"
