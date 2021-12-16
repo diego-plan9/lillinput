@@ -3,7 +3,7 @@
 use std::io::Error as IoError;
 use std::os::unix::io::{AsRawFd, RawFd};
 
-use filedescriptor::{poll, pollfd, POLLIN, Error as FileDescriptorError};
+use filedescriptor::{poll, pollfd, Error as FileDescriptorError, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
@@ -55,13 +55,17 @@ pub struct MainLoopError {
 
 impl From<FileDescriptorError> for MainLoopError {
     fn from(e: FileDescriptorError) -> Self {
-        MainLoopError { message: e.to_string()}
+        MainLoopError {
+            message: e.to_string(),
+        }
     }
 }
 
 impl From<IoError> for MainLoopError {
     fn from(e: IoError) -> Self {
-        MainLoopError { message: e.to_string()}
+        MainLoopError {
+            message: e.to_string(),
+        }
     }
 }
 
