@@ -88,9 +88,10 @@ fn setup_logging(verbosity: i64) {
 /// * `value` - argument to be parsed.
 /// * `enabled_action_types` - slice of enabled action types.
 fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
-    enabled_action_types
-        .iter()
-        .any(|x| x.starts_with(&(action_string.to_owned() + ":")))
+    match action_string.split_once(':') {
+        Some((action, _)) => enabled_action_types.iter().any(|s| s == action),
+        None => false
+    }
 }
 
 /// Setup the application logging and return the application settings.
