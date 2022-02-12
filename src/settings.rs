@@ -90,7 +90,7 @@ fn setup_logging(verbosity: i64) {
 fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
     match action_string.split_once(':') {
         Some((action, _)) => enabled_action_types.iter().any(|s| s == action),
-        None => false
+        None => false,
     }
 }
 
