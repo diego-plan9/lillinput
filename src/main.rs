@@ -101,16 +101,23 @@ pub struct Opts {
 ///
 /// * `value` - argument to be parsed.
 fn is_action_string(value: &str) -> Result<(), String> {
-    if ActionTypes::VARIANTS
-        .iter()
-        .any(|&i| value.starts_with(&(i.to_owned() + ":")))
-    {
-        return Ok(());
+    let (action_type, _) = match value.split_once(':') {
+        Some(v) => v,
+        None => {
+            return Err(format!(
+                "The value does not conform to the action string pattern ({:?})",
+                value
+            ))
+        }
+    };
+
+    match ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+        true => Ok(()),
+        false => Err(format!(
+            "The value does not start with a valid action ({:?})",
+            ActionTypes::VARIANTS
+        )),
     }
-    Err(format!(
-        "The value does not start with a valid action ({:?})",
-        ActionTypes::VARIANTS
-    ))
 }
 
 /// Main entry point.
