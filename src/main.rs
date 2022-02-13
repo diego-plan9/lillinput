@@ -146,11 +146,10 @@ fn main() {
 
 #[cfg(test)]
 mod test {
-    use clap::Parser;
-    use crate::Opts;
-    use crate::test_utils::{default_test_settings, init_listener};
     use crate::settings::{setup_application, Settings};
-    use std::collections::HashMap;
+    use crate::test_utils::default_test_settings;
+    use crate::{ActionEvents, ActionTypes, Opts};
+    use clap::Parser;
 
     #[test]
     #[should_panic(expected = "The value does not conform to the action string pattern")]
@@ -170,7 +169,10 @@ mod test {
     /// Test passing an action string as a parameter.
     fn test_action_argument_valid_action_string() {
         let opts: Opts = Opts::parse_from(&["lillinput", "--three-finger-swipe-left", "i3:foo"]);
-        assert_eq!(opts.three_finger_swipe_left.unwrap(), vec![String::from("i3:foo")]);
+        assert_eq!(
+            opts.three_finger_swipe_left.unwrap(),
+            vec![String::from("i3:foo")]
+        );
     }
 
     #[test]
@@ -180,5 +182,48 @@ mod test {
         Opts::try_parse_from(&["lillinput", "--enabled-action-types", "invalid"]).unwrap();
     }
 
+    #[test]
+    /// Test conversion of `Opts` to `Settings`.
+    fn test_opts_to_settings() {
+        let opts: Opts = Opts::parse_from(&[
+            "lillinput",
+            "--config-file",
+            "nonexisting.file",
+            "--seat",
+            "some.seat",
+            "--verbose",
+            "--verbose",
+            "--enabled-action-types",
+            "i3",
+            "--threshold",
+            "20",
+            "--three-finger-swipe-left",
+            "i3:foo",
+            "--three-finger-swipe-left",
+            "command:bar",
+            "--three-finger-swipe-right",
+            "i3:bar",
+        ]);
+        let converted_settings: Settings = setup_application(opts);
 
+        // Build expected settings:
+        // * config file should be not passed and have no effect on settings.
+        // * the "command:bar" action should be removed, as "command" is not enabled.
+        // * actions should use the enum representations, and contain the passed values.
+        let mut expected_settings = default_test_settings();
+        expected_settings.verbose = 2;
+        expected_settings.seat = String::from("some.seat");
+        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.threshold = 20.0;
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            vec![String::from("i3:foo")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:bar")],
+        );
+
+        assert_eq!(converted_settings, expected_settings);
+    }
 }
