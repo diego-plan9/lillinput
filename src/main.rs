@@ -101,16 +101,23 @@ pub struct Opts {
 ///
 /// * `value` - argument to be parsed.
 fn is_action_string(value: &str) -> Result<(), String> {
-    if ActionTypes::VARIANTS
-        .iter()
-        .any(|&i| value.starts_with(&(i.to_owned() + ":")))
-    {
-        return Ok(());
+    let (action_type, _) = match value.split_once(':') {
+        Some(v) => v,
+        None => {
+            return Err(format!(
+                "The value does not conform to the action string pattern ({:?})",
+                value
+            ))
+        }
+    };
+
+    match ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+        true => Ok(()),
+        false => Err(format!(
+            "The value does not start with a valid action ({:?})",
+            ActionTypes::VARIANTS
+        )),
     }
-    Err(format!(
-        "The value does not start with a valid action ({:?})",
-        ActionTypes::VARIANTS
-    ))
 }
 
 /// Main entry point.
@@ -134,5 +141,89 @@ fn main() {
     // Start the main loop.
     if let Err(e) = main_loop(input, &mut action_map) {
         error!("Unhandled error during the main loop: {}", e.message)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::settings::{setup_application, Settings};
+    use crate::test_utils::default_test_settings;
+    use crate::{ActionEvents, ActionTypes, Opts};
+    use clap::Parser;
+
+    #[test]
+    #[should_panic(expected = "The value does not conform to the action string pattern")]
+    /// Test passing an action string as a parameter with invalid pattern.
+    fn test_action_argument_invalid_pattern() {
+        Opts::try_parse_from(&["lillinput", "--three-finger-swipe-left", "invalid"]).unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "The value does not start with a valid action")]
+    /// Test passing an action string as a parameter with invalid pattern.
+    fn test_action_argument_invalid_action_string() {
+        Opts::try_parse_from(&["lillinput", "--three-finger-swipe-left", "invalid:bar"]).unwrap();
+    }
+
+    #[test]
+    /// Test passing an action string as a parameter.
+    fn test_action_argument_valid_action_string() {
+        let opts: Opts = Opts::parse_from(&["lillinput", "--three-finger-swipe-left", "i3:foo"]);
+        assert_eq!(
+            opts.three_finger_swipe_left.unwrap(),
+            vec![String::from("i3:foo")]
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "isn't a valid value for")]
+    /// Test passing an invalid enabled action type as a parameter.
+    fn test_enabled_action_types_argument_invalid() {
+        Opts::try_parse_from(&["lillinput", "--enabled-action-types", "invalid"]).unwrap();
+    }
+
+    #[test]
+    /// Test conversion of `Opts` to `Settings`.
+    fn test_opts_to_settings() {
+        let opts: Opts = Opts::parse_from(&[
+            "lillinput",
+            "--config-file",
+            "nonexisting.file",
+            "--seat",
+            "some.seat",
+            "--verbose",
+            "--verbose",
+            "--enabled-action-types",
+            "i3",
+            "--threshold",
+            "20",
+            "--three-finger-swipe-left",
+            "i3:foo",
+            "--three-finger-swipe-left",
+            "command:bar",
+            "--three-finger-swipe-right",
+            "i3:bar",
+        ]);
+        let converted_settings: Settings = setup_application(opts);
+
+        // Build expected settings:
+        // * config file should be not passed and have no effect on settings.
+        // * the "command:bar" action should be removed, as "command" is not enabled.
+        // * actions should use the enum representations, and contain the passed values.
+        let mut expected_settings = default_test_settings();
+        expected_settings.verbose = 2;
+        expected_settings.seat = String::from("some.seat");
+        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.threshold = 20.0;
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            vec![String::from("i3:foo")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:bar")],
+        );
+
+        assert_eq!(converted_settings, expected_settings);
     }
 }

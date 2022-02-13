@@ -10,7 +10,7 @@ use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger
 use std::collections::HashMap;
 
 /// Application settings.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Settings {
     /// Level of verbosity.
     pub verbose: i64,
