@@ -143,3 +143,42 @@ fn main() {
         error!("Unhandled error during the main loop: {}", e.message)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use clap::Parser;
+    use crate::Opts;
+    use crate::test_utils::{default_test_settings, init_listener};
+    use crate::settings::{setup_application, Settings};
+    use std::collections::HashMap;
+
+    #[test]
+    #[should_panic(expected = "The value does not conform to the action string pattern")]
+    /// Test passing an action string as a parameter with invalid pattern.
+    fn test_action_argument_invalid_pattern() {
+        Opts::try_parse_from(&["lillinput", "--three-finger-swipe-left", "invalid"]).unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "The value does not start with a valid action")]
+    /// Test passing an action string as a parameter with invalid pattern.
+    fn test_action_argument_invalid_action_string() {
+        Opts::try_parse_from(&["lillinput", "--three-finger-swipe-left", "invalid:bar"]).unwrap();
+    }
+
+    #[test]
+    /// Test passing an action string as a parameter.
+    fn test_action_argument_valid_action_string() {
+        let opts: Opts = Opts::parse_from(&["lillinput", "--three-finger-swipe-left", "i3:foo"]);
+        assert_eq!(opts.three_finger_swipe_left.unwrap(), vec![String::from("i3:foo")]);
+    }
+
+    #[test]
+    #[should_panic(expected = "isn't a valid value for")]
+    /// Test passing an invalid enabled action type as a parameter.
+    fn test_enabled_action_types_argument_invalid() {
+        Opts::try_parse_from(&["lillinput", "--enabled-action-types", "invalid"]).unwrap();
+    }
+
+
+}
