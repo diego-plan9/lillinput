@@ -124,7 +124,7 @@ fn is_action_string(value: &str) -> Result<(), String> {
 fn main() {
     // Retrieve the application settings and setup logging.
     let opts: Opts = Opts::parse();
-    let settings: Settings = setup_application(opts);
+    let settings: Settings = setup_application(opts, true);
 
     // Create the action map controller.
     let mut action_map: ActionMap = ActionController::new(&settings);
@@ -150,6 +150,8 @@ mod test {
     use crate::test_utils::default_test_settings;
     use crate::{ActionEvents, ActionTypes, Opts};
     use clap::Parser;
+    use std::io::Write;
+    use tempfile::Builder;
 
     #[test]
     #[should_panic(expected = "The value does not conform to the action string pattern")]
@@ -204,7 +206,7 @@ mod test {
             "--three-finger-swipe-right",
             "i3:bar",
         ]);
-        let converted_settings: Settings = setup_application(opts);
+        let converted_settings: Settings = setup_application(opts, false);
 
         // Build expected settings:
         // * config file should be not passed and have no effect on settings.
@@ -221,6 +223,57 @@ mod test {
         );
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:bar")],
+        );
+
+        assert_eq!(converted_settings, expected_settings);
+    }
+
+    #[test]
+    /// Test using a config file.
+    fn test_config_file() {
+        let mut file = Builder::new().suffix(".toml").tempfile().unwrap();
+        let file_path = String::from(file.path().to_str().unwrap());
+
+        writeln!(
+            file,
+            r#"
+verbose = 0
+seat = "some.seat"
+threshold = 42.0
+enabled_action_types = ["i3"]
+
+[actions]
+three-finger-swipe-right = ["i3:foo"]
+three-finger-swipe-left = []
+three-finger-swipe-up = []
+three-finger-swipe-down = []
+four-finger-swipe-right = ["i3:bar", "command:baz"]
+four-finger-swipe-left = []
+four-finger-swipe-up = []
+four-finger-swipe-down = []
+"#
+        )
+        .unwrap();
+
+        let opts: Opts = Opts::parse_from(&["lillinput", "--config-file", &file_path]);
+        let converted_settings: Settings = setup_application(opts, false);
+
+        // Build expected settings:
+        // * values should be read from the config file.
+        // * the "command:bar" action should be removed, as "command" is not enabled.
+        // * actions should use the enum representations, and contain the passed values.
+        let mut expected_settings = default_test_settings();
+        expected_settings.verbose = 0;
+        expected_settings.seat = String::from("some.seat");
+        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.threshold = 42.0;
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:foo")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeRight.to_string(),
             vec![String::from("i3:bar")],
         );
 
