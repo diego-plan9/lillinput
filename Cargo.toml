@@ -24,3 +24,6 @@ simplelog = "~0.11"
 strum = { version = "~0.23", features = ["derive"] }
 strum_macros = "~0.23"
 xdg = "~2.4"
+
+[dev-dependencies]
+tempfile = "~3.3"
