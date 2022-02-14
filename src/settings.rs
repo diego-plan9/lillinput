@@ -103,7 +103,8 @@ fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]
 /// # Arguments
 ///
 /// * `opts` - command line arguments.
-pub fn setup_application(opts: Opts) -> Settings {
+/// * `initialize_logging` - if `true`, initialize logging.
+pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     // Initialize the variables to keep track of config.
     let mut final_settings: Settings;
     let mut log_entries: Vec<LogEntry> = Vec::new();
@@ -301,7 +302,9 @@ pub fn setup_application(opts: Opts) -> Settings {
     }
 
     // Setup logging.
-    setup_logging(final_settings.verbose);
+    if initialize_logging {
+        setup_logging(final_settings.verbose);
+    }
 
     // Log any pending error messages.
     for log_entry in log_entries.iter() {
