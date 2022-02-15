@@ -4,7 +4,6 @@
 [![license]](LICENSE)
 [![build status]](https://github.com/diego-plan9/lillinput/actions/workflows/default.yml)
 
-
 ## About
 
 `lillinput` is a small utility written in Rust for connecting [`libinput`]
@@ -41,19 +40,19 @@ OPTIONS:
     -c, --config-file <CONFIG_FILE>
             Configuration file
 
-    -e, --enabled-action-types <ENABLED_ACTION_TYPES>...
+    -e, --enabled-action-types <ENABLED_ACTION_TYPES>
             enabled action types [possible values: i3, command]
 
-        --four-finger-swipe-down <FOUR_FINGER_SWIPE_DOWN>...
+        --four-finger-swipe-down <FOUR_FINGER_SWIPE_DOWN>
             actions the four-finger swipe down
 
-        --four-finger-swipe-left <FOUR_FINGER_SWIPE_LEFT>...
+        --four-finger-swipe-left <FOUR_FINGER_SWIPE_LEFT>
             actions the four-finger swipe left
 
-        --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>...
+        --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>
             actions the four-finger swipe right
 
-        --four-finger-up-down <FOUR_FINGER_UP_DOWN>...
+        --four-finger-up-down <FOUR_FINGER_UP_DOWN>
             actions the four-finger swipe up
 
     -h, --help
@@ -65,16 +64,16 @@ OPTIONS:
     -t, --threshold <THRESHOLD>
             minimum threshold for displacement changes
 
-        --three-finger-swipe-down <THREE_FINGER_SWIPE_DOWN>...
+        --three-finger-swipe-down <THREE_FINGER_SWIPE_DOWN>
             actions the three-finger swipe down
 
-        --three-finger-swipe-left <THREE_FINGER_SWIPE_LEFT>...
+        --three-finger-swipe-left <THREE_FINGER_SWIPE_LEFT>
             actions the three-finger swipe left
 
-        --three-finger-swipe-right <THREE_FINGER_SWIPE_RIGHT>...
+        --three-finger-swipe-right <THREE_FINGER_SWIPE_RIGHT>
             actions the three-finger swipe right
 
-        --three-finger-swipe-up <THREE_FINGER_SWIPE_UP>...
+        --three-finger-swipe-up <THREE_FINGER_SWIPE_UP>
             actions the three-finger swipe up
 
     -v, --verbose
@@ -111,6 +110,7 @@ argument. If specified, any other command line arguments will take precedence
 over values read from the configuration file.
 
 The format of the configuration can be found in the [sample configuration file]:
+
 ```toml
 verbose = 0
 seat = "seat01"
@@ -145,6 +145,7 @@ crates (among others) - kudos to their maintainers for making them available.
 
 Outside rust, the following projects provide a more complete solution for using
 `libinput` gestures:
+
 * [`libinput-gestures`]
 * [`fusuma`]
 * [`geebar-libinput`]

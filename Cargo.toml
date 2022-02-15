@@ -1,6 +1,6 @@
 [package]
 name = "lillinput"
-version = "0.2.1-alpha"
+version = "0.2.1"
 authors = ["Diego M. Rodríguez <diego@moreda.io>"]
 edition = "2018"
 description = "Connect libinput gestures to i3 and others"
