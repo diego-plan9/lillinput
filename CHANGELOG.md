@@ -61,7 +61,7 @@ Types of changes:
 * Initial release.
 
 [UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...v0.2.1
+[0.2.1]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/diego-plan9/lillinput/releases/tag/v0.1.0
 
