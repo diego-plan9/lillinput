@@ -13,7 +13,18 @@ Types of changes:
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
 
-## UNRELEASED
+## [0.2.1] - 2022-02-15
+
+### Fixed
+
+* Command line arguments involving action strings are now parsed correctly
+  (and more efficiently) instead of being always marked as invalid, thanks to
+  @tpoliaw. (\#76)
+
+### Changed
+
+* The `main_loop()` function now can now return a custom `MainLoopError` that
+  accounts for `filedescriptor::Error` and `std::io::Error`. (\#73)
 
 ## [0.2.0] - 2021-11-10
 
@@ -26,7 +37,7 @@ Types of changes:
 * Settings can now be read from a configuration file using the `--config-file`
   optional argument. If not specified, a `lillinput.toml` file in default
   locations (`/etc`, `$XDG_CONFIG_HOME/lillinput`, `$CWD`) will be used
-  instead  (\#54).
+  instead. (\#54)
 
 ### Changed
 
@@ -50,6 +61,7 @@ Types of changes:
 * Initial release.
 
 [UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/diego-plan9/lillinput/releases/tag/v0.1.0
 
