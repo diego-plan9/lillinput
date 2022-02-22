@@ -4,22 +4,19 @@
 //! * commands for the `i3` tiling window manager IPC interface
 //! * shell commands
 
-use input::Libinput;
-
-use clap::Parser;
-use log::{error, info};
-use strum::{Display, EnumString, EnumVariantNames, VariantNames};
-use strum_macros::EnumIter;
-
 mod actions;
-use actions::{ActionController, ActionMap};
-
 mod events;
+mod settings;
+
+use actions::{ActionController, ActionMap};
+use clap::Parser;
 use events::libinput::Interface;
 use events::main_loop;
-
-mod settings;
+use input::Libinput;
+use log::{error, info};
 use settings::{setup_application, Settings};
+use strum::{Display, EnumString, EnumVariantNames, VariantNames};
+use strum_macros::EnumIter;
 
 #[cfg(test)]
 mod test_utils;

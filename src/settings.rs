@@ -1,13 +1,12 @@
 //! Functionality related to settings and other tooling.
 
-use crate::{ActionEvents, ActionTypes, Opts};
+use std::collections::HashMap;
 
+use crate::{ActionEvents, ActionTypes, Opts};
 use config::{Config, File};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
-
-use std::collections::HashMap;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize, PartialEq)]

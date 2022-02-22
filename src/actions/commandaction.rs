@@ -1,11 +1,11 @@
 //! Action for executing commands.
 
-use super::{Action, ActionExt, ActionTypes};
-use log::warn;
-use shlex::split;
-
 use std::fmt;
 use std::process::Command;
+
+use crate::actions::{Action, ActionExt, ActionTypes};
+use log::warn;
+use shlex::split;
 
 /// Action that executes shell commands.
 pub struct CommandAction {
@@ -38,9 +38,10 @@ impl ActionExt for CommandAction {
 
 #[cfg(test)]
 mod test {
+    use std::path::Path;
+
     use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
     use crate::test_utils::default_test_settings;
-    use std::path::Path;
 
     #[test]
     /// Test the triggering of commands for a single swipe action.

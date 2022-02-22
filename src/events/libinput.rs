@@ -6,7 +6,6 @@ use std::os::unix::io::{FromRawFd, IntoRawFd, RawFd};
 use std::path::Path;
 
 use input::LibinputInterface;
-
 use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 
 /// Struct for libinput interface.

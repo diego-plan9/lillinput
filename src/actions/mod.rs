@@ -7,14 +7,13 @@ pub mod commandaction;
 pub mod controller;
 pub mod i3action;
 
-use super::{ActionEvents, ActionTypes};
-use crate::Settings;
-use i3ipc::I3Connection;
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
+
+use crate::{ActionEvents, ActionTypes, Settings};
+use i3ipc::I3Connection;
 
 /// Map between events and actions.
 pub struct ActionMap {

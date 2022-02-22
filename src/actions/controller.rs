@@ -1,20 +1,18 @@
 //! Controller for actions.
 
-use super::commandaction::CommandAction;
-use super::i3action::{I3Action, I3ActionExt};
-use super::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
-use crate::Settings;
-
-use i3ipc::I3Connection;
-use itertools::Itertools;
-use log::{debug, info, warn};
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::rc::Rc;
 use std::str::FromStr;
 
+use crate::actions::commandaction::CommandAction;
+use crate::actions::i3action::{I3Action, I3ActionExt};
+use crate::actions::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
+use crate::Settings;
+use i3ipc::I3Connection;
+use itertools::Itertools;
+use log::{debug, info, warn};
 use strum::IntoEnumIterator;
 
 /// Possible choices for finger count.
@@ -240,7 +238,7 @@ impl ActionController for ActionMap {
 
 #[cfg(test)]
 mod test {
-    use super::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::controller::{ActionController, ActionEvents, ActionMap, Settings};
     use crate::test_utils::default_test_settings;
 
     #[test]
