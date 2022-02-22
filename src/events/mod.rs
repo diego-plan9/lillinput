@@ -1,18 +1,17 @@
 //! Components for capturing and handling events.
 
+pub mod libinput;
+
 use std::io::Error as IoError;
 use std::os::unix::io::{AsRawFd, RawFd};
 
+use crate::actions::{ActionController, ActionMap};
 use filedescriptor::{poll, pollfd, Error as FileDescriptorError, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
 use input::event::Event;
 use input::Libinput;
-
-use super::actions::{ActionController, ActionMap};
-
-pub mod libinput;
 
 /// Process a single `GestureEvent`.
 ///

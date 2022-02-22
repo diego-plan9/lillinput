@@ -1,12 +1,12 @@
 //! Action for interacting with `i3`.
 
-use super::{Action, ActionTypes};
-use i3ipc::I3Connection;
-use log::warn;
-
 use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
+
+use crate::actions::{Action, ActionTypes};
+use i3ipc::I3Connection;
+use log::warn;
 
 /// Action that executes `i3` commands.
 pub struct I3Action {
@@ -54,11 +54,12 @@ impl I3ActionExt for I3Action {
 
 #[cfg(test)]
 mod test {
-    use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
-    use crate::test_utils::{default_test_settings, init_listener};
     use std::collections::HashMap;
     use std::env;
     use std::sync::{Arc, Mutex};
+
+    use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::test_utils::{default_test_settings, init_listener};
 
     #[test]
     /// Test the triggering of commands for the 4x2 swipe actions.
