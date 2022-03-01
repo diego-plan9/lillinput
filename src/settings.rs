@@ -105,7 +105,6 @@ fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]
 /// * `initialize_logging` - if `true`, initialize logging.
 pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     // Initialize the variables to keep track of config.
-    let mut final_settings: Settings;
     let mut log_entries: Vec<LogEntry> = Vec::new();
 
     // Determine the config files to use: unless an specific file is provided
@@ -262,8 +261,8 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
 
     // Finalize the config, determining which Settings to use. In case of
     // errors, revert to the default settings.
-    match config.try_deserialize::<Settings>() {
-        Ok(merged_settings) => final_settings = merged_settings,
+    let mut final_settings: Settings = match config.try_deserialize::<Settings>() {
+        Ok(merged_settings) => merged_settings,
         Err(e) => {
             log_entries.push(LogEntry {
                 level: Level::Warn,
@@ -272,9 +271,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
                     e
                 ),
             });
-            final_settings = default_settings
+            default_settings
         }
-    }
+    };
 
     // Prune action strings, removing the items that are malformed or using
     // not enaled action types.
