@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::{ActionEvents, ActionTypes, Opts};
-use config::{builder, Config, File};
+use config::{Config, File};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
