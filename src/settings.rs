@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::{ActionEvents, ActionTypes, Opts};
-use config::{Config, File};
+use config::{builder, Config, File};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
@@ -262,7 +262,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
 
     // Finalize the config, determining which Settings to use. In case of
     // errors, revert to the default settings.
-    match config.try_into::<Settings>() {
+    match config.try_deserialize::<Settings>() {
         Ok(merged_settings) => final_settings = merged_settings,
         Err(e) => {
             log_entries.push(LogEntry {
