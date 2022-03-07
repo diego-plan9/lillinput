@@ -147,6 +147,8 @@ mod test {
     use crate::test_utils::default_test_settings;
     use crate::{ActionEvents, ActionTypes, Opts};
     use clap::Parser;
+    use std::env;
+    use std::fs::{create_dir, File};
     use std::io::Write;
     use tempfile::Builder;
 
@@ -258,6 +260,64 @@ four-finger-swipe-down = []
 
         // Build expected settings:
         // * values should be read from the config file.
+        // * the "command:bar" action should be removed, as "command" is not enabled.
+        // * actions should use the enum representations, and contain the passed values.
+        let mut expected_settings = default_test_settings();
+        expected_settings.verbose = 0;
+        expected_settings.seat = String::from("some.seat");
+        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.threshold = 42.0;
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:foo")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeRight.to_string(),
+            vec![String::from("i3:bar")],
+        );
+
+        assert_eq!(converted_settings, expected_settings);
+    }
+
+    #[test]
+    /// Test using a config file from the default set (at `XDG_CONFIG_HOME`).
+    fn test_config_file_from_xdg_config_home() {
+        // Create a temporary dir.
+        let tmp_dir = Builder::new().prefix("lillinput-conf").tempdir().unwrap();
+
+        // Create the config dir ("temp/lillinput"), and tweak the xdg env var.
+        create_dir(tmp_dir.path().join("lillinput")).unwrap();
+        env::set_var("XDG_CONFIG_HOME", tmp_dir.path());
+
+        // Populate the config file.
+        let config_home_file_path = tmp_dir.path().join("lillinput").join("lillinput.toml");
+        let mut config_home_file = File::create(config_home_file_path).unwrap();
+        writeln!(
+            config_home_file,
+            r#"
+verbose = 0
+seat = "some.seat"
+threshold = 42.0
+enabled_action_types = ["i3"]
+
+[actions]
+three-finger-swipe-right = ["i3:foo"]
+three-finger-swipe-left = []
+three-finger-swipe-up = []
+three-finger-swipe-down = []
+four-finger-swipe-right = ["i3:bar", "command:baz"]
+four-finger-swipe-left = []
+four-finger-swipe-up = []
+four-finger-swipe-down = []
+"#
+        )
+        .unwrap();
+
+        let opts: Opts = Opts::parse_from(&["lillinput"]);
+        let converted_settings: Settings = setup_application(opts, false);
+
+        // Build expected settings:
+        // * values should be read from the home config file.
         // * the "command:bar" action should be removed, as "command" is not enabled.
         // * actions should use the enum representations, and contain the passed values.
         let mut expected_settings = default_test_settings();
