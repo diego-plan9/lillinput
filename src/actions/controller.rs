@@ -250,23 +250,17 @@ mod test {
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
-        assert_eq!(action_event.is_some(), true);
-        assert_eq!(
-            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
-            true
-        );
+        assert!(action_event.is_some());
+        assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 4);
-        assert_eq!(action_event.is_some(), true);
-        assert_eq!(
-            action_event.unwrap() == ActionEvents::FourFingerSwipeRight,
-            true
-        );
+        assert!(action_event.is_some());
+        assert!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 5);
-        assert_eq!(action_event.is_none(), true);
+        assert!(action_event.is_none());
     }
 
     #[test]
@@ -278,14 +272,11 @@ mod test {
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(&4.99, &0.0, 3);
-        assert_eq!(action_event.is_none(), true);
+        assert!(action_event.is_none());
 
         // Trigger swipe above threshold.
         let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
-        assert_eq!(action_event.is_some(), true);
-        assert_eq!(
-            action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,
-            true
-        );
+        assert!(action_event.is_some());
+        assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
     }
 }

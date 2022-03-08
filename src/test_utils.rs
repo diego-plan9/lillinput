@@ -8,7 +8,7 @@ use std::thread;
 
 use crate::{ActionEvents, Settings};
 
-static SOCKET_PATH: &'static str = "/tmp/lillinput_socket";
+static SOCKET_PATH: &str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
 static MSG_VERSION: u32 = 7;
 
@@ -50,7 +50,7 @@ fn create_i3_message(payload: &[u8], message_type: u32) -> Vec<u8> {
     let length: &[u8] = &(payload.len() as u32).to_ne_bytes();
     let message_type: &[u8] = &message_type.to_ne_bytes();
 
-    return [magic_string, length, message_type, payload].concat();
+    [magic_string, length, message_type, payload].concat()
 }
 
 /// Parse a message received from i3 into a I3IpcMessage.
@@ -148,22 +148,16 @@ pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) {
         match listener.accept() {
             Ok((mut socket, _)) => {
                 loop {
-                    match parse_i3_message(&socket) {
-                        Some(i3_message) => {
-                            match create_i3_reply(i3_message.message_type) {
-                                Some(reply) => {
-                                    // Add the message to the log.
-                                    let mut messages = message_log.lock().unwrap();
-                                    messages.push(i3_message.message_payload);
-                                    std::mem::drop(messages);
+                    if let Some(i3_message) = parse_i3_message(&socket) {
+                        if let Some(reply) = create_i3_reply(i3_message.message_type) {
+                            // Add the message to the log.
+                            let mut messages = message_log.lock().unwrap();
+                            messages.push(i3_message.message_payload);
+                            std::mem::drop(messages);
 
-                                    // Send the reply.
-                                    socket.write_all(&reply).ok();
-                                }
-                                None => (),
-                            }
+                            // Send the reply.
+                            socket.write_all(&reply).ok();
                         }
-                        None => (),
                     }
                 }
             }
