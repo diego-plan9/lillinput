@@ -242,7 +242,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
             )
             .ok();
     }
-    if let Some(values) = opts.four_finger_up_down {
+    if let Some(values) = opts.four_finger_swipe_up {
         config
             .set(
                 &format!("actions.{}", ActionEvents::FourFingerSwipeUp),

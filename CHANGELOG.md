@@ -13,6 +13,13 @@ Types of changes:
 * `Fixed` for any bug fixes.
 * `Security` in case of vulnerabilities.
 
+## [UNRELEASED]
+
+### Fixed
+
+* The `four_finger_swipe_up` field in `Opts` and corresponding command line
+  argument is now correctly named. (\#89)
+
 ## [0.2.1] - 2022-02-15
 
 ### Fixed
@@ -60,7 +67,7 @@ Types of changes:
 
 * Initial release.
 
-[UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...HEAD
+[UNRELEASED]: https://github.com/diego-plan9/lillinput/compare/v0.2.1...HEAD
 [0.2.1]: https://github.com/diego-plan9/lillinput/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/diego-plan9/lillinput/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/diego-plan9/lillinput/releases/tag/v0.1.0

@@ -52,7 +52,7 @@ OPTIONS:
         --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>
             actions the four-finger swipe right
 
-        --four-finger-up-down <FOUR_FINGER_UP_DOWN>
+        --four-finger-swipe-up <FOUR_FINGER_SWIPE_UP>
             actions the four-finger swipe up
 
     -h, --help

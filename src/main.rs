@@ -83,7 +83,7 @@ pub struct Opts {
     four_finger_swipe_right: Option<Vec<String>>,
     /// actions the four-finger swipe up
     #[clap(long, validator = is_action_string)]
-    four_finger_up_down: Option<Vec<String>>,
+    four_finger_swipe_up: Option<Vec<String>>,
     /// actions the four-finger swipe down
     #[clap(long, validator = is_action_string)]
     four_finger_swipe_down: Option<Vec<String>>,
