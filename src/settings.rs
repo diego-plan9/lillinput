@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::{ActionEvents, ActionTypes, Opts};
-use config::{Config, File};
+use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
@@ -182,81 +182,12 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     }
 
     // Add the CLI options.
-    config.set("verbose", opts.verbose).ok();
-    if opts.seat.is_some() {
-        config.set("seat", opts.seat).ok();
-    }
-    if opts.enabled_action_types.is_some() {
-        config
-            .set("enabled_action_types", opts.enabled_action_types)
-            .ok();
-    }
-    if opts.threshold.is_some() {
-        config.set("threshold", opts.threshold).ok();
-    }
-    if let Some(values) = opts.three_finger_swipe_left {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.three_finger_swipe_right {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::ThreeFingerSwipeRight),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.three_finger_swipe_up {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::ThreeFingerSwipeUp),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.three_finger_swipe_down {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::ThreeFingerSwipeDown),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.four_finger_swipe_left {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::FourFingerSwipeLeft),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.four_finger_swipe_right {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::FourFingerSwipeRight),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.four_finger_swipe_up {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::FourFingerSwipeUp),
-                values,
-            )
-            .ok();
-    }
-    if let Some(values) = opts.four_finger_swipe_down {
-        config
-            .set(
-                &format!("actions.{}", ActionEvents::FourFingerSwipeDown),
-                values,
-            )
-            .ok();
+    match config.merge(opts) {
+        Ok(_) => (),
+        Err(e) => log_entries.push(LogEntry {
+            level: Level::Warn,
+            message: format!("Unable to parse default config: {}", e),
+        }),
     }
 
     // Finalize the config, determining which Settings to use. In case of
@@ -276,7 +207,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     };
 
     // Prune action strings, removing the items that are malformed or using
-    // not enaled action types.
+    // not enabled action types.
     let enabled_action_types = final_settings.enabled_action_types.as_slice();
     for (key, value) in final_settings.actions.iter_mut() {
         let mut prune = false;
@@ -315,4 +246,75 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
 
     // Return the final settings.
     final_settings
+}
+
+impl Source for Opts {
+    fn clone_into_box(&self) -> Box<dyn Source + Send + Sync> {
+        Box::new((*self).clone())
+    }
+
+    fn collect(&self) -> Result<Map<String, Value>, ConfigError> {
+        let mut m = Map::new();
+
+        m.insert(String::from("verbose"), Value::from(self.verbose));
+        self.seat
+            .as_ref()
+            .map(|x| m.insert(String::from("seat"), Value::from(x.clone())));
+        self.enabled_action_types
+            .as_ref()
+            .map(|x| m.insert(String::from("enabled_action_types"), Value::from(x.clone())));
+        self.threshold
+            .as_ref()
+            .map(|x| m.insert(String::from("threshold"), Value::from(*x)));
+        self.three_finger_swipe_left.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft)),
+                Value::from(x.clone()),
+            )
+        });
+        self.three_finger_swipe_right.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight)),
+                Value::from(x.clone()),
+            )
+        });
+        self.three_finger_swipe_up.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp)),
+                Value::from(x.clone()),
+            )
+        });
+        self.three_finger_swipe_down.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown)),
+                Value::from(x.clone()),
+            )
+        });
+        self.four_finger_swipe_left.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft)),
+                Value::from(x.clone()),
+            )
+        });
+        self.four_finger_swipe_right.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeRight)),
+                Value::from(x.clone()),
+            )
+        });
+        self.four_finger_swipe_up.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeUp)),
+                Value::from(x.clone()),
+            )
+        });
+        self.four_finger_swipe_down.as_ref().map(|x| {
+            m.insert(
+                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeDown)),
+                Value::from(x.clone()),
+            )
+        });
+
+        Ok(m)
+    }
 }

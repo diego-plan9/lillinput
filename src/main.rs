@@ -45,7 +45,7 @@ pub enum ActionEvents {
 }
 
 /// Connect libinput gestures to i3 and others.
-#[derive(Parser)]
+#[derive(Parser, Debug, Clone)]
 #[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 pub struct Opts {
     /// Configuration file.
@@ -199,11 +199,23 @@ mod test {
             "--threshold",
             "20",
             "--three-finger-swipe-left",
-            "i3:foo",
-            "--three-finger-swipe-left",
             "command:bar",
+            "--three-finger-swipe-left",
+            "i3:3left",
             "--three-finger-swipe-right",
-            "i3:bar",
+            "i3:3right",
+            "--three-finger-swipe-up",
+            "i3:3up",
+            "--three-finger-swipe-down",
+            "i3:3down",
+            "--four-finger-swipe-left",
+            "i3:4left",
+            "--four-finger-swipe-right",
+            "i3:4right",
+            "--four-finger-swipe-up",
+            "i3:4up",
+            "--four-finger-swipe-down",
+            "i3:4down",
         ]);
         let converted_settings: Settings = setup_application(opts, false);
 
@@ -218,11 +230,35 @@ mod test {
         expected_settings.threshold = 20.0;
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeLeft.to_string(),
-            vec![String::from("i3:foo")],
+            vec![String::from("i3:3left")],
         );
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec![String::from("i3:bar")],
+            vec![String::from("i3:3right")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeUp.to_string(),
+            vec![String::from("i3:3up")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeDown.to_string(),
+            vec![String::from("i3:3down")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeLeft.to_string(),
+            vec![String::from("i3:4left")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeRight.to_string(),
+            vec![String::from("i3:4right")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeUp.to_string(),
+            vec![String::from("i3:4up")],
+        );
+        expected_settings.actions.insert(
+            ActionEvents::FourFingerSwipeDown.to_string(),
+            vec![String::from("i3:4down")],
         );
 
         assert_eq!(converted_settings, expected_settings);
