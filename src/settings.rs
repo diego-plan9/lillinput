@@ -129,30 +129,13 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     // Prepare the default settings and options.
     let default_settings = Settings::default();
     let mut default_config = Config::default();
-
-    default_config.set_default("verbose", 0).ok();
-    default_config.set_default("seat", "seat0".to_string()).ok();
-    default_config
-        .set_default("enabled_action_types", vec![ActionTypes::I3.to_string()])
-        .ok();
-    default_config.set_default("threshold", 20.0).ok();
-    let actions: HashMap<String, Vec<String>> = HashMap::from([
-        (
-            ActionEvents::ThreeFingerSwipeLeft.to_string(),
-            vec!["i3:workspace prev".to_string()],
-        ),
-        (
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec!["i3:workspace next".to_string()],
-        ),
-        (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
-        (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
-        (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
-        (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
-        (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
-        (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
-    ]);
-    default_config.set_default("actions", actions).ok();
+    match default_config.merge(default_settings.clone()) {
+        Ok(_) => (),
+        Err(e) => log_entries.push(LogEntry {
+            level: Level::Warn,
+            message: format!("Unable to parse default config: {}", e),
+        }),
+    }
 
     // Start a config with the default options.
     let mut config = Config::default();
