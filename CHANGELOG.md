@@ -18,7 +18,7 @@ Types of changes:
 ### Fixed
 
 * The `four_finger_swipe_up` field in `Opts` and corresponding command line
-  argument is now correctly named. (\#89)
+  argument is now correctly named. (\#90)
 
 ## [0.2.1] - 2022-02-15
 
