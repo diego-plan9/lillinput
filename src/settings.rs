@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
 
 /// Application settings.
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct Settings {
     /// Level of verbosity.
     pub verbose: i64,
@@ -314,6 +314,32 @@ impl Source for Opts {
                 Value::from(x.clone()),
             )
         });
+
+        Ok(m)
+    }
+}
+
+impl Source for Settings {
+    fn clone_into_box(&self) -> Box<dyn Source + Send + Sync> {
+        Box::new((*self).clone())
+    }
+
+    fn collect(&self) -> Result<Map<String, Value>, ConfigError> {
+        let mut m = Map::new();
+
+        m.insert(String::from("verbose"), Value::from(self.verbose));
+        m.insert(String::from("seat"), Value::from(self.seat.clone()));
+        m.insert(
+            String::from("enabled_action_types"),
+            Value::from(self.enabled_action_types.clone()),
+        );
+        m.insert(String::from("threshold"), Value::from(self.threshold));
+        for (action_event, actions) in self.actions.iter() {
+            m.insert(
+                String::from(&format!("actions.{}", action_event)),
+                Value::from(actions.clone()),
+            );
+        }
 
         Ok(m)
     }
