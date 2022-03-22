@@ -118,11 +118,11 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     config_home.push("lillinput.toml");
     let config_file = opts.config_file.clone();
     let files = match config_file {
-        Some(filename) => vec![File::with_name(&filename)],
+        Some(filename) => vec![File::with_name(&filename).required(false)],
         None => vec![
-            File::with_name(&"/etc/lillinput.toml".to_string()),
-            File::with_name(&config_home.into_os_string().into_string().unwrap()),
-            File::with_name(&"./lillinput.toml".to_string()),
+            File::with_name(&"/etc/lillinput.toml".to_string()).required(false),
+            File::with_name(&config_home.into_os_string().into_string().unwrap()).required(false),
+            File::with_name(&"./lillinput.toml".to_string()).required(false),
         ],
     };
 
@@ -148,20 +148,18 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     }
 
     // Merge the config files.
-    for filename in files {
-        match Config::default().with_merged(filename) {
-            Ok(c) => {
-                log_entries.push(LogEntry {
-                    level: Level::Info,
-                    message: "Read config file".to_string(),
-                });
-                config = c
-            }
-            Err(e) => log_entries.push(LogEntry {
-                level: Level::Warn,
-                message: format!("Unable to parse config file: {}", e),
-            }),
-        };
+    match config.merge(files) {
+        Ok(c) => {
+            log_entries.push(LogEntry {
+                level: Level::Info,
+                message: "Read config file".to_string(),
+            });
+            config = c.clone()
+        }
+        Err(e) => log_entries.push(LogEntry {
+            level: Level::Warn,
+            message: format!("Unable to parse config file: {}", e),
+        }),
     }
 
     // Add the CLI options.
