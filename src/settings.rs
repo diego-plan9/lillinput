@@ -119,9 +119,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     let files = match opts.config_file.clone() {
         Some(filename) => vec![File::with_name(&filename).required(false)],
         None => vec![
-            File::with_name(&"/etc/lillinput.toml".to_string()).required(false),
+            File::with_name("/etc/lillinput.toml").required(false),
             File::with_name(&config_home.into_os_string().into_string().unwrap()).required(false),
-            File::with_name(&"./lillinput.toml".to_string()).required(false),
+            File::with_name("./lillinput.toml").required(false),
         ],
     };
 

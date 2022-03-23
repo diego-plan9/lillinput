@@ -60,7 +60,6 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
-        continue-on-error: true
 
       - name: Install dependencies for clippy
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
@@ -69,4 +68,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all --tests
+          args: --all --tests -- -D warnings
