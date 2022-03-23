@@ -116,65 +116,35 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         .unwrap()
         .get_config_home();
     config_home.push("lillinput.toml");
-    let config_file = opts.config_file.clone();
-    let files = match config_file {
+    let files = match opts.config_file.clone() {
         Some(filename) => vec![File::with_name(&filename).required(false)],
         None => vec![
-            File::with_name(&"/etc/lillinput.toml".to_string()).required(false),
+            File::with_name("/etc/lillinput.toml").required(false),
             File::with_name(&config_home.into_os_string().into_string().unwrap()).required(false),
-            File::with_name(&"./lillinput.toml".to_string()).required(false),
+            File::with_name("./lillinput.toml").required(false),
         ],
     };
 
-    // Prepare the default settings and options.
-    let default_settings = Settings::default();
-    let mut default_config = Config::default();
-    match default_config.merge(default_settings.clone()) {
-        Ok(_) => (),
-        Err(e) => log_entries.push(LogEntry {
-            level: Level::Warn,
-            message: format!("Unable to parse default config: {}", e),
-        }),
-    }
-
-    // Start a config with the default options.
-    let mut config = Config::default();
-    match config.merge(default_config) {
-        Ok(_) => (),
-        Err(e) => log_entries.push(LogEntry {
-            level: Level::Warn,
-            message: format!("Unable to parse default config: {}", e),
-        }),
-    }
-
-    // Merge the config files.
-    match config.merge(files) {
-        Ok(c) => {
-            log_entries.push(LogEntry {
-                level: Level::Info,
-                message: "Read config file".to_string(),
-            });
-            config = c.clone()
-        }
-        Err(e) => log_entries.push(LogEntry {
-            level: Level::Warn,
-            message: format!("Unable to parse config file: {}", e),
-        }),
-    }
-
-    // Add the CLI options.
-    match config.merge(opts) {
-        Ok(_) => (),
-        Err(e) => log_entries.push(LogEntry {
-            level: Level::Warn,
-            message: format!("Unable to parse default config: {}", e),
-        }),
-    }
-
-    // Finalize the config, determining which Settings to use. In case of
-    // errors, revert to the default settings.
-    let mut final_settings: Settings = match config.try_deserialize::<Settings>() {
-        Ok(merged_settings) => merged_settings,
+    // Parse the settings, defaulting in case of errors.
+    let mut final_settings: Settings = match Config::builder()
+        .add_source(Settings::default())
+        .add_source(files)
+        .add_source(opts)
+        .build()
+    {
+        Ok(merged_config) => match merged_config.try_deserialize::<Settings>() {
+            Ok(merged_settings) => merged_settings,
+            Err(e) => {
+                log_entries.push(LogEntry {
+                    level: Level::Warn,
+                    message: format!(
+                        "Unable to parse settings: {}. Reverting to default settings",
+                        e
+                    ),
+                });
+                Settings::default()
+            }
+        },
         Err(e) => {
             log_entries.push(LogEntry {
                 level: Level::Warn,
@@ -183,7 +153,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
                     e
                 ),
             });
-            default_settings
+            Settings::default()
         }
     };
 
