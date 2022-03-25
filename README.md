@@ -106,8 +106,10 @@ By default, the following sources will be read in order:
 3. `${CWD}/lillinput.toml`
 
 Alternatively, a different file can be specified via the `--config-file`
-argument. If specified, any other command line arguments will take precedence
-over values read from the configuration file.
+argument. The configuration files can be partial (as in declaring just specific 
+options rather than the full range of options), and each option can be
+overridden individually by later config files or command line arguments,
+falling back to their default values if not provided.
 
 The format of the configuration can be found in the [sample configuration file]:
 
@@ -158,7 +160,7 @@ Any contribution is welcome, please issue or PR away!
 
 This project is licensed under [BSD-3-Clause].
 
-[BSD-3-Clause]: LICENSE.txt
+[BSD-3-Clause]: LICENSE
 [`i3`]: https://i3wm.org/
 [`libinput`]: https://www.freedesktop.org/wiki/Software/libinput/
 [name]: https://en.wikipedia.org/wiki/Lilliput_and_Blefuscu
