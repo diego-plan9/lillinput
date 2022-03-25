@@ -372,4 +372,61 @@ four-finger-swipe-down = []
 
         assert_eq!(converted_settings, expected_settings);
     }
+
+    #[test]
+    /// Test overriding options from a config file with options from CLI.
+    fn test_config_overriding() {
+        let mut file = Builder::new().suffix(".toml").tempfile().unwrap();
+        let file_path = String::from(file.path().to_str().unwrap());
+
+        writeln!(
+            file,
+            r#"
+seat = "seat.from.config"
+threshold = 42.0
+
+[actions]
+three-finger-swipe-right = ["i3:right_from_config"]
+three-finger-swipe-left = ["i3:left_from_config"]
+"#
+        )
+        .unwrap();
+
+        let opts: Opts = Opts::parse_from(&[
+            "lillinput",
+            "--config-file",
+            &file_path,
+            "--threshold",
+            "99.9",
+            "--three-finger-swipe-left",
+            "i3:left_from_cli",
+        ]);
+        let converted_settings: Settings = setup_application(opts, false);
+
+        // Build expected settings:
+        // * values should be merged from:
+        //   1. default values.
+        //   2. custom config file.
+        //   3. cli arguments.
+        let mut expected_settings = Settings {
+            // `seat` from config file.
+            seat: String::from("seat.from.config"),
+            // `threshold` from CLI.
+            threshold: 99.9,
+            ..Default::default()
+        };
+
+        // `three-finger-swipe-right` from config file.
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            vec![String::from("i3:right_from_config")],
+        );
+        // `three-finger-swipe-left` from CLI.
+        expected_settings.actions.insert(
+            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            vec![String::from("i3:left_from_cli")],
+        );
+
+        assert_eq!(converted_settings, expected_settings);
+    }
 }
