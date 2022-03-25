@@ -20,6 +20,12 @@ Types of changes:
 * The `four_finger_swipe_up` field in `Opts` and corresponding command line
   argument is now correctly named. (\#90)
 
+### Changed
+
+* Configuration files can now contain partial content, and each option can be
+  overridden individually by other sources, falling back to a default value
+  if any option is not provided. (\#94)
+
 ## [0.2.1] - 2022-02-15
 
 ### Fixed
