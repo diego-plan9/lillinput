@@ -177,7 +177,7 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected = "isn't a valid value for")]
+    #[should_panic(expected = "InvalidValue")]
     /// Test passing an invalid enabled action type as a parameter.
     fn test_enabled_action_types_argument_invalid() {
         Opts::try_parse_from(&["lillinput", "--enabled-action-types", "invalid"]).unwrap();
