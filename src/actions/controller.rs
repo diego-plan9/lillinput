@@ -93,9 +93,7 @@ impl ActionController for ActionMap {
 
             for value in arguments.iter() {
                 // Split the arguments, in the form "{type}:{value}".
-                let mut splitter = value.splitn(2, ':');
-                let action_type = splitter.next().unwrap();
-                let action_value = splitter.next().unwrap();
+                let (action_type, action_value) = value.split_once(':').unwrap();
 
                 // Create the new actions.
                 match ActionTypes::from_str(action_type) {
