@@ -25,6 +25,9 @@ Types of changes:
 * Configuration files can now contain partial content, and each option can be
   overridden individually by other sources, falling back to a default value
   if any option is not provided. (\#94)
+* The verbosity is now specified via the `--verbose` and `--quiet` flags, from
+  a default verbosity of `INFO`, and if used in a configuration file it must be
+  specified as a string instead of an integer. (\#83)
 
 ## [0.2.1] - 2022-02-15
 

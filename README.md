@@ -58,6 +58,9 @@ OPTIONS:
     -h, --help
             Print help information
 
+    -q, --quiet
+            Less output per occurrence
+
     -s, --seat <SEAT>
             libinput seat
 
@@ -77,7 +80,7 @@ OPTIONS:
             actions the three-finger swipe up
 
     -v, --verbose
-            Level of verbosity (additive, can be used up to 3 times)
+            More output per occurrence
 
     -V, --version
             Print version information
@@ -114,7 +117,7 @@ falling back to their default values if not provided.
 The format of the configuration can be found in the [sample configuration file]:
 
 ```toml
-verbose = 0
+verbose = "INFO"
 seat = "seat01"
 threshold = 20.0
 enabled_action_types = ["i3"]
