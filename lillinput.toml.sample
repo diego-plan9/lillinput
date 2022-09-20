@@ -1,4 +1,4 @@
-verbose = 0
+verbose = "INFO"
 seat = "seat01"
 threshold = 20.0
 enabled_action_types = ["i3"]

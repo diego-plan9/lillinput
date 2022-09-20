@@ -11,14 +11,15 @@ categories = ["command-line-utilities", "gui"]
 
 [dependencies]
 clap = { version = "~3.2.17", features = ["derive"] }
+clap-verbosity-flag = "~1.0.1"
 config = "~0.13.2"
 filedescriptor = "~0.8"
 i3ipc = "~0.10"
 input = "~0.7"
 itertools = "~0.10"
 libc = "~0.2"
-log = "~0.4"
-serde = { version= "~1.0", features = ["derive"] }
+log = { version = "~0.4.17", features = ["serde"] }
+serde = { version = "~1.0", features = ["derive"] }
 shlex = "~1.1"
 simplelog = "~0.12.0"
 strum = { version = "~0.24", features = ["derive"] }
