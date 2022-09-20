@@ -127,7 +127,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     let verbosity_override: Option<String> =
         if opts.verbose.log_level_filter() == default_settings.verbose {
             match Config::builder().add_source(files.clone()).build() {
-                Ok(config) => config.get_string("verbose".into()).ok(),
+                Ok(config) => config.get_string("verbose").ok(),
                 Err(_) => None,
             }
         } else {
