@@ -12,7 +12,7 @@ use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct Settings {
     /// Level of verbosity.
-    pub verbose: i64,
+    pub verbose: LevelFilter,
     /// libinput seat.
     pub seat: String,
     /// Enabled action types.
@@ -26,7 +26,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Settings {
         Settings {
-            verbose: 0,
+            verbose: LevelFilter::Info,
             seat: "seat0".to_string(),
             enabled_action_types: vec![ActionTypes::I3.to_string()],
             threshold: 20.0,
@@ -61,14 +61,9 @@ struct LogEntry {
 /// # Arguments
 ///
 /// * `verbosity` - verbosity level.
-fn setup_logging(verbosity: i64) {
-    let log_level = match verbosity {
-        0 => LevelFilter::Info,
-        1 => LevelFilter::Debug,
-        _ => LevelFilter::Trace,
-    };
+fn setup_logging(verbosity: LevelFilter) {
     TermLogger::init(
-        log_level,
+        verbosity,
         LogConfig::default(),
         TerminalMode::Mixed,
         ColorChoice::Auto,
@@ -125,11 +120,27 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         ],
     };
 
+    // Special handling of the "verbose" flag. If no command line arguments
+    // related to verbosity are passed, and the verbosity is specified in the
+    // config files, use the config files value.
+    let default_settings = Settings::default();
+    let verbosity_override: Option<String> =
+        if opts.verbose.log_level_filter() == default_settings.verbose {
+            match Config::builder().add_source(files.clone()).build() {
+                Ok(config) => config.get_string("verbose".into()).ok(),
+                Err(_) => None,
+            }
+        } else {
+            None
+        };
+
     // Parse the settings, defaulting in case of errors.
     let mut final_settings: Settings = match Config::builder()
         .add_source(Settings::default())
         .add_source(files)
         .add_source(opts)
+        .set_override_option(String::from("verbose"), verbosity_override)
+        .unwrap()
         .build()
     {
         Ok(merged_config) => match merged_config.try_deserialize::<Settings>() {
@@ -207,7 +218,10 @@ impl Source for Opts {
     fn collect(&self) -> Result<Map<String, Value>, ConfigError> {
         let mut m = Map::new();
 
-        m.insert(String::from("verbose"), Value::from(self.verbose));
+        m.insert(
+            String::from("verbose"),
+            Value::from(self.verbose.log_level_filter().to_string()),
+        );
         self.seat
             .as_ref()
             .map(|x| m.insert(String::from("seat"), Value::from(x.clone())));
@@ -278,7 +292,10 @@ impl Source for Settings {
     fn collect(&self) -> Result<Map<String, Value>, ConfigError> {
         let mut m = Map::new();
 
-        m.insert(String::from("verbose"), Value::from(self.verbose));
+        m.insert(
+            String::from("verbose"),
+            Value::from(self.verbose.to_string()),
+        );
         m.insert(String::from("seat"), Value::from(self.seat.clone()));
         m.insert(
             String::from("enabled_action_types"),

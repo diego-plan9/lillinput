@@ -10,6 +10,7 @@ mod settings;
 
 use actions::{ActionController, ActionMap};
 use clap::Parser;
+use clap_verbosity_flag::{InfoLevel, Verbosity};
 use events::libinput::Interface;
 use events::main_loop;
 use input::Libinput;
@@ -52,8 +53,8 @@ pub struct Opts {
     #[clap(short, long)]
     config_file: Option<String>,
     /// Level of verbosity (additive, can be used up to 3 times)
-    #[clap(short, long, parse(from_occurrences))]
-    verbose: i64,
+    #[clap(flatten)]
+    verbose: Verbosity<InfoLevel>,
     /// libinput seat
     #[clap(short, long)]
     seat: Option<String>,
@@ -147,6 +148,7 @@ mod test {
     use crate::test_utils::default_test_settings;
     use crate::{ActionEvents, ActionTypes, Opts};
     use clap::Parser;
+    use simplelog::LevelFilter;
     use std::env;
     use std::fs::{create_dir, File};
     use std::io::Write;
@@ -223,8 +225,9 @@ mod test {
         // * config file should be not passed and have no effect on settings.
         // * the "command:bar" action should be removed, as "command" is not enabled.
         // * actions should use the enum representations, and contain the passed values.
+        // * log level should be the default (INFO) + 2 levels from CLI.
         let mut expected_settings = default_test_settings();
-        expected_settings.verbose = 2;
+        expected_settings.verbose = LevelFilter::Trace;
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
         expected_settings.threshold = 20.0;
@@ -273,7 +276,7 @@ mod test {
         writeln!(
             file,
             r#"
-verbose = 0
+verbose = "DEBUG"
 seat = "some.seat"
 threshold = 42.0
 enabled_action_types = ["i3"]
@@ -299,7 +302,7 @@ four-finger-swipe-down = []
         // * the "command:bar" action should be removed, as "command" is not enabled.
         // * actions should use the enum representations, and contain the passed values.
         let mut expected_settings = default_test_settings();
-        expected_settings.verbose = 0;
+        expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
         expected_settings.threshold = 42.0;
@@ -331,7 +334,7 @@ four-finger-swipe-down = []
         writeln!(
             config_home_file,
             r#"
-verbose = 0
+verbose = "DEBUG"
 seat = "some.seat"
 threshold = 42.0
 enabled_action_types = ["i3"]
@@ -357,7 +360,7 @@ four-finger-swipe-down = []
         // * the "command:bar" action should be removed, as "command" is not enabled.
         // * actions should use the enum representations, and contain the passed values.
         let mut expected_settings = default_test_settings();
-        expected_settings.verbose = 0;
+        expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
         expected_settings.threshold = 42.0;

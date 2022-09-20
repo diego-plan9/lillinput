@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 use crate::{ActionEvents, Settings};
+use simplelog::LevelFilter;
 
 static SOCKET_PATH: &str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
@@ -34,7 +35,7 @@ pub fn default_test_settings() -> Settings {
         ]),
         threshold: 5.0,
         seat: "seat0".to_string(),
-        verbose: 0,
+        verbose: LevelFilter::Info,
     }
 }
 
