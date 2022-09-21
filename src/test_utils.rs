@@ -10,7 +10,6 @@ use crate::{ActionEvents, Settings};
 use simplelog::LevelFilter;
 use tempfile::{Builder, NamedTempFile};
 
-static SOCKET_PATH: &str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
 static MSG_VERSION: u32 = 7;
 
@@ -142,7 +141,7 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 ///
 /// The file with the temporary i3 socket.
 pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) -> NamedTempFile {
-    let mut socket_file = Builder::new().tempfile().unwrap();
+    let socket_file = Builder::new().tempfile().unwrap();
     let socket_file_name = socket_file.path().file_name().unwrap();
     // Use a custom listener instead of the i3 socket.
     let listener = UnixListener::bind(socket_file_name).unwrap();
