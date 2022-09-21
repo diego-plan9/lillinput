@@ -61,7 +61,10 @@ mod test {
     use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
     use crate::test_utils::{default_test_settings, init_listener};
 
+    use serial_test::serial;
+
     #[test]
+    #[serial]
     /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
@@ -139,6 +142,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.
