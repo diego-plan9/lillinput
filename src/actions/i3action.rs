@@ -119,7 +119,7 @@ mod test {
 
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
-        init_listener(Arc::clone(&message_log));
+        let socket_file = init_listener(Arc::clone(&message_log));
 
         // Trigger swipe in the 4 directions.
         let mut action_map: ActionMap = ActionController::new(&settings);
@@ -132,6 +132,7 @@ mod test {
         action_map.receive_end_event(&-10.0, &0.0, 4);
         action_map.receive_end_event(&0.0, &10.0, 4);
         action_map.receive_end_event(&0.0, &-10.0, 4);
+        std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
