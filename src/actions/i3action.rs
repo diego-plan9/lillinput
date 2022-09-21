@@ -61,7 +61,10 @@ mod test {
     use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
     use crate::test_utils::{default_test_settings, init_listener};
 
+    use serial_test::serial;
+
     #[test]
+    #[serial]
     /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
         // Initialize the command line options.
@@ -116,7 +119,7 @@ mod test {
 
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
-        init_listener(Arc::clone(&message_log));
+        let socket_file = init_listener(Arc::clone(&message_log));
 
         // Trigger swipe in the 4 directions.
         let mut action_map: ActionMap = ActionController::new(&settings);
@@ -129,6 +132,7 @@ mod test {
         action_map.receive_end_event(&-10.0, &0.0, 4);
         action_map.receive_end_event(&0.0, &10.0, 4);
         action_map.receive_end_event(&0.0, &-10.0, 4);
+        std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
@@ -139,6 +143,7 @@ mod test {
     }
 
     #[test]
+    #[serial]
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
         // Initialize the command line options.

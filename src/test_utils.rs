@@ -8,8 +8,8 @@ use std::thread;
 
 use crate::{ActionEvents, Settings};
 use simplelog::LevelFilter;
+use tempfile::{Builder, NamedTempFile};
 
-static SOCKET_PATH: &str = "/tmp/lillinput_socket";
 static MSG_COMMAND: u32 = 0;
 static MSG_VERSION: u32 = 7;
 
@@ -136,14 +136,17 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 /// # Arguments
 ///
 /// * `message_log` - type of message.
-pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) {
-    // Remove the file in case it exists.
-    // TODO: use a cleaner init and cleanup.
-    std::fs::remove_file(SOCKET_PATH).ok();
+///
+/// # Returns
+///
+/// The file with the temporary i3 socket.
+pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) -> NamedTempFile {
+    let socket_file = Builder::new().tempfile().unwrap();
+    let socket_file_name = socket_file.path().file_name().unwrap();
     // Use a custom listener instead of the i3 socket.
-    let listener = UnixListener::bind(SOCKET_PATH).unwrap();
+    let listener = UnixListener::bind(socket_file_name).unwrap();
     // Trick I3Connection::connect() into using the custom listener.
-    env::set_var("I3SOCK", SOCKET_PATH);
+    env::set_var("I3SOCK", socket_file_name);
 
     thread::spawn(move || {
         match listener.accept() {
@@ -165,4 +168,6 @@ pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) {
             Err(e) => println!("accept function failed: {:?}", e),
         };
     });
+
+    socket_file
 }
