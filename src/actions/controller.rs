@@ -13,6 +13,7 @@ use crate::Settings;
 use i3ipc::I3Connection;
 use itertools::Itertools;
 use log::{debug, info, warn};
+use std::convert::TryInto;
 use strum::IntoEnumIterator;
 
 /// Possible choices for finger count.
@@ -62,19 +63,16 @@ impl ActionController for ActionMap {
             false => None,
         };
 
+        let default_actions: [(ActionEvents, Vec<_>); 8] = ActionEvents::iter()
+            .map(|x| (x, Vec::new()))
+            .collect::<Vec<(ActionEvents, Vec<_>)>>()
+            .try_into()
+            .unwrap();
+
         ActionMap {
             threshold: settings.threshold,
             connection,
-            actions: HashMap::from([
-                (ActionEvents::ThreeFingerSwipeLeft, vec![]),
-                (ActionEvents::ThreeFingerSwipeRight, vec![]),
-                (ActionEvents::ThreeFingerSwipeUp, vec![]),
-                (ActionEvents::ThreeFingerSwipeDown, vec![]),
-                (ActionEvents::FourFingerSwipeLeft, vec![]),
-                (ActionEvents::FourFingerSwipeRight, vec![]),
-                (ActionEvents::FourFingerSwipeUp, vec![]),
-                (ActionEvents::FourFingerSwipeDown, vec![]),
-            ]),
+            actions: HashMap::from(default_actions),
         }
     }
 

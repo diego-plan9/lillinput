@@ -9,6 +9,7 @@ use i3ipc::I3Connection;
 use log::warn;
 
 /// Action that executes `i3` commands.
+#[derive(Debug)]
 pub struct I3Action {
     connection: Rc<RefCell<I3Connection>>,
     command: String,
