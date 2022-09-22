@@ -8,6 +8,7 @@ use log::warn;
 use shlex::split;
 
 /// Action that executes shell commands.
+#[derive(Debug)]
 pub struct CommandAction {
     command: String,
 }

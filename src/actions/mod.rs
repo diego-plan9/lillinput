@@ -64,7 +64,7 @@ pub trait ActionController {
 }
 
 /// Handler for a single action triggered by an event.
-pub trait Action {
+pub trait Action: std::fmt::Debug {
     /// Execute the command for this action.
     fn execute_command(&mut self);
     /// Format the contents of the action as a String.
