@@ -134,40 +134,18 @@ impl ActionController for ActionMap {
                 self.actions.get(&action_event).unwrap().iter().format(", ")
             );
         }
+        let three_finger_counts: String = ActionEvents::iter()
+            .take(4)
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .collect();
+        let four_finger_counts: String = ActionEvents::iter()
+            .skip(4)
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .collect();
         info!(
-            "Action controller started: {:?}/{:?}/{:?}/{:?}, {:?}/{:?}/{:?}/{:?} actions enabled",
-            self.actions
-                .get(&ActionEvents::ThreeFingerSwipeLeft)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::ThreeFingerSwipeRight)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::ThreeFingerSwipeUp)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::ThreeFingerSwipeDown)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::FourFingerSwipeLeft)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::FourFingerSwipeRight)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::FourFingerSwipeUp)
-                .unwrap()
-                .len(),
-            self.actions
-                .get(&ActionEvents::FourFingerSwipeDown)
-                .unwrap()
-                .len(),
+            "Action controller started: {}, {} actions enabled",
+            &three_finger_counts.as_str()[0..three_finger_counts.len() - 1],
+            &four_finger_counts.as_str()[0..four_finger_counts.len() - 1],
         );
     }
 
