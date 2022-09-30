@@ -4,6 +4,13 @@
 //! * commands for the `i3` tiling window manager IPC interface
 //! * shell commands
 
+#![warn(
+    missing_docs,
+    clippy::missing_docs_in_private_items,
+    clippy::missing_errors_doc,
+    clippy::missing_panics_doc
+)]
+
 mod actions;
 mod events;
 mod settings;
@@ -26,7 +33,9 @@ mod test_utils;
 #[derive(Display, EnumString, EnumVariantNames)]
 #[strum(serialize_all = "kebab_case")]
 enum ActionTypes {
+    /// Action for interacting with `i3`.
     I3,
+    /// Action for executing commands.
     Command,
 }
 
@@ -35,13 +44,21 @@ enum ActionTypes {
 #[strum(serialize_all = "kebab_case")]
 #[allow(clippy::enum_variant_names)]
 pub enum ActionEvents {
+    /// Three-finger swipe to left.
     ThreeFingerSwipeLeft,
+    /// Three-finger swipe to right.
     ThreeFingerSwipeRight,
+    /// Three-finger swipe to up.
     ThreeFingerSwipeUp,
+    /// Three-finger swipe to down.
     ThreeFingerSwipeDown,
+    /// Four-finger swipe to left.
     FourFingerSwipeLeft,
+    /// Four-finger swipe to right.
     FourFingerSwipeRight,
+    /// Four-finger swipe to up.
     FourFingerSwipeUp,
+    /// Four-finger swipe to down.
     FourFingerSwipeDown,
 }
 
@@ -93,7 +110,7 @@ pub struct Opts {
 /// Validator for arguments that specify an action.
 ///
 /// A string that specifies an action must conform to the following format:
-/// {action choice}:{value}.
+/// `{action choice}:{value}`.
 ///
 /// # Arguments
 ///

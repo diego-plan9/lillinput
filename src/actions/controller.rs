@@ -18,7 +18,9 @@ use strum::IntoEnumIterator;
 
 /// Possible choices for finger count.
 enum FingerCount {
+    /// Three fingers.
     ThreeFinger = 3,
+    /// Four fingers.
     FourFinger = 4,
 }
 
@@ -34,9 +36,11 @@ impl TryFrom<i32> for FingerCount {
     }
 }
 
-// Axis of a swipe action.
+/// Axis of a swipe action.
 enum Axis {
+    /// Horizontal (`X`) axis.
     X,
+    /// Vertical (`Y`) axis.
     Y,
 }
 
@@ -80,9 +84,9 @@ impl ActionController for ActionMap {
         /// Convert an stringified action list into individual actions.
         ///
         /// # Arguments
-        ///
-        /// * `arguments` - list of command line arguments
-        /// * `connection` - optional i3 connection
+        ///.
+        /// * `arguments` - list of command line arguments.
+        /// * `connection` - optional i3 connection.
         fn parse_action_list(
             arguments: &[String],
             connection: &Option<Rc<RefCell<I3Connection>>>,
