@@ -19,7 +19,7 @@ pub struct I3Action {
 
 /// Extended trait for construction new actions.
 pub trait I3ActionExt {
-    /// Create a new [I3ActionExt].
+    /// Create a new [`I3ActionExt`].
     ///
     /// # Arguments
     ///

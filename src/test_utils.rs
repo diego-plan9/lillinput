@@ -39,7 +39,7 @@ pub fn default_test_settings() -> Settings {
     }
 }
 
-/// Create a new message to be sent to i3.
+/// Create a new message to be sent to `i3`.
 ///
 /// # Arguments
 ///
@@ -54,11 +54,11 @@ fn create_i3_message(payload: &[u8], message_type: u32) -> Vec<u8> {
     [magic_string, length, message_type, payload].concat()
 }
 
-/// Parse a message received from i3 into a I3IpcMessage.
+/// Parse a message received from i3 into a [`I3IpcMessage`].
 ///
 /// # Arguments
 ///
-/// * `socket` - UnixStream with the message.
+/// * `socket` - [`UnixStream`] with the message.
 fn parse_i3_message(mut socket: &UnixStream) -> Option<I3IpcMessage> {
     // Read the message from the client.
     let mut buffer = [0u8; 14];
