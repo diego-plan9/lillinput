@@ -27,7 +27,7 @@ pub struct ActionMap {
 
 /// Controller that connects events and actions.
 pub trait ActionController {
-    /// Create a new [ActionController].
+    /// Create a new [`ActionController`].
     ///
     /// # Arguments
     ///
@@ -81,7 +81,7 @@ pub trait Action: std::fmt::Debug {
 
 /// Extended trait for construction new actions.
 pub trait ActionExt {
-    /// Create a new [ActionExt].
+    /// Create a new [`ActionExt`].
     ///
     /// # Arguments
     ///

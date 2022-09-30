@@ -50,7 +50,7 @@ impl Default for Settings {
     }
 }
 
-/// Log entries emitted during [setup_application()].
+/// Log entries emitted during [`setup_application()`].
 struct LogEntry {
     /// Log level for the entry.
     level: Level,
@@ -77,7 +77,7 @@ fn setup_logging(verbosity: LevelFilter) {
 ///
 /// A string that specifies an action must conform to the following format:
 /// `{action choice}:{value}`.
-/// and {action choice} needs to be in enabled_action_types.
+/// and `{action choice}` needs to be in `enabled_action_types`.
 ///
 /// # Arguments
 ///
