@@ -13,14 +13,14 @@ use input::event::gesture::{
 use input::event::Event;
 use input::Libinput;
 
-/// Process a single `GestureEvent`.
+/// Process a single [GestureEvent].
 ///
 /// # Arguments
 ///
-/// * `event` - a gesture event
-/// * `dx` - the current position in the `x` axis
-/// * `dy` - the current position in the `y` axis
-/// * `action_map` - the action map that will process the event
+/// * `event` - a gesture event.
+/// * `dx` - the current position in the `x` axis.
+/// * `dy` - the current position in the `y` axis.
+/// * `action_map` - the action map that will process the event.
 fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &mut ActionMap) {
     if let GestureEvent::Swipe(event) = event {
         match event {
@@ -44,8 +44,8 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
 /// Custom error issued during the main loop.
 ///
 /// This custom error message captures the errors emitted during the main loop:
-/// * filedescriptor::Error
-/// * std::io::Error
+/// * [filedescriptor::Error]
+/// * [std::io::Error]
 #[derive(Debug, Clone)]
 pub struct MainLoopError {
     /// Content of the original error.
@@ -68,12 +68,12 @@ impl From<IoError> for MainLoopError {
     }
 }
 
-/// Run the main loop for parsing the libinput events.
+/// Run the main loop for parsing the `libinput` events.
 ///
 /// # Arguments
 ///
-/// * `input` - the libinput object
-/// * `action_map` - the action map that will process the event
+/// * `input` - the `libinput` object.
+/// * `action_map` - the action map that will process the event.
 pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), MainLoopError> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;

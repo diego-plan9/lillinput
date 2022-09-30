@@ -10,6 +10,7 @@ use shlex::split;
 /// Action that executes shell commands.
 #[derive(Debug)]
 pub struct CommandAction {
+    /// Command to be executed in this action.
     command: String,
 }
 
@@ -47,7 +48,7 @@ mod test {
     #[test]
     /// Test the triggering of commands for a single swipe action.
     fn test_command_single_action() {
-        // File that will be touched .
+        // File that will be touched.
         let expected_file = "/tmp/swipe-right";
         std::fs::remove_file(expected_file).ok();
 

@@ -13,7 +13,7 @@ use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger
 pub struct Settings {
     /// Level of verbosity.
     pub verbose: LevelFilter,
-    /// libinput seat.
+    /// `libinput` seat.
     pub seat: String,
     /// Enabled action types.
     pub enabled_action_types: Vec<String>,
@@ -50,9 +50,11 @@ impl Default for Settings {
     }
 }
 
-// Log entries emitted during setup_application.
+/// Log entries emitted during [setup_application()].
 struct LogEntry {
+    /// Log level for the entry.
     level: Level,
+    /// Message of the entry.
     message: String,
 }
 
@@ -74,7 +76,7 @@ fn setup_logging(verbosity: LevelFilter) {
 /// Check if an action string is valid and with an enabled action type.
 ///
 /// A string that specifies an action must conform to the following format:
-/// {action choice}:{value}.
+/// `{action choice}:{value}`.
 /// and {action choice} needs to be in enabled_action_types.
 ///
 /// # Arguments

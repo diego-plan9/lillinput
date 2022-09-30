@@ -8,7 +8,7 @@ use std::path::Path;
 use input::LibinputInterface;
 use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 
-/// Struct for libinput interface.
+/// Struct for `libinput` interface.
 pub struct Interface;
 
 impl LibinputInterface for Interface {

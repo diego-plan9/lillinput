@@ -11,12 +11,20 @@ use log::warn;
 /// Action that executes `i3` commands.
 #[derive(Debug)]
 pub struct I3Action {
+    /// `i3` RPC connection.
     connection: Rc<RefCell<I3Connection>>,
+    /// `i3` command to be executed in this action.
     command: String,
 }
 
 /// Extended trait for construction new actions.
 pub trait I3ActionExt {
+    /// Create a new [I3ActionExt].
+    ///
+    /// # Arguments
+    ///
+    /// * `command` - `i3` command to be executed in this action.
+    /// * `connection` - `i3` RPC connection.
     fn new(command: String, connection: Rc<RefCell<I3Connection>>) -> Self;
 }
 

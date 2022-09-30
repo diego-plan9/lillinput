@@ -126,7 +126,7 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 /// Initialize the RPC listener.
 ///
 /// Start a RPC listener which receives the i3 messages, mimicking a
-/// small subset of the I3 RPC protocol. The listener parses the messages
+/// small subset of the i3 RPC protocol. The listener parses the messages
 /// received, storing them in a shared variable, and creates fake replies
 /// accordingly.
 ///
