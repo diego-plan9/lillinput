@@ -33,7 +33,7 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
                 (*dy) += update_event.dy();
             }
             GestureSwipeEvent::End(ref _end_event) => {
-                action_map.receive_end_event(dx, dy, event.finger_count());
+                action_map.receive_end_event(*dx, *dy, event.finger_count());
             }
             // GestureEvent::Swipe is non-exhaustive.
             _ => (),
