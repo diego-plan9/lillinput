@@ -155,8 +155,8 @@ impl ActionController for ActionMap {
 
     fn end_event_to_action_event(
         &mut self,
-        dx: &f64,
-        dy: &f64,
+        dx: f64,
+        dy: f64,
         finger_count: i32,
     ) -> Option<ActionEvents> {
         // Avoid acting if the displacement is below the threshold.
@@ -176,8 +176,8 @@ impl ActionController for ActionMap {
 
         // Determine the axis and direction.
         let (axis, positive) = match dx.abs() > dy.abs() {
-            true => (Axis::X, dx > &0.0),
-            false => (Axis::Y, dy > &0.0),
+            true => (Axis::X, dx > 0.0),
+            false => (Axis::Y, dy > 0.0),
         };
 
         // Determine the command for the event.
@@ -193,7 +193,7 @@ impl ActionController for ActionMap {
         }
     }
 
-    fn receive_end_event(&mut self, dx: &f64, dy: &f64, finger_count: i32) {
+    fn receive_end_event(&mut self, dx: f64, dy: f64, finger_count: i32) {
         let action_event = self.end_event_to_action_event(dx, dy, finger_count);
 
         // Invoke actions.
@@ -227,17 +227,17 @@ mod test {
         let mut action_map: ActionMap = ActionController::new(&settings);
 
         // Trigger right swipe with supported (3) fingers count.
-        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_some());
         assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
-        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 4);
+        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 4);
         assert!(action_event.is_some());
         assert!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
-        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 5);
+        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 5);
         assert!(action_event.is_none());
     }
 
@@ -249,11 +249,11 @@ mod test {
         let mut action_map: ActionMap = ActionController::new(&settings);
 
         // Trigger swipe below threshold.
-        let action_event = action_map.end_event_to_action_event(&4.99, &0.0, 3);
+        let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);
         assert!(action_event.is_none());
 
         // Trigger swipe above threshold.
-        let action_event = action_map.end_event_to_action_event(&5.0, &0.0, 3);
+        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_some());
         assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
     }
