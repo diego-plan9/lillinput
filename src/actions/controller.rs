@@ -47,11 +47,11 @@ enum Axis {
 impl ActionController for ActionMap {
     fn new(settings: &Settings) -> Self {
         // Create the I3 connection if needed.
-        let connection = match settings
+        let connection = if settings
             .enabled_action_types
             .contains(&ActionTypes::I3.to_string())
         {
-            true => match I3Connection::connect() {
+            match I3Connection::connect() {
                 Ok(mut conn) => {
                     info!(
                         "i3: connection opened (with({:?})",
@@ -63,8 +63,9 @@ impl ActionController for ActionMap {
                     info!("i3: could not establish a connection: {:?}", error);
                     None
                 }
-            },
-            false => None,
+            }
+        } else {
+            None
         };
 
         let default_actions: [(ActionEvents, Vec<_>); 8] = ActionEvents::iter()
@@ -166,18 +167,18 @@ impl ActionController for ActionMap {
         }
 
         // Determine finger count and avoid acting if the number of fingers is not supported.
-        let finger_count_as_enum = match FingerCount::try_from(finger_count) {
-            Ok(count) => count,
-            Err(_) => {
-                debug!("Received end event with unsupported finger count, discarding");
-                return None;
-            }
+        let finger_count_as_enum = if let Ok(count) = FingerCount::try_from(finger_count) {
+            count
+        } else {
+            debug!("Received end event with unsupported finger count, discarding");
+            return None;
         };
 
         // Determine the axis and direction.
-        let (axis, positive) = match dx.abs() > dy.abs() {
-            true => (Axis::X, dx > 0.0),
-            false => (Axis::Y, dy > 0.0),
+        let (axis, positive) = if dx.abs() > dy.abs() {
+            (Axis::X, dx > 0.0)
+        } else {
+            (Axis::Y, dy > 0.0)
         };
 
         // Determine the command for the event.
