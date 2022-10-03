@@ -173,7 +173,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     // Prune action strings, removing the items that are malformed or using
     // not enabled action types.
     let enabled_action_types = final_settings.enabled_action_types.as_slice();
-    for (key, value) in final_settings.actions.iter_mut() {
+    for (key, value) in &mut final_settings.actions {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
@@ -200,7 +200,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     }
 
     // Log any pending error messages.
-    for log_entry in log_entries.iter() {
+    for log_entry in &log_entries {
         match log_entry.level {
             Level::Info => info!("{}", log_entry.message),
             Level::Warn => warn!("{}", log_entry.message),
@@ -304,7 +304,7 @@ impl Source for Settings {
             Value::from(self.enabled_action_types.clone()),
         );
         m.insert(String::from("threshold"), Value::from(self.threshold));
-        for (action_event, actions) in self.actions.iter() {
+        for (action_event, actions) in &self.actions {
             m.insert(
                 String::from(&format!("actions.{}", action_event)),
                 Value::from(actions.clone()),

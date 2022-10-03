@@ -48,6 +48,7 @@ pub fn default_test_settings() -> Settings {
 fn create_i3_message(payload: &[u8], message_type: u32) -> Vec<u8> {
     // From https://i3wm.org/docs/ipc.html#_sending_messages_to_i3.
     let magic_string: &[u8] = b"i3-ipc";
+    #[allow(clippy::cast_possible_truncation)]
     let length: &[u8] = &(payload.len() as u32).to_ne_bytes();
     let message_type: &[u8] = &message_type.to_ne_bytes();
 

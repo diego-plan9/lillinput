@@ -19,7 +19,7 @@ impl LibinputInterface for Interface {
             .read((flags & O_RDONLY != 0) | (flags & O_RDWR != 0))
             .write((flags & O_WRONLY != 0) | (flags & O_RDWR != 0))
             .open(path)
-            .map(|file| file.into_raw_fd())
+            .map(IntoRawFd::into_raw_fd)
             .map_err(|err| err.raw_os_error().unwrap())
     }
 

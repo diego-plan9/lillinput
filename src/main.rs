@@ -127,13 +127,14 @@ fn is_action_string(value: &str) -> Result<(), String> {
         }
     };
 
-    match ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
-        true => Ok(()),
-        false => Err(format!(
+    if !ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+        return Err(format!(
             "The value does not start with a valid action ({:?})",
             ActionTypes::VARIANTS
-        )),
+        ));
     }
+
+    Ok(())
 }
 
 /// Main entry point.
@@ -434,7 +435,7 @@ three-finger-swipe-left = ["i3:left_from_config"]
             seat: String::from("seat.from.config"),
             // `threshold` from CLI.
             threshold: 99.9,
-            ..Default::default()
+            ..Settings::default()
         };
 
         // `three-finger-swipe-right` from config file.
