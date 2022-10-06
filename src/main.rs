@@ -17,6 +17,8 @@ mod events;
 mod settings;
 
 use actions::{ActionController, ActionMap};
+use clap::builder::{StringValueParser, TypedValueParser};
+use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
 use events::libinput::Interface;
@@ -83,58 +85,70 @@ pub struct Opts {
     #[clap(short, long)]
     threshold: Option<f64>,
     /// actions the three-finger swipe left
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     three_finger_swipe_left: Option<Vec<String>>,
     /// actions the three-finger swipe right
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     three_finger_swipe_right: Option<Vec<String>>,
     /// actions the three-finger swipe up
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     three_finger_swipe_up: Option<Vec<String>>,
     /// actions the three-finger swipe down
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     three_finger_swipe_down: Option<Vec<String>>,
     /// actions the four-finger swipe left
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     four_finger_swipe_left: Option<Vec<String>>,
     /// actions the four-finger swipe right
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     four_finger_swipe_right: Option<Vec<String>>,
     /// actions the four-finger swipe up
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     four_finger_swipe_up: Option<Vec<String>>,
     /// actions the four-finger swipe down
-    #[clap(long, validator = is_action_string)]
+    #[clap(long, value_parser = ActionStringParser)]
     four_finger_swipe_down: Option<Vec<String>>,
 }
 
-/// Validator for arguments that specify an action.
+/// Parser for arguments that specify an action.
 ///
 /// A string that specifies an action must conform to the following format:
-/// `{action choice}:{value}`.
-///
-/// # Arguments
-///
-/// * `value` - argument to be parsed.
-fn is_action_string(value: &str) -> Result<(), String> {
-    let (action_type, _) = match value.split_once(':') {
-        Some(v) => v,
-        None => {
-            return Err(format!(
-                "The value does not conform to the action string pattern ({:?})",
-                value
-            ))
+/// * `{action choice}:{value}`.
+#[derive(Clone, Debug)]
+struct ActionStringParser;
+
+impl TypedValueParser for ActionStringParser {
+    type Value = String;
+
+    fn parse_ref(
+        &self,
+        cmd: &clap::Command,
+        arg: Option<&clap::Arg>,
+        value: &std::ffi::OsStr,
+    ) -> Result<Self::Value, clap::Error> {
+        let inner = StringValueParser::new();
+        let value = inner.parse_ref(cmd, arg, value)?;
+
+        match value.split_once(':') {
+            None | Some((_, "") | ("", _)) => Err(clap::Error::raw(
+                ErrorKind::ValueValidation,
+                "The value does not conform to the action string pattern `{type}:{command}`",
+            )),
+            Some((action_type, _)) => {
+                if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+                    Ok(value)
+                } else {
+                    Err(clap::Error::raw(
+                        ErrorKind::ValueValidation,
+                        format!(
+                            "The value does not start with a valid action ({:?})",
+                            ActionTypes::VARIANTS
+                        ),
+                    ))
+                }
+            }
         }
-    };
-
-    if !ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
-        return Err(format!(
-            "The value does not start with a valid action ({:?})",
-            ActionTypes::VARIANTS
-        ));
     }
-
-    Ok(())
 }
 
 /// Main entry point.
