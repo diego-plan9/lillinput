@@ -94,7 +94,7 @@ invocation specifies two actions for the "three finger swipe up": moving to the
 next workspace in `i3`, and creating a file.
 
 ```bash
-$ lillinput --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
+$ lillinput -e i3 -e command --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
 ```
 
 Currently, the available action types are `i3` and `command`.
