@@ -12,6 +12,7 @@ use input::event::gesture::{
 };
 use input::event::Event;
 use input::Libinput;
+use thiserror::Error;
 
 /// Process a single [`GestureEvent`].
 ///
@@ -43,29 +44,17 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
 
 /// Custom error issued during the main loop.
 ///
-/// This custom error message captures the errors emitted during the main loop:
-/// * [`filedescriptor::Error`]
-/// * [`std::io::Error`]
-#[derive(Debug, Clone)]
-pub struct MainLoopError {
-    /// Content of the original error.
-    pub message: String,
-}
+/// This custom error message captures the errors emitted during the main loop,
+/// which wrap over:
+/// * [`filedescriptor::Error`] (during [`filedescriptor::poll`]).
+/// * [`std::io::Error`] (during [`input::Libinput::dispatch`]).
+#[derive(Error, Debug)]
+pub enum MainLoopError {
+    #[error("unknown error while dispatching libinput event")]
+    DispatchError(#[from] IoError),
 
-impl From<FileDescriptorError> for MainLoopError {
-    fn from(e: FileDescriptorError) -> Self {
-        MainLoopError {
-            message: e.to_string(),
-        }
-    }
-}
-
-impl From<IoError> for MainLoopError {
-    fn from(e: IoError) -> Self {
-        MainLoopError {
-            message: e.to_string(),
-        }
-    }
+    #[error("unknown error while polling the file descriptor")]
+    IOError(#[from] FileDescriptorError),
 }
 
 /// Run the main loop for parsing the `libinput` events.
