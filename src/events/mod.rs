@@ -1,18 +1,18 @@
 //! Components for capturing and handling events.
 
+pub mod errors;
 pub mod libinput;
 
-use std::io::Error as IoError;
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use crate::actions::{ActionController, ActionMap};
-use filedescriptor::{poll, pollfd, Error as FileDescriptorError, POLLIN};
+use crate::events::errors::MainLoopError;
+use filedescriptor::{poll, pollfd, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
 use input::event::Event;
 use input::Libinput;
-use thiserror::Error;
 
 /// Process a single [`GestureEvent`].
 ///
@@ -40,21 +40,6 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
             _ => (),
         }
     }
-}
-
-/// Custom error issued during the main loop.
-///
-/// This custom error message captures the errors emitted during the main loop,
-/// which wrap over:
-/// * [`filedescriptor::Error`] (during [`filedescriptor::poll`]).
-/// * [`std::io::Error`] (during [`input::Libinput::dispatch`]).
-#[derive(Error, Debug)]
-pub enum MainLoopError {
-    #[error("unknown error while dispatching libinput event")]
-    DispatchError(#[from] IoError),
-
-    #[error("unknown error while polling the file descriptor")]
-    IOError(#[from] FileDescriptorError),
 }
 
 /// Run the main loop for parsing the `libinput` events.
