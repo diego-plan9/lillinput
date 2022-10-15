@@ -21,11 +21,11 @@ use clap::builder::{StringValueParser, TypedValueParser};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
-use events::libinput::Interface;
+use events::libinput::initialize_context;
 use events::main_loop;
-use input::Libinput;
 use log::{error, info};
 use settings::{setup_application, Settings};
+use std::process;
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
 use strum_macros::EnumIter;
 
@@ -162,16 +162,16 @@ fn main() {
     action_map.populate_actions(&settings);
 
     // Create the libinput object.
-    let mut input = Libinput::new_with_udev(Interface {});
-    input.udev_assign_seat(settings.seat.as_str()).unwrap();
-    info!(
-        "Assigned seat {:?} to the libinput context. Listening for events ...",
-        settings.seat
-    );
+    let input = initialize_context(&settings.seat).unwrap_or_else(|e| {
+        error!("Unable to initialize libinput: {e}");
+        process::exit(1);
+    });
 
     // Start the main loop.
+    info!("Listening for events ...");
     if let Err(e) = main_loop(input, &mut action_map) {
         error!("Unhandled error during the main loop: {}", e);
+        process::exit(1);
     }
 }
 
