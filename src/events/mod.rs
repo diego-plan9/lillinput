@@ -13,6 +13,31 @@ use input::event::gesture::{
 };
 use input::event::Event;
 use input::Libinput;
+use strum::{Display, EnumString, EnumVariantNames};
+use strum_macros::EnumIter;
+
+/// High-level events that can trigger an action.
+#[derive(Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug)]
+#[strum(serialize_all = "kebab_case")]
+#[allow(clippy::module_name_repetitions)]
+pub enum ActionEvents {
+    /// Three-finger swipe to left.
+    ThreeFingerSwipeLeft,
+    /// Three-finger swipe to right.
+    ThreeFingerSwipeRight,
+    /// Three-finger swipe to up.
+    ThreeFingerSwipeUp,
+    /// Three-finger swipe to down.
+    ThreeFingerSwipeDown,
+    /// Four-finger swipe to left.
+    FourFingerSwipeLeft,
+    /// Four-finger swipe to right.
+    FourFingerSwipeRight,
+    /// Four-finger swipe to up.
+    FourFingerSwipeUp,
+    /// Four-finger swipe to down.
+    FourFingerSwipeDown,
+}
 
 /// Process a single [`GestureEvent`].
 ///

@@ -12,7 +12,8 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use crate::{ActionEvents, ActionTypes, Settings};
+use crate::events::ActionEvents;
+use crate::{ActionTypes, Settings};
 use i3ipc::I3Connection;
 
 /// Map between events and actions.
