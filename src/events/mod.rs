@@ -6,13 +6,14 @@ pub mod libinput;
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use crate::actions::{ActionController, ActionMap};
-use crate::events::errors::MainLoopError;
+use crate::events::errors::{MainLoopError, ProcessEventError};
 use filedescriptor::{poll, pollfd, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
 use input::event::Event;
 use input::Libinput;
+use log::debug;
 use strum::{Display, EnumString, EnumVariantNames};
 use strum_macros::EnumIter;
 
@@ -47,7 +48,12 @@ pub enum ActionEvents {
 /// * `dx` - the current position in the `x` axis.
 /// * `dy` - the current position in the `y` axis.
 /// * `action_map` - the action map that will process the event.
-fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &mut ActionMap) {
+fn process_event(
+    event: GestureEvent,
+    dx: &mut f64,
+    dy: &mut f64,
+    action_map: &mut ActionMap,
+) -> Result<(), ProcessEventError> {
     if let GestureEvent::Swipe(event) = event {
         match event {
             GestureSwipeEvent::Begin(_begin_event) => {
@@ -62,9 +68,11 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
                 action_map.receive_end_event(*dx, *dy, event.finger_count());
             }
             // GestureEvent::Swipe is non-exhaustive.
-            _ => (),
+            other => return Err(ProcessEventError::UnsupportedSwipeEvent(other)),
         }
     }
+
+    Ok(())
 }
 
 /// Run the main loop for parsing the `libinput` events.
@@ -95,7 +103,9 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), 
         input.dispatch()?;
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
-                process_event(gesture_event, &mut dx, &mut dy, action_map);
+                process_event(gesture_event, &mut dx, &mut dy, action_map).unwrap_or_else(|e| {
+                    debug!("Unhandled event: {e}");
+                });
             }
         }
     }

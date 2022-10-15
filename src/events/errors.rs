@@ -3,7 +3,15 @@
 use std::io::Error as IoError;
 
 use filedescriptor::Error as FileDescriptorError;
+use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
+
+/// Errors raised during `libinput` initialization.
+#[derive(Error, Debug)]
+pub enum LibinputError {
+    #[error("error while assigning seat to the libinput context")]
+    SeatError,
+}
 
 /// Custom error issued during the main loop.
 ///
@@ -20,9 +28,9 @@ pub enum MainLoopError {
     IOError(#[from] FileDescriptorError),
 }
 
-/// Errors raised during `libinput` initialization.
+/// Errors raised during the processing of an event.
 #[derive(Error, Debug)]
-pub enum LibinputError {
-    #[error("error while assigning seat to the libinput context")]
-    SeatError,
+pub enum ProcessEventError {
+    #[error("unsupported swipe event ({:?})", .0)]
+    UnsupportedSwipeEvent(GestureSwipeEvent),
 }
