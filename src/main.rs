@@ -16,6 +16,7 @@ mod actions;
 mod events;
 mod settings;
 
+use crate::events::ActionEvents;
 use actions::{ActionController, ActionMap};
 use clap::builder::{StringValueParser, TypedValueParser};
 use clap::error::ErrorKind;
@@ -27,7 +28,6 @@ use log::{error, info};
 use settings::{setup_application, Settings};
 use std::process;
 use strum::{Display, EnumString, EnumVariantNames, VariantNames};
-use strum_macros::EnumIter;
 
 #[cfg(test)]
 mod test_utils;
@@ -40,29 +40,6 @@ enum ActionTypes {
     I3,
     /// Action for executing commands.
     Command,
-}
-
-/// High-level events that can trigger an action.
-#[derive(Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug)]
-#[strum(serialize_all = "kebab_case")]
-#[allow(clippy::enum_variant_names)]
-pub enum ActionEvents {
-    /// Three-finger swipe to left.
-    ThreeFingerSwipeLeft,
-    /// Three-finger swipe to right.
-    ThreeFingerSwipeRight,
-    /// Three-finger swipe to up.
-    ThreeFingerSwipeUp,
-    /// Three-finger swipe to down.
-    ThreeFingerSwipeDown,
-    /// Four-finger swipe to left.
-    FourFingerSwipeLeft,
-    /// Four-finger swipe to right.
-    FourFingerSwipeRight,
-    /// Four-finger swipe to up.
-    FourFingerSwipeUp,
-    /// Four-finger swipe to down.
-    FourFingerSwipeDown,
 }
 
 /// Connect libinput gestures to i3 and others.

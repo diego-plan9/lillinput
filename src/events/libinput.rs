@@ -5,10 +5,10 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{FromRawFd, IntoRawFd, RawFd};
 use std::path::Path;
 
+use crate::events::errors::LibinputError;
 use input::{Libinput, LibinputInterface};
 use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 use log::info;
-use thiserror::Error;
 
 /// Struct for `libinput` interface.
 struct Interface;
@@ -32,23 +32,16 @@ impl LibinputInterface for Interface {
     }
 }
 
-/// Errors raised during `libinput` initialization.
-#[derive(Error, Debug)]
-pub enum InitializationError {
-    #[error("error while assigning seat to the libinput context")]
-    SeatError,
-}
-
 /// Return an initialized `libinput` context.
 ///
 /// # Arguments
 ///
 /// * `seat_id` - the identifier of the seat.
-pub fn initialize_context(seat_id: &str) -> Result<Libinput, InitializationError> {
+pub fn initialize_context(seat_id: &str) -> Result<Libinput, LibinputError> {
     // Create the libinput context.
     let mut input = Libinput::new_with_udev(Interface {});
     if input.udev_assign_seat(seat_id).is_err() {
-        return Err(InitializationError::SeatError);
+        return Err(LibinputError::SeatError);
     }
 
     info!("Assigned seat {seat_id} to the libinput context.");

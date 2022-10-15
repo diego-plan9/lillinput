@@ -1,18 +1,44 @@
 //! Components for capturing and handling events.
 
+pub mod errors;
 pub mod libinput;
 
-use std::io::Error as IoError;
 use std::os::unix::io::{AsRawFd, RawFd};
 
 use crate::actions::{ActionController, ActionMap};
-use filedescriptor::{poll, pollfd, Error as FileDescriptorError, POLLIN};
+use crate::events::errors::{MainLoopError, ProcessEventError};
+use filedescriptor::{poll, pollfd, POLLIN};
 use input::event::gesture::{
     GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
 };
 use input::event::Event;
 use input::Libinput;
-use thiserror::Error;
+use log::debug;
+use strum::{Display, EnumString, EnumVariantNames};
+use strum_macros::EnumIter;
+
+/// High-level events that can trigger an action.
+#[derive(Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug)]
+#[strum(serialize_all = "kebab_case")]
+#[allow(clippy::module_name_repetitions)]
+pub enum ActionEvents {
+    /// Three-finger swipe to left.
+    ThreeFingerSwipeLeft,
+    /// Three-finger swipe to right.
+    ThreeFingerSwipeRight,
+    /// Three-finger swipe to up.
+    ThreeFingerSwipeUp,
+    /// Three-finger swipe to down.
+    ThreeFingerSwipeDown,
+    /// Four-finger swipe to left.
+    FourFingerSwipeLeft,
+    /// Four-finger swipe to right.
+    FourFingerSwipeRight,
+    /// Four-finger swipe to up.
+    FourFingerSwipeUp,
+    /// Four-finger swipe to down.
+    FourFingerSwipeDown,
+}
 
 /// Process a single [`GestureEvent`].
 ///
@@ -22,7 +48,12 @@ use thiserror::Error;
 /// * `dx` - the current position in the `x` axis.
 /// * `dy` - the current position in the `y` axis.
 /// * `action_map` - the action map that will process the event.
-fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &mut ActionMap) {
+fn process_event(
+    event: GestureEvent,
+    dx: &mut f64,
+    dy: &mut f64,
+    action_map: &mut ActionMap,
+) -> Result<(), ProcessEventError> {
     if let GestureEvent::Swipe(event) = event {
         match event {
             GestureSwipeEvent::Begin(_begin_event) => {
@@ -37,24 +68,11 @@ fn process_event(event: GestureEvent, dx: &mut f64, dy: &mut f64, action_map: &m
                 action_map.receive_end_event(*dx, *dy, event.finger_count());
             }
             // GestureEvent::Swipe is non-exhaustive.
-            _ => (),
+            other => return Err(ProcessEventError::UnsupportedSwipeEvent(other)),
         }
     }
-}
 
-/// Custom error issued during the main loop.
-///
-/// This custom error message captures the errors emitted during the main loop,
-/// which wrap over:
-/// * [`filedescriptor::Error`] (during [`filedescriptor::poll`]).
-/// * [`std::io::Error`] (during [`input::Libinput::dispatch`]).
-#[derive(Error, Debug)]
-pub enum MainLoopError {
-    #[error("unknown error while dispatching libinput event")]
-    DispatchError(#[from] IoError),
-
-    #[error("unknown error while polling the file descriptor")]
-    IOError(#[from] FileDescriptorError),
+    Ok(())
 }
 
 /// Run the main loop for parsing the `libinput` events.
@@ -85,7 +103,9 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), 
         input.dispatch()?;
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
-                process_event(gesture_event, &mut dx, &mut dy, action_map);
+                process_event(gesture_event, &mut dx, &mut dy, action_map).unwrap_or_else(|e| {
+                    debug!("Unhandled event: {e}");
+                });
             }
         }
     }
