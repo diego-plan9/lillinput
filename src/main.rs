@@ -167,14 +167,11 @@ fn main() {
         process::exit(1);
     });
 
-    info!(
-        "Assigned seat {:?} to the libinput context. Listening for events ...",
-        settings.seat
-    );
-
     // Start the main loop.
+    info!("Listening for events ...");
     if let Err(e) = main_loop(input, &mut action_map) {
         error!("Unhandled error during the main loop: {}", e);
+        process::exit(1);
     }
 }
 
