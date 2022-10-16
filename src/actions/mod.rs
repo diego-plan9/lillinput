@@ -15,8 +15,19 @@ use std::rc::Rc;
 
 use crate::actions::errors::ActionControllerError;
 use crate::events::ActionEvents;
-use crate::{ActionTypes, Settings};
+use crate::Settings;
 use i3ipc::I3Connection;
+use strum::{Display, EnumString, EnumVariantNames};
+
+/// Possible choices for action types.
+#[derive(Display, EnumString, EnumVariantNames)]
+#[strum(serialize_all = "kebab_case")]
+pub enum ActionTypes {
+    /// Action for interacting with `i3`.
+    I3,
+    /// Action for executing commands.
+    Command,
+}
 
 /// Map between events and actions.
 pub struct ActionMap {
