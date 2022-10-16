@@ -17,29 +17,18 @@ mod events;
 mod opts;
 mod settings;
 
+use crate::actions::{ActionController, ActionMap, ActionTypes};
 use crate::events::ActionEvents;
 use crate::opts::Opts;
-use actions::{ActionController, ActionMap};
 use clap::Parser;
 use events::libinput::initialize_context;
 use events::main_loop;
 use log::{error, info};
 use settings::{setup_application, Settings};
 use std::process;
-use strum::{Display, EnumString, EnumVariantNames};
 
 #[cfg(test)]
 mod test_utils;
-
-/// Possible choices for action types.
-#[derive(Display, EnumString, EnumVariantNames)]
-#[strum(serialize_all = "kebab_case")]
-enum ActionTypes {
-    /// Action for interacting with `i3`.
-    I3,
-    /// Action for executing commands.
-    Command,
-}
 
 /// Main entry point.
 fn main() {
