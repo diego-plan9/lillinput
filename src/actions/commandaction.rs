@@ -63,7 +63,7 @@ mod test {
         // Trigger a swipe.
         let mut action_map: ActionMap = ActionController::new(&settings);
         action_map.populate_actions(&settings);
-        action_map.receive_end_event(10.0, 0.0, 3);
+        action_map.receive_end_event(10.0, 0.0, 3).ok();
 
         // Assert.
         assert!(Path::new(expected_file).exists());

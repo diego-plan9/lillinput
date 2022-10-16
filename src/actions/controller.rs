@@ -7,6 +7,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 
 use crate::actions::commandaction::CommandAction;
+use crate::actions::errors::ActionControllerError;
 use crate::actions::i3action::{I3Action, I3ActionExt};
 use crate::actions::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
 use crate::Settings;
@@ -25,13 +26,13 @@ enum FingerCount {
 }
 
 impl TryFrom<i32> for FingerCount {
-    type Error = ();
+    type Error = ActionControllerError;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
             3 => Ok(FingerCount::ThreeFinger),
             4 => Ok(FingerCount::FourFinger),
-            _ => Err(()),
+            _ => Err(ActionControllerError::UnsupportedFingerCount(value)),
         }
     }
 }
@@ -159,20 +160,16 @@ impl ActionController for ActionMap {
         dx: f64,
         dy: f64,
         finger_count: i32,
-    ) -> Option<ActionEvents> {
+    ) -> Result<ActionEvents, ActionControllerError> {
+        // Determine finger count.
+        let finger_count_as_enum = FingerCount::try_from(finger_count)?;
+
         // Avoid acting if the displacement is below the threshold.
         if dx.abs() < self.threshold && dy.abs() < self.threshold {
-            debug!("Received end event below threshold, discarding");
-            return None;
+            return Err(ActionControllerError::DisplacementBelowThreshold(
+                self.threshold,
+            ));
         }
-
-        // Determine finger count and avoid acting if the number of fingers is not supported.
-        let finger_count_as_enum = if let Ok(count) = FingerCount::try_from(finger_count) {
-            count
-        } else {
-            debug!("Received end event with unsupported finger count, discarding");
-            return None;
-        };
 
         // Determine the axis and direction.
         let (axis, positive) = if dx.abs() > dy.abs() {
@@ -182,42 +179,50 @@ impl ActionController for ActionMap {
         };
 
         // Determine the command for the event.
-        match (axis, positive, finger_count_as_enum) {
-            (Axis::X, true, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeRight),
-            (Axis::X, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeLeft),
-            (Axis::X, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeRight),
-            (Axis::X, false, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeLeft),
-            (Axis::Y, true, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeUp),
-            (Axis::Y, false, FingerCount::ThreeFinger) => Some(ActionEvents::ThreeFingerSwipeDown),
-            (Axis::Y, true, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeUp),
-            (Axis::Y, false, FingerCount::FourFinger) => Some(ActionEvents::FourFingerSwipeDown),
-        }
+        Ok(match (axis, positive, finger_count_as_enum) {
+            (Axis::X, true, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeRight,
+            (Axis::X, false, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeLeft,
+            (Axis::X, true, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeRight,
+            (Axis::X, false, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeLeft,
+            (Axis::Y, true, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeUp,
+            (Axis::Y, false, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeDown,
+            (Axis::Y, true, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeUp,
+            (Axis::Y, false, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeDown,
+        })
     }
 
-    fn receive_end_event(&mut self, dx: f64, dy: f64, finger_count: i32) {
-        let action_event = self.end_event_to_action_event(dx, dy, finger_count);
+    fn receive_end_event(
+        &mut self,
+        dx: f64,
+        dy: f64,
+        finger_count: i32,
+    ) -> Result<(), ActionControllerError> {
+        let action_event = self.end_event_to_action_event(dx, dy, finger_count)?;
 
         // Invoke actions.
-        let actions = match action_event {
-            Some(ref event) => self.actions.get_mut(event).unwrap(),
-            None => return,
-        };
+        let actions = self
+            .actions
+            .get_mut(&action_event)
+            .ok_or(ActionControllerError::NoActionsRegistered(action_event))?;
 
         debug!(
             "Received end event: {}, triggering {} actions",
-            action_event.unwrap(),
+            action_event,
             actions.len()
         );
 
         for action in actions.iter_mut() {
             action.execute_command();
         }
+
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::actions::controller::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::errors::ActionControllerError;
     use crate::test_utils::default_test_settings;
 
     #[test]
@@ -229,17 +234,21 @@ mod test {
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
-        assert!(action_event.is_some());
+        assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 4);
-        assert!(action_event.is_some());
+        assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 5);
-        assert!(action_event.is_none());
+        assert!(action_event.is_err());
+        assert_eq!(
+            action_event,
+            Err(ActionControllerError::UnsupportedFingerCount(5))
+        );
     }
 
     #[test]
@@ -251,11 +260,14 @@ mod test {
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);
-        assert!(action_event.is_none());
+        assert_eq!(
+            action_event,
+            Err(ActionControllerError::DisplacementBelowThreshold(5.0))
+        );
 
         // Trigger swipe above threshold.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
-        assert!(action_event.is_some());
+        assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
     }
 }

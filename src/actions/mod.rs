@@ -5,6 +5,7 @@
 
 pub mod commandaction;
 pub mod controller;
+pub mod errors;
 pub mod i3action;
 
 use std::cell::RefCell;
@@ -12,6 +13,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
+use crate::actions::errors::ActionControllerError;
 use crate::events::ActionEvents;
 use crate::{ActionTypes, Settings};
 use i3ipc::I3Connection;
@@ -54,7 +56,12 @@ pub trait ActionController {
     /// * `dx` - the current position in the `x` axis.
     /// * `dy` - the current position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
-    fn receive_end_event(&mut self, dx: f64, dy: f64, finger_count: i32);
+    fn receive_end_event(
+        &mut self,
+        dx: f64,
+        dy: f64,
+        finger_count: i32,
+    ) -> Result<(), ActionControllerError>;
 
     /// Parse a swipe gesture end event into an action event.
     ///
@@ -69,7 +76,7 @@ pub trait ActionController {
         dx: f64,
         dy: f64,
         finger_count: i32,
-    ) -> Option<ActionEvents>;
+    ) -> Result<ActionEvents, ActionControllerError>;
 }
 
 /// Handler for a single action triggered by an event.
