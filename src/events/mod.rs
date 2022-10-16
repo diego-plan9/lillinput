@@ -18,7 +18,9 @@ use strum::{Display, EnumString, EnumVariantNames};
 use strum_macros::EnumIter;
 
 /// High-level events that can trigger an action.
-#[derive(Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug)]
+#[derive(
+    Copy, Clone, Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug,
+)]
 #[strum(serialize_all = "kebab_case")]
 #[allow(clippy::module_name_repetitions)]
 pub enum ActionEvents {
