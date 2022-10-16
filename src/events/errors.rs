@@ -2,6 +2,7 @@
 
 use std::io::Error as IoError;
 
+use crate::actions::errors::ActionControllerError;
 use filedescriptor::Error as FileDescriptorError;
 use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
@@ -33,4 +34,7 @@ pub enum MainLoopError {
 pub enum ProcessEventError {
     #[error("unsupported swipe event ({:?})", .0)]
     UnsupportedSwipeEvent(GestureSwipeEvent),
+
+    #[error("acton controller was not able to process the event {0}")]
+    ActionControllerError(#[from] ActionControllerError),
 }

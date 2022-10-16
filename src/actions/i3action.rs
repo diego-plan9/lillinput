@@ -133,14 +133,14 @@ mod test {
         // Trigger swipe in the 4 directions.
         let mut action_map: ActionMap = ActionController::new(&settings);
         action_map.populate_actions(&settings);
-        action_map.receive_end_event(10.0, 0.0, 3);
-        action_map.receive_end_event(-10.0, 0.0, 3);
-        action_map.receive_end_event(0.0, 10.0, 3);
-        action_map.receive_end_event(0.0, -10.0, 3);
-        action_map.receive_end_event(10.0, 0.0, 4);
-        action_map.receive_end_event(-10.0, 0.0, 4);
-        action_map.receive_end_event(0.0, 10.0, 4);
-        action_map.receive_end_event(0.0, -10.0, 4);
+        action_map.receive_end_event(10.0, 0.0, 3).ok();
+        action_map.receive_end_event(-10.0, 0.0, 3).ok();
+        action_map.receive_end_event(0.0, 10.0, 3).ok();
+        action_map.receive_end_event(0.0, -10.0, 3).ok();
+        action_map.receive_end_event(10.0, 0.0, 4).ok();
+        action_map.receive_end_event(-10.0, 0.0, 4).ok();
+        action_map.receive_end_event(0.0, 10.0, 4).ok();
+        action_map.receive_end_event(0.0, -10.0, 4).ok();
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.
