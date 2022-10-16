@@ -171,14 +171,6 @@ impl ActionController for ActionMap {
             ));
         }
 
-        // // Determine finger count and avoid acting if the number of fingers is not supported.
-        // let finger_count_as_enum = if let Ok(count) = FingerCount::try_from(finger_count) {
-        //     count
-        // } else {
-        //     debug!("Received end event with unsupported finger count, discarding");
-        //     return None;
-        // };
-
         // Determine the axis and direction.
         let (axis, positive) = if dx.abs() > dy.abs() {
             (Axis::X, dx > 0.0)
@@ -208,7 +200,6 @@ impl ActionController for ActionMap {
         let action_event = self.end_event_to_action_event(dx, dy, finger_count)?;
 
         // Invoke actions.
-
         let actions = self
             .actions
             .get_mut(&action_event)
@@ -231,6 +222,7 @@ impl ActionController for ActionMap {
 #[cfg(test)]
 mod test {
     use crate::actions::controller::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::errors::ActionControllerError;
     use crate::test_utils::default_test_settings;
 
     #[test]
@@ -253,6 +245,10 @@ mod test {
         // Trigger right swipe with unsupported (5) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 5);
         assert!(action_event.is_err());
+        assert_eq!(
+            action_event,
+            Err(ActionControllerError::UnsupportedFingerCount(5))
+        );
     }
 
     #[test]
@@ -264,7 +260,10 @@ mod test {
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);
-        assert!(action_event.is_err());
+        assert_eq!(
+            action_event,
+            Err(ActionControllerError::DisplacementBelowThreshold(5.0))
+        );
 
         // Trigger swipe above threshold.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);

@@ -106,7 +106,7 @@ pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), 
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
                 process_event(gesture_event, &mut dx, &mut dy, action_map).unwrap_or_else(|e| {
-                    debug!("{}", e);
+                    debug!("Discarding event: {}", e);
                 });
             }
         }
