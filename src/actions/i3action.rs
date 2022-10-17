@@ -35,12 +35,16 @@ impl Action for I3Action {
             .borrow_mut()
             .run_command(&self.command)
         {
-            Err(e) => Err(ActionError::ExecutionError(e.to_string())),
+            Err(e) => Err(ActionError::ExecutionError {
+                kind: "i3".into(),
+                message: e.to_string(),
+            }),
             Ok(command_reply) => {
                 if command_reply.outcomes.iter().any(|x| !x.success) {
-                    Err(ActionError::ExecutionError(
-                        "unsuccessful outcome(s)".to_string(),
-                    ))
+                    Err(ActionError::ExecutionError {
+                        kind: "i3".into(),
+                        message: "unsuccessful outcome(s)".into(),
+                    })
                 } else {
                     Ok(())
                 }

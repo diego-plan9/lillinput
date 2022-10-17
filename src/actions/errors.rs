@@ -19,6 +19,6 @@ pub enum ActionControllerError {
 /// Errors related to `Actions`.
 #[derive(Error, Debug, PartialEq)]
 pub enum ActionError {
-    #[error("command execution resulted in error: {0}")]
-    ExecutionError(String),
+    #[error("{kind}: command execution resulted in error: {message}")]
+    ExecutionError { kind: String, message: String },
 }

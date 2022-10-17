@@ -22,7 +22,10 @@ impl Action for CommandAction {
             .args(&split_commands[1..])
             .output()
             .map(|_| ())
-            .map_err(|e| ActionError::ExecutionError(e.to_string()))
+            .map_err(|e| ActionError::ExecutionError {
+                kind: "command".into(),
+                message: e.to_string(),
+            })
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
