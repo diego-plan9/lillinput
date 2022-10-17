@@ -13,7 +13,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::rc::Rc;
 
-use crate::actions::errors::ActionControllerError;
+use crate::actions::errors::{ActionControllerError, ActionError};
 use crate::events::ActionEvents;
 use crate::Settings;
 use i3ipc::I3Connection;
@@ -93,7 +93,7 @@ pub trait ActionController {
 /// Handler for a single action triggered by an event.
 pub trait Action: std::fmt::Debug {
     /// Execute the command for this action.
-    fn execute_command(&mut self);
+    fn execute_command(&mut self) -> Result<(), ActionError>;
     /// Format the contents of the action as a String.
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result;
 }

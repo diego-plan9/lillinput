@@ -4,9 +4,9 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
+use crate::actions::errors::ActionError;
 use crate::actions::{Action, ActionTypes};
 use i3ipc::I3Connection;
-use log::warn;
 
 /// Action that executes `i3` commands.
 #[derive(Debug)]
@@ -29,19 +29,24 @@ pub trait I3ActionExt {
 }
 
 impl Action for I3Action {
-    fn execute_command(&mut self) {
+    fn execute_command(&mut self) -> Result<(), ActionError> {
         // Perform the command, if specified.
         match Rc::clone(&self.connection)
             .borrow_mut()
             .run_command(&self.command)
         {
-            Err(error) => warn!("i3: command invocation resulted in error: {}", error),
+            Err(e) => Err(ActionError::ExecutionError {
+                kind: "i3".into(),
+                message: e.to_string(),
+            }),
             Ok(command_reply) => {
-                for outcome in command_reply.outcomes.iter().filter(|x| !x.success) {
-                    warn!(
-                        "i3: command execution resulted in error: {:?}",
-                        outcome.error
-                    );
+                if command_reply.outcomes.iter().any(|x| !x.success) {
+                    Err(ActionError::ExecutionError {
+                        kind: "i3".into(),
+                        message: "unsuccessful outcome(s)".into(),
+                    })
+                } else {
+                    Ok(())
                 }
             }
         }
