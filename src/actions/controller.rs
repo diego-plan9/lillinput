@@ -157,15 +157,17 @@ impl ActionController for ActionMap {
 
     fn end_event_to_action_event(
         &mut self,
-        dx: f64,
-        dy: f64,
+        mut dx: f64,
+        mut dy: f64,
         finger_count: i32,
     ) -> Result<ActionEvents, ActionControllerError> {
         // Determine finger count.
         let finger_count_as_enum = FingerCount::try_from(finger_count)?;
 
-        // Avoid acting if the displacement is below the threshold.
-        if dx.abs() < self.threshold && dy.abs() < self.threshold {
+        // Trim displacements according to threshold.
+        dx = if dx.abs() < self.threshold { 0.0 } else { dx };
+        dy = if dy.abs() < self.threshold { 0.0 } else { dy };
+        if dx == 0.0 && dy == 0.0 {
             return Err(ActionControllerError::DisplacementBelowThreshold(
                 self.threshold,
             ));
