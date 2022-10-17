@@ -214,7 +214,10 @@ impl ActionController for ActionMap {
         );
 
         for action in actions.iter_mut() {
-            action.execute_command();
+            match action.execute_command() {
+                Ok(_) => (),
+                Err(e) => warn!("{}", e),
+            }
         }
 
         Ok(())

@@ -3,8 +3,8 @@
 use std::fmt;
 use std::process::Command;
 
+use crate::actions::errors::ActionError;
 use crate::actions::{Action, ActionExt, ActionTypes};
-use log::warn;
 use shlex::split;
 
 /// Action that executes shell commands.
@@ -15,16 +15,14 @@ pub struct CommandAction {
 }
 
 impl Action for CommandAction {
-    fn execute_command(&mut self) {
+    fn execute_command(&mut self) -> Result<(), ActionError> {
         // Perform the command, if specified.
         let split_commands = split(&self.command).unwrap();
-        match Command::new(&split_commands[0])
+        Command::new(&split_commands[0])
             .args(&split_commands[1..])
             .output()
-        {
-            Ok(_) => (),
-            Err(e) => warn!("command: command execution resulted in error: {:?}", e),
-        }
+            .map(|_| ())
+            .map_err(|e| ActionError::ExecutionError(e.to_string()))
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {

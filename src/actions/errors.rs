@@ -15,3 +15,10 @@ pub enum ActionControllerError {
     #[error("no actions registered for event {0}")]
     NoActionsRegistered(ActionEvents),
 }
+
+/// Errors related to `Actions`.
+#[derive(Error, Debug, PartialEq)]
+pub enum ActionError {
+    #[error("command execution resulted in error: {0}")]
+    ExecutionError(String),
+}
