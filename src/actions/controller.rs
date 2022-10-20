@@ -8,8 +8,8 @@ use std::str::FromStr;
 
 use crate::actions::commandaction::CommandAction;
 use crate::actions::errors::ActionControllerError;
-use crate::actions::i3action::{I3Action, I3ActionExt};
-use crate::actions::{Action, ActionController, ActionEvents, ActionExt, ActionMap, ActionTypes};
+use crate::actions::i3action::I3Action;
+use crate::actions::{Action, ActionController, ActionEvents, ActionMap, ActionTypes};
 use crate::Settings;
 use i3ipc::I3Connection;
 use itertools::Itertools;

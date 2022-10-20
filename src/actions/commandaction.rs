@@ -4,7 +4,7 @@ use std::fmt;
 use std::process::Command;
 
 use crate::actions::errors::ActionError;
-use crate::actions::{Action, ActionExt, ActionTypes};
+use crate::actions::{Action, ActionTypes};
 use shlex::split;
 
 /// Action that executes shell commands.
@@ -12,6 +12,17 @@ use shlex::split;
 pub struct CommandAction {
     /// Command to be executed in this action.
     command: String,
+}
+
+impl CommandAction {
+    /// Create a new [`CommandAction`].
+    ///
+    /// # Arguments
+    ///
+    /// * `command` - shell command to be executed in this action.
+    pub fn new(command: String) -> CommandAction {
+        CommandAction { command }
+    }
 }
 
 impl Action for CommandAction {
@@ -30,12 +41,6 @@ impl Action for CommandAction {
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}:<{}>", ActionTypes::Command, self.command)
-    }
-}
-
-impl ActionExt for CommandAction {
-    fn new(command: String) -> CommandAction {
-        CommandAction { command }
     }
 }
 
