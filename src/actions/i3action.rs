@@ -17,15 +17,19 @@ pub struct I3Action {
     command: String,
 }
 
-/// Extended trait for construction new actions.
-pub trait I3ActionExt {
-    /// Create a new [`I3ActionExt`].
+impl I3Action {
+    /// Create a new [`I3Action`].
     ///
     /// # Arguments
     ///
     /// * `command` - `i3` command to be executed in this action.
     /// * `connection` - `i3` RPC connection.
-    fn new(command: String, connection: Rc<RefCell<I3Connection>>) -> Self;
+    pub fn new(command: String, connection: Rc<RefCell<I3Connection>>) -> Self {
+        I3Action {
+            connection,
+            command,
+        }
+    }
 }
 
 impl Action for I3Action {
@@ -54,15 +58,6 @@ impl Action for I3Action {
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}:<{}>", ActionTypes::I3, self.command)
-    }
-}
-
-impl I3ActionExt for I3Action {
-    fn new(command: String, connection: Rc<RefCell<I3Connection>>) -> Self {
-        I3Action {
-            connection,
-            command,
-        }
     }
 }
 

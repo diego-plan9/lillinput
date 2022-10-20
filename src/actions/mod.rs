@@ -98,16 +98,6 @@ pub trait Action: std::fmt::Debug {
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result;
 }
 
-/// Extended trait for construction new actions.
-pub trait ActionExt {
-    /// Create a new [`ActionExt`].
-    ///
-    /// # Arguments
-    ///
-    /// * `command` - the command to be executed in this action.
-    fn new(command: String) -> Self;
-}
-
 impl fmt::Display for dyn Action {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // Delegate on the structs specific `fmt` implementation.
