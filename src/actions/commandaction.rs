@@ -49,6 +49,7 @@ mod test {
     use std::path::Path;
 
     use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::opts::StringifiedAction;
     use crate::test_utils::default_test_settings;
 
     #[test]
@@ -63,7 +64,7 @@ mod test {
         settings.enabled_action_types = vec!["command".to_string()];
         settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec!["command:touch /tmp/swipe-right".to_string()],
+            vec![StringifiedAction::new("command", "touch /tmp/swipe-right")],
         );
 
         // Trigger a swipe.

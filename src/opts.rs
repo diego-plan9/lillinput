@@ -264,35 +264,35 @@ mod test {
         expected_settings.threshold = 20.0;
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeLeft.to_string(),
-            vec![String::from("i3:3left")],
+            vec![StringifiedAction::new("i3", "3left")],
         );
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec![String::from("i3:3right")],
+            vec![StringifiedAction::new("i3", "3right")],
         );
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeUp.to_string(),
-            vec![String::from("i3:3up")],
+            vec![StringifiedAction::new("i3", "3up")],
         );
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeDown.to_string(),
-            vec![String::from("i3:3down")],
+            vec![StringifiedAction::new("i3", "3down")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeLeft.to_string(),
-            vec![String::from("i3:4left")],
+            vec![StringifiedAction::new("i3", "4left")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeRight.to_string(),
-            vec![String::from("i3:4right")],
+            vec![StringifiedAction::new("i3", "4right")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeUp.to_string(),
-            vec![String::from("i3:4up")],
+            vec![StringifiedAction::new("i3", "4up")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeDown.to_string(),
-            vec![String::from("i3:4down")],
+            vec![StringifiedAction::new("i3", "4down")],
         );
 
         assert_eq!(converted_settings, expected_settings);
@@ -339,11 +339,11 @@ four-finger-swipe-down = []
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec![String::from("i3:foo")],
+            vec![StringifiedAction::new("i3", "foo")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeRight.to_string(),
-            vec![String::from("i3:bar")],
+            vec![StringifiedAction::new("i3", "bar")],
         );
 
         assert_eq!(converted_settings, expected_settings);
@@ -397,11 +397,11 @@ four-finger-swipe-down = []
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec![String::from("i3:foo")],
+            vec![StringifiedAction::new("i3", "foo")],
         );
         expected_settings.actions.insert(
             ActionEvents::FourFingerSwipeRight.to_string(),
-            vec![String::from("i3:bar")],
+            vec![StringifiedAction::new("i3", "bar")],
         );
 
         assert_eq!(converted_settings, expected_settings);
@@ -453,12 +453,12 @@ three-finger-swipe-left = ["i3:left_from_config"]
         // `three-finger-swipe-right` from config file.
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
-            vec![String::from("i3:right_from_config")],
+            vec![StringifiedAction::new("i3", "right_from_config")],
         );
         // `three-finger-swipe-left` from CLI.
         expected_settings.actions.insert(
             ActionEvents::ThreeFingerSwipeLeft.to_string(),
-            vec![String::from("i3:left_from_cli")],
+            vec![StringifiedAction::new("i3", "left_from_cli")],
         );
 
         assert_eq!(converted_settings, expected_settings);

@@ -83,35 +83,35 @@ mod test {
         settings.actions = HashMap::from([
             (
                 ActionEvents::ThreeFingerSwipeLeft.to_string(),
-                vec!["i3:swipe left 3".to_string()],
+                vec![StringifiedAction::new("i3", "swipe left 3")],
             ),
             (
                 ActionEvents::ThreeFingerSwipeRight.to_string(),
-                vec!["i3:swipe right 3".to_string()],
+                vec![StringifiedAction::new("i3", "swipe right 3")],
             ),
             (
                 ActionEvents::ThreeFingerSwipeUp.to_string(),
-                vec!["i3:swipe up 3".to_string()],
+                vec![StringifiedAction::new("i3", "swipe up 3")],
             ),
             (
                 ActionEvents::ThreeFingerSwipeDown.to_string(),
-                vec!["i3:swipe down 3".to_string()],
+                vec![StringifiedAction::new("i3", "swipe down 3")],
             ),
             (
                 ActionEvents::FourFingerSwipeLeft.to_string(),
-                vec!["i3:swipe left 4".to_string()],
+                vec![StringifiedAction::new("i3", "swipe left 4")],
             ),
             (
                 ActionEvents::FourFingerSwipeRight.to_string(),
-                vec!["i3:swipe right 4".to_string()],
+                vec![StringifiedAction::new("i3", "swipe right 4")],
             ),
             (
                 ActionEvents::FourFingerSwipeUp.to_string(),
-                vec!["i3:swipe up 4".to_string()],
+                vec![StringifiedAction::new("i3", "swipe up 4")],
             ),
             (
                 ActionEvents::FourFingerSwipeDown.to_string(),
-                vec!["i3:swipe down 4".to_string()],
+                vec![StringifiedAction::new("i3", "swipe down 4")],
             ),
         ]);
 
@@ -162,8 +162,8 @@ mod test {
         settings.actions.insert(
             ActionEvents::ThreeFingerSwipeRight.to_string(),
             vec![
-                "i3:swipe right".to_string(),
-                "command:touch /tmp/swipe-right".to_string(),
+                StringifiedAction::new("i3", "swipe right"),
+                StringifiedAction::new("command", "touch /tmp/swipe-right"),
             ],
         );
 
