@@ -2,11 +2,13 @@
 
 use std::collections::HashMap;
 
+use crate::opts::StringifiedAction;
 use crate::{ActionEvents, ActionTypes, Opts};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
+use std::string::ToString;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
@@ -20,7 +22,7 @@ pub struct Settings {
     /// Minimum threshold for displacement changes.
     pub threshold: f64,
     /// List of action for each action event.
-    pub actions: HashMap<String, Vec<String>>,
+    pub actions: HashMap<String, Vec<StringifiedAction>>,
 }
 
 impl Default for Settings {
@@ -33,11 +35,11 @@ impl Default for Settings {
             actions: HashMap::from([
                 (
                     ActionEvents::ThreeFingerSwipeLeft.to_string(),
-                    vec!["i3:workspace prev".to_string()],
+                    vec![StringifiedAction::new("i3", "workspace prev")],
                 ),
                 (
                     ActionEvents::ThreeFingerSwipeRight.to_string(),
-                    vec!["i3:workspace next".to_string()],
+                    vec![StringifiedAction::new("i3", "workspace next")],
                 ),
                 (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
                 (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
@@ -177,7 +179,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
-            if !is_enabled_action_string(entry, enabled_action_types) {
+            if !is_enabled_action_string(&entry.to_string(), enabled_action_types) {
                 log_entries.push(LogEntry {
                     level: Level::Warn,
                     message: format!(
@@ -190,7 +192,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         }
 
         if prune {
-            value.retain(|x| is_enabled_action_string(x, enabled_action_types));
+            value.retain(|x| is_enabled_action_string(&x.to_string(), enabled_action_types));
         }
     }
 
@@ -236,49 +238,49 @@ impl Source for Opts {
         self.three_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeRight)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeUp)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeDown)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
 
@@ -307,7 +309,12 @@ impl Source for Settings {
         for (action_event, actions) in &self.actions {
             m.insert(
                 String::from(&format!("actions.{}", action_event)),
-                Value::from(actions.clone()),
+                Value::from(
+                    actions
+                        .iter()
+                        .map(ToString::to_string)
+                        .collect::<Vec<String>>(),
+                ),
             );
         }
 

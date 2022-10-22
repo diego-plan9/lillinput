@@ -10,6 +10,7 @@ use crate::actions::commandaction::CommandAction;
 use crate::actions::errors::ActionControllerError;
 use crate::actions::i3action::I3Action;
 use crate::actions::{Action, ActionController, ActionEvents, ActionMap, ActionTypes};
+use crate::opts::StringifiedAction;
 use crate::Settings;
 use i3ipc::I3Connection;
 use itertools::Itertools;
@@ -90,24 +91,21 @@ impl ActionController for ActionMap {
         /// * `arguments` - list of command line arguments.
         /// * `connection` - optional i3 connection.
         fn parse_action_list(
-            arguments: &[String],
+            arguments: &[StringifiedAction],
             connection: &Option<Rc<RefCell<I3Connection>>>,
         ) -> Vec<Box<dyn Action>> {
             let mut actions_list: Vec<Box<dyn Action>> = vec![];
 
             for value in arguments.iter() {
-                // Split the arguments, in the form "{type}:{value}".
-                let (action_type, action_value) = value.split_once(':').unwrap();
-
                 // Create the new actions.
-                match ActionTypes::from_str(action_type) {
+                match ActionTypes::from_str(&value.kind) {
                     Ok(ActionTypes::Command) => {
-                        actions_list.push(Box::new(CommandAction::new(action_value.to_string())));
+                        actions_list.push(Box::new(CommandAction::new(value.command.clone())));
                     }
                     Ok(ActionTypes::I3) => match connection {
                         Some(conn) => {
                             actions_list.push(Box::new(I3Action::new(
-                                action_value.to_string(),
+                                value.command.clone(),
                                 Rc::clone(conn),
                             )));
                         }
@@ -116,7 +114,7 @@ impl ActionController for ActionMap {
                         }
                     },
                     Err(_) => {
-                        warn!("Unknown action type: '{}", action_type);
+                        warn!("Unknown action type: '{}", value.kind);
                     }
                 }
             }
@@ -155,6 +153,36 @@ impl ActionController for ActionMap {
         );
     }
 
+    fn receive_end_event(
+        &mut self,
+        dx: f64,
+        dy: f64,
+        finger_count: i32,
+    ) -> Result<(), ActionControllerError> {
+        let action_event = self.end_event_to_action_event(dx, dy, finger_count)?;
+
+        // Invoke actions.
+        let actions = self
+            .actions
+            .get_mut(&action_event)
+            .ok_or(ActionControllerError::NoActionsRegistered(action_event))?;
+
+        debug!(
+            "Received end event: {}, triggering {} actions",
+            action_event,
+            actions.len()
+        );
+
+        for action in actions.iter_mut() {
+            match action.execute_command() {
+                Ok(_) => (),
+                Err(e) => warn!("{}", e),
+            }
+        }
+
+        Ok(())
+    }
+
     fn end_event_to_action_event(
         &mut self,
         mut dx: f64,
@@ -191,36 +219,6 @@ impl ActionController for ActionMap {
             (Axis::Y, true, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeUp,
             (Axis::Y, false, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeDown,
         })
-    }
-
-    fn receive_end_event(
-        &mut self,
-        dx: f64,
-        dy: f64,
-        finger_count: i32,
-    ) -> Result<(), ActionControllerError> {
-        let action_event = self.end_event_to_action_event(dx, dy, finger_count)?;
-
-        // Invoke actions.
-        let actions = self
-            .actions
-            .get_mut(&action_event)
-            .ok_or(ActionControllerError::NoActionsRegistered(action_event))?;
-
-        debug!(
-            "Received end event: {}, triggering {} actions",
-            action_event,
-            actions.len()
-        );
-
-        for action in actions.iter_mut() {
-            match action.execute_command() {
-                Ok(_) => (),
-                Err(e) => warn!("{}", e),
-            }
-        }
-
-        Ok(())
     }
 }
 
