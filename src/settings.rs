@@ -8,6 +8,7 @@ use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
+use  std::string::ToString;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
@@ -237,49 +238,49 @@ impl Source for Opts {
         self.three_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeRight)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeUp)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeDown)),
-                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
+                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
             )
         });
 
@@ -311,7 +312,7 @@ impl Source for Settings {
                 Value::from(
                     actions
                         .iter()
-                        .map(|v| v.to_string())
+                        .map(ToString::to_string)
                         .collect::<Vec<String>>(),
                 ),
             );
