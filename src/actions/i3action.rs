@@ -68,6 +68,7 @@ mod test {
     use std::sync::{Arc, Mutex};
 
     use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::opts::StringifiedAction;
     use crate::test_utils::{default_test_settings, init_listener};
 
     use serial_test::serial;

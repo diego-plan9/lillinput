@@ -5,14 +5,47 @@ use clap::builder::{StringValueParser, TypedValueParser};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::str::FromStr;
 use strum::VariantNames;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+/// Representation of an action.
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(try_from = "String")]
+#[serde(into = "String")]
 pub struct StringifiedAction {
-    type_: String,
-    command: String,
+    pub kind: String,
+    pub command: String,
+}
+
+impl StringifiedAction {
+    pub fn new(kind: &str, command: &str) -> Self {
+        Self {
+            kind: kind.to_string(),
+            command: command.to_string(),
+        }
+    }
+}
+
+/// Convert a [`StringifiedAction`] into a [`String`].
+///
+/// The [`Into`] trait is implemented manually instead of [`From`], as the
+/// conversion in one direction can fail - and as serde serialization derive
+/// does not provide of specifying `try_into` currently.
+#[allow(clippy::from_over_into)]
+impl Into<String> for StringifiedAction {
+    fn into(self) -> String {
+        format!("{}", self)
+    }
+}
+
+impl TryFrom<String> for StringifiedAction {
+    type Error = clap::Error;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::from_str(&value)
+    }
 }
 
 impl FromStr for StringifiedAction {
@@ -27,7 +60,7 @@ impl FromStr for StringifiedAction {
             Some((action_type, action_command)) => {
                 if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
                     Ok(Self {
-                        type_: action_type.into(),
+                        kind: action_type.into(),
                         command: action_command.into(),
                     })
                 } else {
@@ -46,7 +79,7 @@ impl FromStr for StringifiedAction {
 
 impl fmt::Display for StringifiedAction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:{}", self.type_, self.command)
+        write!(f, "{}:{}", self.kind, self.command)
     }
 }
 
@@ -122,7 +155,7 @@ impl TypedValueParser for ActionStringParser {
             Some((action_type, action_command)) => {
                 if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
                     Ok(Self::Value {
-                        type_: action_type.into(),
+                        kind: action_type.into(),
                         command: action_command.into(),
                     })
                 } else {

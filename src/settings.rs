@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use crate::opts::StringifiedAction;
 use crate::{ActionEvents, ActionTypes, Opts};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
@@ -20,7 +21,7 @@ pub struct Settings {
     /// Minimum threshold for displacement changes.
     pub threshold: f64,
     /// List of action for each action event.
-    pub actions: HashMap<String, Vec<String>>,
+    pub actions: HashMap<String, Vec<StringifiedAction>>,
 }
 
 impl Default for Settings {
@@ -33,11 +34,11 @@ impl Default for Settings {
             actions: HashMap::from([
                 (
                     ActionEvents::ThreeFingerSwipeLeft.to_string(),
-                    vec!["i3:workspace prev".to_string()],
+                    vec![StringifiedAction::new("i3", "workspace prev")],
                 ),
                 (
                     ActionEvents::ThreeFingerSwipeRight.to_string(),
-                    vec!["i3:workspace next".to_string()],
+                    vec![StringifiedAction::new("i3", "workspace next")],
                 ),
                 (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
                 (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
@@ -177,7 +178,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
-            if !is_enabled_action_string(entry, enabled_action_types) {
+            if !is_enabled_action_string(&entry.to_string(), enabled_action_types) {
                 log_entries.push(LogEntry {
                     level: Level::Warn,
                     message: format!(
@@ -190,7 +191,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         }
 
         if prune {
-            value.retain(|x| is_enabled_action_string(x, enabled_action_types));
+            value.retain(|x| is_enabled_action_string(&x.to_string(), enabled_action_types));
         }
     }
 
