@@ -1,7 +1,6 @@
 //! Arguments and utils for the `lillinput` binary.
 
 use crate::ActionTypes;
-use clap::builder::{StringValueParser, TypedValueParser};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -51,6 +50,10 @@ impl TryFrom<String> for StringifiedAction {
 impl FromStr for StringifiedAction {
     type Err = clap::Error;
 
+    /// Return a [`StringifiedAction`] from a `str`.
+    ///
+    /// A string that specifies an action must conform to the following format:
+    /// * `{action choice}:{value}`.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.split_once(':') {
             None | Some((_, "") | ("", _)) => Err(clap::Error::raw(
@@ -126,50 +129,6 @@ pub struct Opts {
     /// actions the four-finger swipe down
     #[clap(long)]
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
-}
-
-/// Parser for arguments that specify an action.
-///
-/// A string that specifies an action must conform to the following format:
-/// * `{action choice}:{value}`.
-#[derive(Clone, Debug)]
-struct ActionStringParser;
-
-impl TypedValueParser for ActionStringParser {
-    type Value = StringifiedAction;
-
-    fn parse_ref(
-        &self,
-        cmd: &clap::Command,
-        arg: Option<&clap::Arg>,
-        value: &std::ffi::OsStr,
-    ) -> Result<Self::Value, clap::Error> {
-        let inner = StringValueParser::new();
-        let value = inner.parse_ref(cmd, arg, value)?;
-
-        match value.split_once(':') {
-            None | Some((_, "") | ("", _)) => Err(clap::Error::raw(
-                ErrorKind::ValueValidation,
-                "The value does not conform to the action string pattern `{type}:{command}`",
-            )),
-            Some((action_type, action_command)) => {
-                if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
-                    Ok(Self::Value {
-                        kind: action_type.into(),
-                        command: action_command.into(),
-                    })
-                } else {
-                    Err(clap::Error::raw(
-                        ErrorKind::ValueValidation,
-                        format!(
-                            "The value does not start with a valid action ({:?})",
-                            ActionTypes::VARIANTS
-                        ),
-                    ))
-                }
-            }
-        }
-    }
 }
 
 #[cfg(test)]
