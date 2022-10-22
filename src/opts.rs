@@ -5,7 +5,50 @@ use clap::builder::{StringValueParser, TypedValueParser};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
+use std::fmt;
+use std::str::FromStr;
 use strum::VariantNames;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct StringifiedAction {
+    type_: String,
+    command: String,
+}
+
+impl FromStr for StringifiedAction {
+    type Err = clap::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.split_once(':') {
+            None | Some((_, "") | ("", _)) => Err(clap::Error::raw(
+                ErrorKind::ValueValidation,
+                "The value does not conform to the action string pattern `{type}:{command}`",
+            )),
+            Some((action_type, action_command)) => {
+                if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+                    Ok(Self {
+                        type_: action_type.into(),
+                        command: action_command.into(),
+                    })
+                } else {
+                    Err(clap::Error::raw(
+                        ErrorKind::ValueValidation,
+                        format!(
+                            "The value does not start with a valid action ({:?})",
+                            ActionTypes::VARIANTS
+                        ),
+                    ))
+                }
+            }
+        }
+    }
+}
+
+impl fmt::Display for StringifiedAction {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}:{}", self.type_, self.command)
+    }
+}
 
 /// Connect libinput gestures to i3 and others.
 #[derive(Parser, Debug, Clone)]
@@ -27,29 +70,29 @@ pub struct Opts {
     #[clap(short, long)]
     pub threshold: Option<f64>,
     /// actions the three-finger swipe left
-    #[clap(long, value_parser = ActionStringParser)]
-    pub three_finger_swipe_left: Option<Vec<String>>,
+    #[clap(long)]
+    pub three_finger_swipe_left: Option<Vec<StringifiedAction>>,
     /// actions the three-finger swipe right
-    #[clap(long, value_parser = ActionStringParser)]
-    pub three_finger_swipe_right: Option<Vec<String>>,
+    #[clap(long)]
+    pub three_finger_swipe_right: Option<Vec<StringifiedAction>>,
     /// actions the three-finger swipe up
-    #[clap(long, value_parser = ActionStringParser)]
-    pub three_finger_swipe_up: Option<Vec<String>>,
+    #[clap(long)]
+    pub three_finger_swipe_up: Option<Vec<StringifiedAction>>,
     /// actions the three-finger swipe down
-    #[clap(long, value_parser = ActionStringParser)]
-    pub three_finger_swipe_down: Option<Vec<String>>,
+    #[clap(long)]
+    pub three_finger_swipe_down: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe left
-    #[clap(long, value_parser = ActionStringParser)]
-    pub four_finger_swipe_left: Option<Vec<String>>,
+    #[clap(long)]
+    pub four_finger_swipe_left: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe right
-    #[clap(long, value_parser = ActionStringParser)]
-    pub four_finger_swipe_right: Option<Vec<String>>,
+    #[clap(long)]
+    pub four_finger_swipe_right: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe up
-    #[clap(long, value_parser = ActionStringParser)]
-    pub four_finger_swipe_up: Option<Vec<String>>,
+    #[clap(long)]
+    pub four_finger_swipe_up: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe down
-    #[clap(long, value_parser = ActionStringParser)]
-    pub four_finger_swipe_down: Option<Vec<String>>,
+    #[clap(long)]
+    pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
 }
 
 /// Parser for arguments that specify an action.
@@ -60,7 +103,7 @@ pub struct Opts {
 struct ActionStringParser;
 
 impl TypedValueParser for ActionStringParser {
-    type Value = String;
+    type Value = StringifiedAction;
 
     fn parse_ref(
         &self,
@@ -76,9 +119,12 @@ impl TypedValueParser for ActionStringParser {
                 ErrorKind::ValueValidation,
                 "The value does not conform to the action string pattern `{type}:{command}`",
             )),
-            Some((action_type, _)) => {
+            Some((action_type, action_command)) => {
                 if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
-                    Ok(value)
+                    Ok(Self::Value {
+                        type_: action_type.into(),
+                        command: action_command.into(),
+                    })
                 } else {
                     Err(clap::Error::raw(
                         ErrorKind::ValueValidation,
@@ -95,6 +141,7 @@ impl TypedValueParser for ActionStringParser {
 
 #[cfg(test)]
 mod test {
+    use super::*;
     use crate::settings::{setup_application, Settings};
     use crate::test_utils::default_test_settings;
     use crate::{ActionEvents, ActionTypes, Opts};
@@ -125,7 +172,7 @@ mod test {
         let opts: Opts = Opts::parse_from(&["lillinput", "--three-finger-swipe-left", "i3:foo"]);
         assert_eq!(
             opts.three_finger_swipe_left.unwrap(),
-            vec![String::from("i3:foo")]
+            vec![StringifiedAction::from_str("i3:foo").unwrap()]
         );
     }
 

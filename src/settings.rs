@@ -236,49 +236,49 @@ impl Source for Opts {
         self.three_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.three_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_left.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_right.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeRight)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_up.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeUp)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
         self.four_finger_swipe_down.as_ref().map(|x| {
             m.insert(
                 String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeDown)),
-                Value::from(x.clone()),
+                Value::from(x.iter().map(|v| v.to_string()).collect::<Vec<String>>()),
             )
         });
 
@@ -307,7 +307,12 @@ impl Source for Settings {
         for (action_event, actions) in &self.actions {
             m.insert(
                 String::from(&format!("actions.{}", action_event)),
-                Value::from(actions.clone()),
+                Value::from(
+                    actions
+                        .iter()
+                        .map(|v| v.to_string())
+                        .collect::<Vec<String>>(),
+                ),
             );
         }
 
