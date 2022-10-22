@@ -8,7 +8,7 @@ use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
-use  std::string::ToString;
+use std::string::ToString;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
