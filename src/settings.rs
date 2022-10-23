@@ -76,23 +76,6 @@ fn setup_logging(verbosity: LevelFilter) {
     .unwrap();
 }
 
-/// Check if an action string is valid and with an enabled action type.
-///
-/// A string that specifies an action must conform to the following format:
-/// `{action choice}:{value}`.
-/// and `{action choice}` needs to be in `enabled_action_types`.
-///
-/// # Arguments
-///
-/// * `value` - argument to be parsed.
-/// * `enabled_action_types` - slice of enabled action types.
-fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
-    match action_string.split_once(':') {
-        Some((action, _)) => enabled_action_types.iter().any(|s| s == action),
-        None => false,
-    }
-}
-
 /// Setup the application logging and return the application settings.
 ///
 /// The application settings are merged from:
@@ -180,7 +163,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
-            if !is_enabled_action_string(&entry.to_string(), enabled_action_types) {
+            if enabled_action_types.contains(&entry.type_) {
                 log_entries.push(LogEntry {
                     level: Level::Warn,
                     message: format!(
@@ -193,7 +176,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         }
 
         if prune {
-            value.retain(|x| is_enabled_action_string(&x.to_string(), enabled_action_types));
+            value.retain(|x| enabled_action_types.contains(&x.type_));
         }
     }
 

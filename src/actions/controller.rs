@@ -98,7 +98,7 @@ impl ActionController for ActionMap {
 
             for value in arguments.iter() {
                 // Create the new actions.
-                match ActionType::from_str(&value.kind) {
+                match ActionType::from_str(&value.type_) {
                     Ok(ActionType::Command) => {
                         actions_list.push(Box::new(CommandAction::new(value.command.clone())));
                     }
@@ -114,7 +114,7 @@ impl ActionController for ActionMap {
                         }
                     },
                     Err(_) => {
-                        warn!("Unknown action type: '{}", value.kind);
+                        warn!("Unknown action type: '{}", value.type_);
                     }
                 }
             }

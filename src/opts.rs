@@ -14,17 +14,17 @@ use strum::VariantNames;
 #[serde(try_from = "String")]
 #[serde(into = "String")]
 pub struct StringifiedAction {
-    /// Action kind.
-    pub kind: String,
+    /// Action type.
+    pub type_: String,
     /// Action command.
     pub command: String,
 }
 
 impl StringifiedAction {
     /// Return a new [`StringifiedAction`].
-    pub fn new(kind: &str, command: &str) -> Self {
+    pub fn new(type_: &str, command: &str) -> Self {
         Self {
-            kind: kind.to_string(),
+            type_: type_.to_string(),
             command: command.to_string(),
         }
     }
@@ -66,7 +66,7 @@ impl FromStr for StringifiedAction {
             Some((action_type, action_command)) => {
                 if ActionType::VARIANTS.iter().any(|s| s == &action_type) {
                     Ok(Self {
-                        kind: action_type.into(),
+                        type_: action_type.into(),
                         command: action_command.into(),
                     })
                 } else {
@@ -85,7 +85,7 @@ impl FromStr for StringifiedAction {
 
 impl fmt::Display for StringifiedAction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:{}", self.kind, self.command)
+        write!(f, "{}:{}", self.type_, self.command)
     }
 }
 

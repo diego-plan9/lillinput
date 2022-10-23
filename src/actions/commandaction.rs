@@ -34,7 +34,7 @@ impl Action for CommandAction {
             .output()
             .map(|_| ())
             .map_err(|e| ActionError::ExecutionError {
-                kind: "command".into(),
+                type_: "command".into(),
                 message: e.to_string(),
             })
     }
