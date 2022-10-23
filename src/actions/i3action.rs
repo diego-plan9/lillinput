@@ -67,7 +67,7 @@ mod test {
     use std::env;
     use std::sync::{Arc, Mutex};
 
-    use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::{ActionController, ActionEvent, ActionMap, Settings};
     use crate::opts::StringifiedAction;
     use crate::test_utils::{default_test_settings, init_listener};
 
@@ -82,35 +82,35 @@ mod test {
         settings.enabled_action_types = vec!["i3".to_string()];
         settings.actions = HashMap::from([
             (
-                ActionEvents::ThreeFingerSwipeLeft.to_string(),
+                ActionEvent::ThreeFingerSwipeLeft.to_string(),
                 vec![StringifiedAction::new("i3", "swipe left 3")],
             ),
             (
-                ActionEvents::ThreeFingerSwipeRight.to_string(),
+                ActionEvent::ThreeFingerSwipeRight.to_string(),
                 vec![StringifiedAction::new("i3", "swipe right 3")],
             ),
             (
-                ActionEvents::ThreeFingerSwipeUp.to_string(),
+                ActionEvent::ThreeFingerSwipeUp.to_string(),
                 vec![StringifiedAction::new("i3", "swipe up 3")],
             ),
             (
-                ActionEvents::ThreeFingerSwipeDown.to_string(),
+                ActionEvent::ThreeFingerSwipeDown.to_string(),
                 vec![StringifiedAction::new("i3", "swipe down 3")],
             ),
             (
-                ActionEvents::FourFingerSwipeLeft.to_string(),
+                ActionEvent::FourFingerSwipeLeft.to_string(),
                 vec![StringifiedAction::new("i3", "swipe left 4")],
             ),
             (
-                ActionEvents::FourFingerSwipeRight.to_string(),
+                ActionEvent::FourFingerSwipeRight.to_string(),
                 vec![StringifiedAction::new("i3", "swipe right 4")],
             ),
             (
-                ActionEvents::FourFingerSwipeUp.to_string(),
+                ActionEvent::FourFingerSwipeUp.to_string(),
                 vec![StringifiedAction::new("i3", "swipe up 4")],
             ),
             (
-                ActionEvents::FourFingerSwipeDown.to_string(),
+                ActionEvent::FourFingerSwipeDown.to_string(),
                 vec![StringifiedAction::new("i3", "swipe down 4")],
             ),
         ]);
@@ -160,7 +160,7 @@ mod test {
         let mut settings: Settings = default_test_settings();
         settings.enabled_action_types = vec!["i3".to_string()];
         settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![
                 StringifiedAction::new("i3", "swipe right"),
                 StringifiedAction::new("command", "touch /tmp/swipe-right"),
@@ -176,7 +176,7 @@ mod test {
         assert_eq!(
             action_map
                 .actions
-                .get(&ActionEvents::ThreeFingerSwipeRight)
+                .get(&ActionEvent::ThreeFingerSwipeRight)
                 .unwrap()
                 .len(),
             1

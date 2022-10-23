@@ -9,7 +9,7 @@ use std::str::FromStr;
 use crate::actions::commandaction::CommandAction;
 use crate::actions::errors::ActionControllerError;
 use crate::actions::i3action::I3Action;
-use crate::actions::{Action, ActionController, ActionEvents, ActionMap, ActionTypes};
+use crate::actions::{Action, ActionController, ActionEvent, ActionMap, ActionTypes};
 use crate::opts::StringifiedAction;
 use crate::Settings;
 use i3ipc::I3Connection;
@@ -70,9 +70,9 @@ impl ActionController for ActionMap {
             None
         };
 
-        let default_actions: [(ActionEvents, Vec<_>); 8] = ActionEvents::iter()
+        let default_actions: [(ActionEvent, Vec<_>); 8] = ActionEvent::iter()
             .map(|x| (x, Vec::new()))
-            .collect::<Vec<(ActionEvents, Vec<_>)>>()
+            .collect::<Vec<(ActionEvent, Vec<_>)>>()
             .try_into()
             .unwrap();
 
@@ -123,7 +123,7 @@ impl ActionController for ActionMap {
         }
 
         // Populate the fields for each `ActionEvent`.
-        for action_event in ActionEvents::iter() {
+        for action_event in ActionEvent::iter() {
             if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
                 let parsed_actions = parse_action_list(arguments, &self.connection);
                 self.actions.insert(action_event, parsed_actions);
@@ -131,18 +131,18 @@ impl ActionController for ActionMap {
         }
 
         // Print information.
-        for action_event in ActionEvents::iter() {
+        for action_event in ActionEvent::iter() {
             debug!(
                 " * {}: {}",
                 action_event,
                 self.actions.get(&action_event).unwrap().iter().format(", ")
             );
         }
-        let three_finger_counts: String = ActionEvents::iter()
+        let three_finger_counts: String = ActionEvent::iter()
             .take(4)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
             .collect();
-        let four_finger_counts: String = ActionEvents::iter()
+        let four_finger_counts: String = ActionEvent::iter()
             .skip(4)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
             .collect();
@@ -188,7 +188,7 @@ impl ActionController for ActionMap {
         mut dx: f64,
         mut dy: f64,
         finger_count: i32,
-    ) -> Result<ActionEvents, ActionControllerError> {
+    ) -> Result<ActionEvent, ActionControllerError> {
         // Determine finger count.
         let finger_count_as_enum = FingerCount::try_from(finger_count)?;
 
@@ -210,21 +210,21 @@ impl ActionController for ActionMap {
 
         // Determine the command for the event.
         Ok(match (axis, positive, finger_count_as_enum) {
-            (Axis::X, true, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeRight,
-            (Axis::X, false, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeLeft,
-            (Axis::X, true, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeRight,
-            (Axis::X, false, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeLeft,
-            (Axis::Y, true, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeUp,
-            (Axis::Y, false, FingerCount::ThreeFinger) => ActionEvents::ThreeFingerSwipeDown,
-            (Axis::Y, true, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeUp,
-            (Axis::Y, false, FingerCount::FourFinger) => ActionEvents::FourFingerSwipeDown,
+            (Axis::X, true, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeRight,
+            (Axis::X, false, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeLeft,
+            (Axis::X, true, FingerCount::FourFinger) => ActionEvent::FourFingerSwipeRight,
+            (Axis::X, false, FingerCount::FourFinger) => ActionEvent::FourFingerSwipeLeft,
+            (Axis::Y, true, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeUp,
+            (Axis::Y, false, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeDown,
+            (Axis::Y, true, FingerCount::FourFinger) => ActionEvent::FourFingerSwipeUp,
+            (Axis::Y, false, FingerCount::FourFinger) => ActionEvent::FourFingerSwipeDown,
         })
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::actions::controller::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::controller::{ActionController, ActionEvent, ActionMap, Settings};
     use crate::actions::errors::ActionControllerError;
     use crate::test_utils::default_test_settings;
 

@@ -1,6 +1,6 @@
 //! Errors related to events.
 
-use crate::events::ActionEvents;
+use crate::events::ActionEvent;
 use thiserror::Error;
 
 /// Errors raised during processing of events in the controller.
@@ -16,7 +16,7 @@ pub enum ActionControllerError {
 
     /// No actions registered for event.
     #[error("no actions registered for event {0}")]
-    NoActionsRegistered(ActionEvents),
+    NoActionsRegistered(ActionEvent),
 }
 
 /// Errors related to `Actions`.

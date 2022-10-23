@@ -14,7 +14,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::actions::errors::{ActionControllerError, ActionError};
-use crate::events::ActionEvents;
+use crate::events::ActionEvent;
 use crate::Settings;
 use i3ipc::I3Connection;
 use strum::{Display, EnumString, EnumVariantNames};
@@ -36,7 +36,7 @@ pub struct ActionMap {
     /// Optional `i3` RPC connection.
     connection: Option<Rc<RefCell<I3Connection>>>,
     /// Map between events and actions.
-    actions: HashMap<ActionEvents, Vec<Box<dyn Action>>>,
+    actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
 }
 
 /// Controller that connects events and actions.
@@ -87,7 +87,7 @@ pub trait ActionController {
         dx: f64,
         dy: f64,
         finger_count: i32,
-    ) -> Result<ActionEvents, ActionControllerError>;
+    ) -> Result<ActionEvent, ActionControllerError>;
 }
 
 /// Handler for a single action triggered by an event.

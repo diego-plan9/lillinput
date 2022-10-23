@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::opts::StringifiedAction;
-use crate::{ActionEvents, ActionTypes, Opts};
+use crate::{ActionEvent, ActionTypes, Opts};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
@@ -35,19 +35,19 @@ impl Default for Settings {
             threshold: 20.0,
             actions: HashMap::from([
                 (
-                    ActionEvents::ThreeFingerSwipeLeft.to_string(),
+                    ActionEvent::ThreeFingerSwipeLeft.to_string(),
                     vec![StringifiedAction::new("i3", "workspace prev")],
                 ),
                 (
-                    ActionEvents::ThreeFingerSwipeRight.to_string(),
+                    ActionEvent::ThreeFingerSwipeRight.to_string(),
                     vec![StringifiedAction::new("i3", "workspace next")],
                 ),
-                (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
-                (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
+                (ActionEvent::ThreeFingerSwipeUp.to_string(), vec![]),
+                (ActionEvent::ThreeFingerSwipeDown.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeLeft.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeRight.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeUp.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeDown.to_string(), vec![]),
             ]),
         }
     }
@@ -237,7 +237,7 @@ impl Source for Opts {
             .as_ref()
             .map(|x| m.insert(String::from("threshold"), Value::from(*x)));
 
-        for action_event in ActionEvents::iter() {
+        for action_event in ActionEvent::iter() {
             let actions = self.get_actions_for_event(action_event);
             actions.map(|x| {
                 m.insert(
