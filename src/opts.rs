@@ -14,11 +14,14 @@ use strum::VariantNames;
 #[serde(try_from = "String")]
 #[serde(into = "String")]
 pub struct StringifiedAction {
+    /// Action kind.
     pub kind: String,
+    /// Action command.
     pub command: String,
 }
 
 impl StringifiedAction {
+    /// Return a new [`StringifiedAction`].
     pub fn new(kind: &str, command: &str) -> Self {
         Self {
             kind: kind.to_string(),
