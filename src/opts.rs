@@ -1,6 +1,6 @@
 //! Arguments and utils for the `lillinput` binary.
 
-use crate::ActionTypes;
+use crate::{ActionEvents, ActionTypes};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -132,6 +132,25 @@ pub struct Opts {
     /// actions the four-finger swipe down
     #[clap(long)]
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
+}
+
+impl Opts {
+    /// Return the actions registered with an event.
+    pub fn get_actions_for_event(
+        &self,
+        action_event: ActionEvents,
+    ) -> Option<&Vec<StringifiedAction>> {
+        match action_event {
+            ActionEvents::ThreeFingerSwipeLeft => self.three_finger_swipe_left.as_ref(),
+            ActionEvents::ThreeFingerSwipeRight => self.three_finger_swipe_right.as_ref(),
+            ActionEvents::ThreeFingerSwipeUp => self.three_finger_swipe_up.as_ref(),
+            ActionEvents::ThreeFingerSwipeDown => self.three_finger_swipe_down.as_ref(),
+            ActionEvents::FourFingerSwipeLeft => self.four_finger_swipe_left.as_ref(),
+            ActionEvents::FourFingerSwipeRight => self.four_finger_swipe_right.as_ref(),
+            ActionEvents::FourFingerSwipeUp => self.four_finger_swipe_up.as_ref(),
+            ActionEvents::FourFingerSwipeDown => self.four_finger_swipe_down.as_ref(),
+        }
+    }
 }
 
 #[cfg(test)]
