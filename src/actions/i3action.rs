@@ -5,7 +5,7 @@ use std::fmt;
 use std::rc::Rc;
 
 use crate::actions::errors::ActionError;
-use crate::actions::{Action, ActionTypes};
+use crate::actions::{Action, ActionType};
 use i3ipc::I3Connection;
 
 /// Action that executes `i3` commands.
@@ -57,7 +57,7 @@ impl Action for I3Action {
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:<{}>", ActionTypes::I3, self.command)
+        write!(f, "{}:<{}>", ActionType::I3, self.command)
     }
 }
 

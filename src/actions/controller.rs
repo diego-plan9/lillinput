@@ -9,7 +9,7 @@ use std::str::FromStr;
 use crate::actions::commandaction::CommandAction;
 use crate::actions::errors::ActionControllerError;
 use crate::actions::i3action::I3Action;
-use crate::actions::{Action, ActionController, ActionEvent, ActionMap, ActionTypes};
+use crate::actions::{Action, ActionController, ActionEvent, ActionMap, ActionType};
 use crate::opts::StringifiedAction;
 use crate::Settings;
 use i3ipc::I3Connection;
@@ -51,7 +51,7 @@ impl ActionController for ActionMap {
         // Create the I3 connection if needed.
         let connection = if settings
             .enabled_action_types
-            .contains(&ActionTypes::I3.to_string())
+            .contains(&ActionType::I3.to_string())
         {
             match I3Connection::connect() {
                 Ok(mut conn) => {
@@ -98,11 +98,11 @@ impl ActionController for ActionMap {
 
             for value in arguments.iter() {
                 // Create the new actions.
-                match ActionTypes::from_str(&value.kind) {
-                    Ok(ActionTypes::Command) => {
+                match ActionType::from_str(&value.kind) {
+                    Ok(ActionType::Command) => {
                         actions_list.push(Box::new(CommandAction::new(value.command.clone())));
                     }
-                    Ok(ActionTypes::I3) => match connection {
+                    Ok(ActionType::I3) => match connection {
                         Some(conn) => {
                             actions_list.push(Box::new(I3Action::new(
                                 value.command.clone(),
@@ -238,12 +238,12 @@ mod test {
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
-        assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 4);
         assert!(action_event.is_ok());
-        assert!(action_event.unwrap() == ActionEvents::FourFingerSwipeRight,);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 5);
@@ -271,6 +271,6 @@ mod test {
         // Trigger swipe above threshold.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
-        assert!(action_event.unwrap() == ActionEvents::ThreeFingerSwipeRight,);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
     }
 }

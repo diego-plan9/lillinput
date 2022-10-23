@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use crate::opts::StringifiedAction;
-use crate::{ActionEvent, ActionTypes, Opts};
+use crate::{ActionEvent, ActionType, Opts};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
@@ -31,7 +31,7 @@ impl Default for Settings {
         Settings {
             verbose: LevelFilter::Info,
             seat: "seat0".to_string(),
-            enabled_action_types: vec![ActionTypes::I3.to_string()],
+            enabled_action_types: vec![ActionType::I3.to_string()],
             threshold: 20.0,
             actions: HashMap::from([
                 (

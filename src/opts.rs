@@ -1,6 +1,6 @@
 //! Arguments and utils for the `lillinput` binary.
 
-use crate::{ActionEvent, ActionTypes};
+use crate::{ActionEvent, ActionType};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -64,7 +64,7 @@ impl FromStr for StringifiedAction {
                 "The value does not conform to the action string pattern `{type}:{command}`",
             )),
             Some((action_type, action_command)) => {
-                if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+                if ActionType::VARIANTS.iter().any(|s| s == &action_type) {
                     Ok(Self {
                         kind: action_type.into(),
                         command: action_command.into(),
@@ -74,7 +74,7 @@ impl FromStr for StringifiedAction {
                         ErrorKind::ValueValidation,
                         format!(
                             "The value does not start with a valid action ({:?})",
-                            ActionTypes::VARIANTS
+                            ActionType::VARIANTS
                         ),
                     ))
                 }
@@ -103,7 +103,7 @@ pub struct Opts {
     #[clap(short, long)]
     pub seat: Option<String>,
     /// enabled action types
-    #[clap(short, long, possible_values = ActionTypes::VARIANTS)]
+    #[clap(short, long, possible_values = ActionType::VARIANTS)]
     pub enabled_action_types: Option<Vec<String>>,
     /// minimum threshold for displacement changes
     #[clap(short, long)]
@@ -158,7 +158,7 @@ mod test {
     use super::*;
     use crate::settings::{setup_application, Settings};
     use crate::test_utils::default_test_settings;
-    use crate::{ActionEvent, ActionTypes, Opts};
+    use crate::{ActionEvent, ActionType, Opts};
     use clap::Parser;
     use simplelog::LevelFilter;
     use std::env;
@@ -241,7 +241,7 @@ mod test {
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Trace;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 20.0;
         expected_settings.actions.insert(
             ActionEvent::ThreeFingerSwipeLeft.to_string(),
@@ -316,7 +316,7 @@ four-finger-swipe-down = []
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvent::ThreeFingerSwipeRight.to_string(),
@@ -374,7 +374,7 @@ four-finger-swipe-down = []
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvent::ThreeFingerSwipeRight.to_string(),

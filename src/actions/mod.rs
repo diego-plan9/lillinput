@@ -22,7 +22,7 @@ use strum::{Display, EnumString, EnumVariantNames};
 /// Possible choices for action types.
 #[derive(Display, EnumString, EnumVariantNames)]
 #[strum(serialize_all = "kebab_case")]
-pub enum ActionTypes {
+pub enum ActionType {
     /// Action for interacting with `i3`.
     I3,
     /// Action for executing commands.

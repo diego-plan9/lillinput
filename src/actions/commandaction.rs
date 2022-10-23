@@ -4,7 +4,7 @@ use std::fmt;
 use std::process::Command;
 
 use crate::actions::errors::ActionError;
-use crate::actions::{Action, ActionTypes};
+use crate::actions::{Action, ActionType};
 use shlex::split;
 
 /// Action that executes shell commands.
@@ -40,7 +40,7 @@ impl Action for CommandAction {
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:<{}>", ActionTypes::Command, self.command)
+        write!(f, "{}:<{}>", ActionType::Command, self.command)
     }
 }
 
