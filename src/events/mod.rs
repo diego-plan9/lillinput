@@ -22,8 +22,7 @@ use strum_macros::EnumIter;
     Copy, Clone, Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug,
 )]
 #[strum(serialize_all = "kebab_case")]
-#[allow(clippy::module_name_repetitions)]
-pub enum ActionEvents {
+pub enum ActionEvent {
     /// Three-finger swipe to left.
     ThreeFingerSwipeLeft,
     /// Three-finger swipe to right.

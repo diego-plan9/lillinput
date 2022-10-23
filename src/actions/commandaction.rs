@@ -4,7 +4,7 @@ use std::fmt;
 use std::process::Command;
 
 use crate::actions::errors::ActionError;
-use crate::actions::{Action, ActionTypes};
+use crate::actions::{Action, ActionType};
 use shlex::split;
 
 /// Action that executes shell commands.
@@ -34,13 +34,13 @@ impl Action for CommandAction {
             .output()
             .map(|_| ())
             .map_err(|e| ActionError::ExecutionError {
-                kind: "command".into(),
+                type_: "command".into(),
                 message: e.to_string(),
             })
     }
 
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:<{}>", ActionTypes::Command, self.command)
+        write!(f, "{}:<{}>", ActionType::Command, self.command)
     }
 }
 
@@ -48,7 +48,7 @@ impl Action for CommandAction {
 mod test {
     use std::path::Path;
 
-    use crate::actions::{ActionController, ActionEvents, ActionMap, Settings};
+    use crate::actions::{ActionController, ActionEvent, ActionMap, Settings};
     use crate::opts::StringifiedAction;
     use crate::test_utils::default_test_settings;
 
@@ -63,7 +63,7 @@ mod test {
         let mut settings: Settings = default_test_settings();
         settings.enabled_action_types = vec!["command".to_string()];
         settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("command", "touch /tmp/swipe-right")],
         );
 

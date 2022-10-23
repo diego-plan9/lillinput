@@ -17,8 +17,8 @@ mod events;
 mod opts;
 mod settings;
 
-use crate::actions::{ActionController, ActionMap, ActionTypes};
-use crate::events::ActionEvents;
+use crate::actions::{ActionController, ActionMap, ActionType};
+use crate::events::ActionEvent;
 use crate::opts::Opts;
 use clap::Parser;
 use events::libinput::initialize_context;

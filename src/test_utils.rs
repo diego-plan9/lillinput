@@ -6,7 +6,7 @@ use std::os::unix::net::{UnixListener, UnixStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use crate::{ActionEvents, Settings};
+use crate::{ActionEvent, Settings};
 use simplelog::LevelFilter;
 use tempfile::{Builder, NamedTempFile};
 
@@ -24,14 +24,14 @@ pub fn default_test_settings() -> Settings {
     Settings {
         enabled_action_types: vec![],
         actions: HashMap::from([
-            (ActionEvents::ThreeFingerSwipeLeft.to_string(), vec![]),
-            (ActionEvents::ThreeFingerSwipeRight.to_string(), vec![]),
-            (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
-            (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
-            (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
-            (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
-            (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
-            (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
+            (ActionEvent::ThreeFingerSwipeLeft.to_string(), vec![]),
+            (ActionEvent::ThreeFingerSwipeRight.to_string(), vec![]),
+            (ActionEvent::ThreeFingerSwipeUp.to_string(), vec![]),
+            (ActionEvent::ThreeFingerSwipeDown.to_string(), vec![]),
+            (ActionEvent::FourFingerSwipeLeft.to_string(), vec![]),
+            (ActionEvent::FourFingerSwipeRight.to_string(), vec![]),
+            (ActionEvent::FourFingerSwipeUp.to_string(), vec![]),
+            (ActionEvent::FourFingerSwipeDown.to_string(), vec![]),
         ]),
         threshold: 5.0,
         seat: "seat0".to_string(),

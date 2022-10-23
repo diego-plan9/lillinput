@@ -3,12 +3,13 @@
 use std::collections::HashMap;
 
 use crate::opts::StringifiedAction;
-use crate::{ActionEvents, ActionTypes, Opts};
+use crate::{ActionEvent, ActionType, Opts};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
 use std::string::ToString;
+use strum::IntoEnumIterator;
 
 /// Application settings.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
@@ -30,23 +31,23 @@ impl Default for Settings {
         Settings {
             verbose: LevelFilter::Info,
             seat: "seat0".to_string(),
-            enabled_action_types: vec![ActionTypes::I3.to_string()],
+            enabled_action_types: vec![ActionType::I3.to_string()],
             threshold: 20.0,
             actions: HashMap::from([
                 (
-                    ActionEvents::ThreeFingerSwipeLeft.to_string(),
+                    ActionEvent::ThreeFingerSwipeLeft.to_string(),
                     vec![StringifiedAction::new("i3", "workspace prev")],
                 ),
                 (
-                    ActionEvents::ThreeFingerSwipeRight.to_string(),
+                    ActionEvent::ThreeFingerSwipeRight.to_string(),
                     vec![StringifiedAction::new("i3", "workspace next")],
                 ),
-                (ActionEvents::ThreeFingerSwipeUp.to_string(), vec![]),
-                (ActionEvents::ThreeFingerSwipeDown.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeLeft.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeRight.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeUp.to_string(), vec![]),
-                (ActionEvents::FourFingerSwipeDown.to_string(), vec![]),
+                (ActionEvent::ThreeFingerSwipeUp.to_string(), vec![]),
+                (ActionEvent::ThreeFingerSwipeDown.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeLeft.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeRight.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeUp.to_string(), vec![]),
+                (ActionEvent::FourFingerSwipeDown.to_string(), vec![]),
             ]),
         }
     }
@@ -73,23 +74,6 @@ fn setup_logging(verbosity: LevelFilter) {
         ColorChoice::Auto,
     )
     .unwrap();
-}
-
-/// Check if an action string is valid and with an enabled action type.
-///
-/// A string that specifies an action must conform to the following format:
-/// `{action choice}:{value}`.
-/// and `{action choice}` needs to be in `enabled_action_types`.
-///
-/// # Arguments
-///
-/// * `value` - argument to be parsed.
-/// * `enabled_action_types` - slice of enabled action types.
-fn is_enabled_action_string(action_string: &str, enabled_action_types: &[String]) -> bool {
-    match action_string.split_once(':') {
-        Some((action, _)) => enabled_action_types.iter().any(|s| s == action),
-        None => false,
-    }
 }
 
 /// Setup the application logging and return the application settings.
@@ -179,7 +163,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
-            if !is_enabled_action_string(&entry.to_string(), enabled_action_types) {
+            if enabled_action_types.contains(&entry.type_) {
                 log_entries.push(LogEntry {
                     level: Level::Warn,
                     message: format!(
@@ -192,7 +176,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         }
 
         if prune {
-            value.retain(|x| is_enabled_action_string(&x.to_string(), enabled_action_types));
+            value.retain(|x| enabled_action_types.contains(&x.type_));
         }
     }
 
@@ -235,54 +219,16 @@ impl Source for Opts {
         self.threshold
             .as_ref()
             .map(|x| m.insert(String::from("threshold"), Value::from(*x)));
-        self.three_finger_swipe_left.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeLeft)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.three_finger_swipe_right.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeRight)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.three_finger_swipe_up.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeUp)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.three_finger_swipe_down.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::ThreeFingerSwipeDown)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.four_finger_swipe_left.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeLeft)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.four_finger_swipe_right.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeRight)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.four_finger_swipe_up.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeUp)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
-        self.four_finger_swipe_down.as_ref().map(|x| {
-            m.insert(
-                String::from(&format!("actions.{}", ActionEvents::FourFingerSwipeDown)),
-                Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
-            )
-        });
+
+        for action_event in ActionEvent::iter() {
+            let actions = self.get_actions_for_event(action_event);
+            actions.map(|x| {
+                m.insert(
+                    String::from(&format!("actions.{}", action_event)),
+                    Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
+                )
+            });
+        }
 
         Ok(m)
     }

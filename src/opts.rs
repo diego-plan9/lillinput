@@ -1,6 +1,6 @@
 //! Arguments and utils for the `lillinput` binary.
 
-use crate::ActionTypes;
+use crate::{ActionEvent, ActionType};
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -14,17 +14,17 @@ use strum::VariantNames;
 #[serde(try_from = "String")]
 #[serde(into = "String")]
 pub struct StringifiedAction {
-    /// Action kind.
-    pub kind: String,
+    /// Action type.
+    pub type_: String,
     /// Action command.
     pub command: String,
 }
 
 impl StringifiedAction {
     /// Return a new [`StringifiedAction`].
-    pub fn new(kind: &str, command: &str) -> Self {
+    pub fn new(type_: &str, command: &str) -> Self {
         Self {
-            kind: kind.to_string(),
+            type_: type_.to_string(),
             command: command.to_string(),
         }
     }
@@ -64,9 +64,9 @@ impl FromStr for StringifiedAction {
                 "The value does not conform to the action string pattern `{type}:{command}`",
             )),
             Some((action_type, action_command)) => {
-                if ActionTypes::VARIANTS.iter().any(|s| s == &action_type) {
+                if ActionType::VARIANTS.iter().any(|s| s == &action_type) {
                     Ok(Self {
-                        kind: action_type.into(),
+                        type_: action_type.into(),
                         command: action_command.into(),
                     })
                 } else {
@@ -74,7 +74,7 @@ impl FromStr for StringifiedAction {
                         ErrorKind::ValueValidation,
                         format!(
                             "The value does not start with a valid action ({:?})",
-                            ActionTypes::VARIANTS
+                            ActionType::VARIANTS
                         ),
                     ))
                 }
@@ -85,7 +85,7 @@ impl FromStr for StringifiedAction {
 
 impl fmt::Display for StringifiedAction {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}:{}", self.kind, self.command)
+        write!(f, "{}:{}", self.type_, self.command)
     }
 }
 
@@ -103,7 +103,7 @@ pub struct Opts {
     #[clap(short, long)]
     pub seat: Option<String>,
     /// enabled action types
-    #[clap(short, long, possible_values = ActionTypes::VARIANTS)]
+    #[clap(short, long, possible_values = ActionType::VARIANTS)]
     pub enabled_action_types: Option<Vec<String>>,
     /// minimum threshold for displacement changes
     #[clap(short, long)]
@@ -134,12 +134,31 @@ pub struct Opts {
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
 }
 
+impl Opts {
+    /// Return the actions registered with an event.
+    pub fn get_actions_for_event(
+        &self,
+        action_event: ActionEvent,
+    ) -> Option<&Vec<StringifiedAction>> {
+        match action_event {
+            ActionEvent::ThreeFingerSwipeLeft => self.three_finger_swipe_left.as_ref(),
+            ActionEvent::ThreeFingerSwipeRight => self.three_finger_swipe_right.as_ref(),
+            ActionEvent::ThreeFingerSwipeUp => self.three_finger_swipe_up.as_ref(),
+            ActionEvent::ThreeFingerSwipeDown => self.three_finger_swipe_down.as_ref(),
+            ActionEvent::FourFingerSwipeLeft => self.four_finger_swipe_left.as_ref(),
+            ActionEvent::FourFingerSwipeRight => self.four_finger_swipe_right.as_ref(),
+            ActionEvent::FourFingerSwipeUp => self.four_finger_swipe_up.as_ref(),
+            ActionEvent::FourFingerSwipeDown => self.four_finger_swipe_down.as_ref(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::settings::{setup_application, Settings};
     use crate::test_utils::default_test_settings;
-    use crate::{ActionEvents, ActionTypes, Opts};
+    use crate::{ActionEvent, ActionType, Opts};
     use clap::Parser;
     use simplelog::LevelFilter;
     use std::env;
@@ -222,38 +241,38 @@ mod test {
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Trace;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 20.0;
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            ActionEvent::ThreeFingerSwipeLeft.to_string(),
             vec![StringifiedAction::new("i3", "3left")],
         );
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "3right")],
         );
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeUp.to_string(),
+            ActionEvent::ThreeFingerSwipeUp.to_string(),
             vec![StringifiedAction::new("i3", "3up")],
         );
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeDown.to_string(),
+            ActionEvent::ThreeFingerSwipeDown.to_string(),
             vec![StringifiedAction::new("i3", "3down")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeLeft.to_string(),
+            ActionEvent::FourFingerSwipeLeft.to_string(),
             vec![StringifiedAction::new("i3", "4left")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeRight.to_string(),
+            ActionEvent::FourFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "4right")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeUp.to_string(),
+            ActionEvent::FourFingerSwipeUp.to_string(),
             vec![StringifiedAction::new("i3", "4up")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeDown.to_string(),
+            ActionEvent::FourFingerSwipeDown.to_string(),
             vec![StringifiedAction::new("i3", "4down")],
         );
 
@@ -297,14 +316,14 @@ four-finger-swipe-down = []
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "foo")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeRight.to_string(),
+            ActionEvent::FourFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "bar")],
         );
 
@@ -355,14 +374,14 @@ four-finger-swipe-down = []
         let mut expected_settings = default_test_settings();
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
-        expected_settings.enabled_action_types = vec![ActionTypes::I3.to_string()];
+        expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "foo")],
         );
         expected_settings.actions.insert(
-            ActionEvents::FourFingerSwipeRight.to_string(),
+            ActionEvent::FourFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "bar")],
         );
 
@@ -414,12 +433,12 @@ three-finger-swipe-left = ["i3:left_from_config"]
 
         // `three-finger-swipe-right` from config file.
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeRight.to_string(),
+            ActionEvent::ThreeFingerSwipeRight.to_string(),
             vec![StringifiedAction::new("i3", "right_from_config")],
         );
         // `three-finger-swipe-left` from CLI.
         expected_settings.actions.insert(
-            ActionEvents::ThreeFingerSwipeLeft.to_string(),
+            ActionEvent::ThreeFingerSwipeLeft.to_string(),
             vec![StringifiedAction::new("i3", "left_from_cli")],
         );
 

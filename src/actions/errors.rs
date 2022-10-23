@@ -1,6 +1,6 @@
 //! Errors related to events.
 
-use crate::events::ActionEvents;
+use crate::events::ActionEvent;
 use thiserror::Error;
 
 /// Errors raised during processing of events in the controller.
@@ -16,17 +16,17 @@ pub enum ActionControllerError {
 
     /// No actions registered for event.
     #[error("no actions registered for event {0}")]
-    NoActionsRegistered(ActionEvents),
+    NoActionsRegistered(ActionEvent),
 }
 
 /// Errors related to `Actions`.
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum ActionError {
     /// Command execution resulted in error.
-    #[error("{kind}: command execution resulted in error: {message}")]
+    #[error("{type_}: command execution resulted in error: {message}")]
     ExecutionError {
-        /// Action kind.
-        kind: String,
+        /// Action type.
+        type_: String,
         /// Command error message.
         message: String,
     },
