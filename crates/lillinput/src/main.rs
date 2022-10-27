@@ -17,7 +17,7 @@ mod events;
 mod opts;
 mod settings;
 
-use crate::actions::{ActionController, ActionMap, ActionType};
+use crate::actions::{ActionMap, ActionType};
 use crate::events::ActionEvent;
 use crate::opts::Opts;
 use clap::Parser;
@@ -37,7 +37,7 @@ fn main() {
     let settings: Settings = setup_application(opts, true);
 
     // Create the action map controller.
-    let mut action_map: ActionMap = ActionController::new(&settings);
+    let mut action_map: ActionMap = ActionMap::new(&settings);
     action_map.populate_actions(&settings);
 
     // Create the libinput object.

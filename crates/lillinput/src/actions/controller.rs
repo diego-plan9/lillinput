@@ -46,8 +46,8 @@ enum Axis {
     Y,
 }
 
-impl ActionController for ActionMap {
-    fn new(settings: &Settings) -> Self {
+impl ActionMap {
+    pub fn new(settings: &Settings) -> Self {
         // Create the I3 connection if needed.
         let connection = if settings
             .enabled_action_types
@@ -83,7 +83,7 @@ impl ActionController for ActionMap {
         }
     }
 
-    fn populate_actions(&mut self, settings: &Settings) {
+    pub fn populate_actions(&mut self, settings: &Settings) {
         /// Convert an stringified action list into individual actions.
         ///
         /// # Arguments
@@ -152,7 +152,9 @@ impl ActionController for ActionMap {
             &four_finger_counts.as_str()[0..four_finger_counts.len() - 1],
         );
     }
+}
 
+impl ActionController for ActionMap {
     fn receive_end_event(
         &mut self,
         dx: f64,
@@ -233,7 +235,7 @@ mod test {
     fn test_parse_finger_count() {
         // Initialize the command line options and controller.
         let settings: Settings = default_test_settings();
-        let mut action_map: ActionMap = ActionController::new(&settings);
+        let mut action_map: ActionMap = ActionMap::new(&settings);
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
@@ -259,7 +261,7 @@ mod test {
     fn test_parse_threshold() {
         // Initialize the command line options and controller.
         let settings: Settings = default_test_settings();
-        let mut action_map: ActionMap = ActionController::new(&settings);
+        let mut action_map: ActionMap = ActionMap::new(&settings);
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);

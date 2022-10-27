@@ -15,7 +15,6 @@ use std::rc::Rc;
 
 use crate::actions::errors::{ActionControllerError, ActionError};
 use crate::events::ActionEvent;
-use crate::Settings;
 use i3ipc::I3Connection;
 use strum::{Display, EnumString, EnumVariantNames};
 
@@ -41,24 +40,6 @@ pub struct ActionMap {
 
 /// Controller that connects events and actions.
 pub trait ActionController {
-    /// Create a new [`ActionController`].
-    ///
-    /// # Arguments
-    ///
-    /// * `settings` - application settings.
-    fn new(settings: &Settings) -> Self;
-
-    /// Create the individual actions used by this controller.
-    ///
-    /// Parse the command line arguments and add the individual actions to
-    /// the internal structures in this controller.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - action controller.
-    /// * `settings` - application settings.
-    fn populate_actions(&mut self, settings: &Settings);
-
     /// Receive the end of swipe gesture event.
     ///
     /// # Arguments
