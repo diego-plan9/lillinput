@@ -47,6 +47,11 @@ enum Axis {
 }
 
 impl ActionMap {
+    /// Return a new [`ActionController`].
+    ///
+    /// # Arguments
+    ///
+    /// * `settings` - application settings.
     pub fn new(settings: &Settings) -> Self {
         // Create the I3 connection if needed.
         let connection = if settings
@@ -83,6 +88,15 @@ impl ActionMap {
         }
     }
 
+    /// Create the individual actions used by this controller.
+    ///
+    /// Parse the command line arguments and add the individual actions to
+    /// the internal structures in this controller.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - action controller.
+    /// * `settings` - application settings.
     pub fn populate_actions(&mut self, settings: &Settings) {
         /// Convert an stringified action list into individual actions.
         ///
