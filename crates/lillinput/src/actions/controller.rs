@@ -66,11 +66,11 @@ impl ActionMap {
         }
         let three_finger_counts: String = ActionEvent::iter()
             .take(4)
-            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         let four_finger_counts: String = ActionEvent::iter()
             .skip(4)
-            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         format!(
             "{}, {} actions enabled",
@@ -154,17 +154,14 @@ impl ActionController for ActionMap {
 mod test {
     use crate::actions::controller::{ActionController, ActionEvent, ActionMap};
     use crate::actions::errors::ActionControllerError;
-    use crate::extract_action_map;
-    use crate::test_utils::default_test_settings;
-    use crate::Settings;
+
+    use std::collections::HashMap;
 
     #[test]
     /// Test the handling of an event `finger_count` argument.
     fn test_parse_finger_count() {
-        // Initialize the command line options and controller.
-        let settings: Settings = default_test_settings();
-        let (actions, _) = extract_action_map(&settings);
-        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        // Initialize the controller.
+        let mut action_map: ActionMap = ActionMap::new(5.0, HashMap::new());
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
@@ -188,10 +185,8 @@ mod test {
     #[test]
     /// Test the handling of an event `threshold` argument.
     fn test_parse_threshold() {
-        // Initialize the command line options and controller.
-        let settings: Settings = default_test_settings();
-        let (actions, _) = extract_action_map(&settings);
-        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        // Initialize the controller.
+        let mut action_map: ActionMap = ActionMap::new(5.0, HashMap::new());
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);

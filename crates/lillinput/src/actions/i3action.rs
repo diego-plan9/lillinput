@@ -76,60 +76,26 @@ impl Action for I3Action {
 
 #[cfg(test)]
 mod test {
+    use std::cell::RefCell;
     use std::collections::HashMap;
     use std::env;
+    use std::rc::Rc;
     use std::sync::{Arc, Mutex};
 
-    use crate::actions::{ActionController, ActionEvent, ActionMap};
+    use super::I3Action;
+    use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
     use crate::extract_action_map;
     use crate::opts::StringifiedAction;
     use crate::settings::Settings;
     use crate::test_utils::{default_test_settings, init_listener};
 
+    use i3ipc::I3Connection;
     use serial_test::serial;
 
     #[test]
     #[serial]
     /// Test the triggering of commands for the 4x2 swipe actions.
     fn test_i3_swipe_actions() {
-        // Initialize the command line options.
-        let mut settings: Settings = default_test_settings();
-        settings.enabled_action_types = vec!["i3".to_string()];
-        settings.actions = HashMap::from([
-            (
-                ActionEvent::ThreeFingerSwipeLeft.to_string(),
-                vec![StringifiedAction::new("i3", "swipe left 3")],
-            ),
-            (
-                ActionEvent::ThreeFingerSwipeRight.to_string(),
-                vec![StringifiedAction::new("i3", "swipe right 3")],
-            ),
-            (
-                ActionEvent::ThreeFingerSwipeUp.to_string(),
-                vec![StringifiedAction::new("i3", "swipe up 3")],
-            ),
-            (
-                ActionEvent::ThreeFingerSwipeDown.to_string(),
-                vec![StringifiedAction::new("i3", "swipe down 3")],
-            ),
-            (
-                ActionEvent::FourFingerSwipeLeft.to_string(),
-                vec![StringifiedAction::new("i3", "swipe left 4")],
-            ),
-            (
-                ActionEvent::FourFingerSwipeRight.to_string(),
-                vec![StringifiedAction::new("i3", "swipe right 4")],
-            ),
-            (
-                ActionEvent::FourFingerSwipeUp.to_string(),
-                vec![StringifiedAction::new("i3", "swipe up 4")],
-            ),
-            (
-                ActionEvent::FourFingerSwipeDown.to_string(),
-                vec![StringifiedAction::new("i3", "swipe down 4")],
-            ),
-        ]);
-
         // Create the expected commands (version + 4 swipes).
         let expected_commands = vec![
             "swipe right 3",
@@ -147,8 +113,27 @@ mod test {
         let socket_file = init_listener(Arc::clone(&message_log));
 
         // Create the controller.
-        let (actions, _) = extract_action_map(&settings);
-        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        let connection = Rc::new(RefCell::new(Some(I3Connection::connect().unwrap())));
+        let actions_list: Vec<Box<dyn Action>> = vec![
+            Box::new(I3Action::new(
+                "swipe right 3".into(),
+                Rc::clone(&connection),
+            )),
+            Box::new(I3Action::new("swipe left 3".into(), Rc::clone(&connection))),
+            Box::new(I3Action::new("swipe up 3".into(), Rc::clone(&connection))),
+            Box::new(I3Action::new("swipe down 3".into(), Rc::clone(&connection))),
+            Box::new(I3Action::new(
+                "swipe right 4".into(),
+                Rc::clone(&connection),
+            )),
+            Box::new(I3Action::new("swipe left 4".into(), Rc::clone(&connection))),
+            Box::new(I3Action::new("swipe up 4".into(), Rc::clone(&connection))),
+            Box::new(I3Action::new("swipe down 4".into(), Rc::clone(&connection))),
+        ];
+        let mut action_map = ActionMap::new(
+            5.0,
+            HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
+        );
 
         // Trigger swipe in the 4 directions.
         action_map.receive_end_event(10.0, 0.0, 3).ok();

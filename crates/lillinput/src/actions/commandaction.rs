@@ -46,13 +46,11 @@ impl Action for CommandAction {
 
 #[cfg(test)]
 mod test {
+    use std::collections::HashMap;
     use std::path::Path;
 
-    use crate::actions::{ActionController, ActionEvent, ActionMap};
-    use crate::extract_action_map;
-    use crate::opts::StringifiedAction;
-    use crate::settings::Settings;
-    use crate::test_utils::default_test_settings;
+    use super::CommandAction;
+    use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
 
     #[test]
     /// Test the triggering of commands for a single swipe action.
@@ -61,17 +59,14 @@ mod test {
         let expected_file = "/tmp/swipe-right";
         std::fs::remove_file(expected_file).ok();
 
-        // Initialize the command line options.
-        let mut settings: Settings = default_test_settings();
-        settings.enabled_action_types = vec!["command".to_string()];
-        settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRight.to_string(),
-            vec![StringifiedAction::new("command", "touch /tmp/swipe-right")],
-        );
-
         // Create the controller.
-        let (actions, _) = extract_action_map(&settings);
-        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        let actions_list: Vec<Box<dyn Action>> = vec![Box::new(CommandAction::new(
+            "touch /tmp/swipe-right".into(),
+        ))];
+        let mut action_map = ActionMap::new(
+            5.0,
+            HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
+        );
 
         // Trigger a swipe.
         action_map.receive_end_event(10.0, 0.0, 3).ok();
