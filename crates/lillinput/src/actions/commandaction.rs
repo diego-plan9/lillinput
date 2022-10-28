@@ -49,6 +49,7 @@ mod test {
     use std::path::Path;
 
     use crate::actions::{ActionController, ActionEvent, ActionMap};
+    use crate::extract_action_map;
     use crate::opts::StringifiedAction;
     use crate::settings::Settings;
     use crate::test_utils::default_test_settings;
@@ -68,9 +69,11 @@ mod test {
             vec![StringifiedAction::new("command", "touch /tmp/swipe-right")],
         );
 
+        // Create the controller.
+        let (actions, _) = extract_action_map(&settings);
+        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+
         // Trigger a swipe.
-        let mut action_map: ActionMap = ActionMap::new(&settings);
-        action_map.populate_actions(&settings);
         action_map.receive_end_event(10.0, 0.0, 3).ok();
 
         // Assert.

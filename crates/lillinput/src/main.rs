@@ -17,6 +17,7 @@ mod events;
 mod opts;
 mod settings;
 
+use crate::actions::controller::extract_action_map;
 use crate::actions::{ActionMap, ActionType};
 use crate::events::ActionEvent;
 use crate::opts::Opts;
@@ -36,9 +37,11 @@ fn main() {
     let opts: Opts = Opts::parse();
     let settings: Settings = setup_application(opts, true);
 
+    // Prepare the action map.
+    let (actions, _) = extract_action_map(&settings);
+
     // Create the action map controller.
-    let mut action_map: ActionMap = ActionMap::new(&settings);
-    action_map.populate_actions(&settings);
+    let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
 
     // Create the libinput object.
     let input = initialize_context(&settings.seat).unwrap_or_else(|e| {

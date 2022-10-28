@@ -8,14 +8,11 @@ pub mod controller;
 pub mod errors;
 pub mod i3action;
 
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
-use std::rc::Rc;
 
 use crate::actions::errors::{ActionControllerError, ActionError};
 use crate::events::ActionEvent;
-use i3ipc::I3Connection;
 use strum::{Display, EnumString, EnumVariantNames};
 
 /// Possible choices for action types.
@@ -32,8 +29,6 @@ pub enum ActionType {
 pub struct ActionMap {
     /// Minimum threshold for displacement changes.
     threshold: f64,
-    /// Optional `i3` RPC connection.
-    connection: Rc<RefCell<Option<I3Connection>>>,
     /// Map between events and actions.
     actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
 }

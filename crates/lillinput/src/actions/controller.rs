@@ -10,12 +10,10 @@ use crate::actions::commandaction::CommandAction;
 use crate::actions::errors::ActionControllerError;
 use crate::actions::i3action::I3Action;
 use crate::actions::{Action, ActionController, ActionEvent, ActionMap, ActionType};
-use crate::opts::StringifiedAction;
 use crate::Settings;
 use i3ipc::I3Connection;
 use itertools::Itertools;
 use log::{debug, info, warn};
-use std::convert::TryInto;
 use strum::IntoEnumIterator;
 
 /// Possible choices for finger count.
@@ -52,101 +50,18 @@ impl ActionMap {
     /// # Arguments
     ///
     /// * `settings` - application settings.
-    pub fn new(settings: &Settings) -> Self {
-        // Create the I3 connection if needed.
-        let connection = if settings
-            .enabled_action_types
-            .contains(&ActionType::I3.to_string())
-        {
-            match I3Connection::connect() {
-                Ok(mut conn) => {
-                    info!(
-                        "i3: connection opened (with({:?})",
-                        conn.get_version().unwrap().human_readable
-                    );
-                    Some(conn)
-                }
-                Err(error) => {
-                    info!("i3: could not establish a connection: {:?}", error);
-                    None
-                }
-            }
-        } else {
-            None
-        };
+    pub fn new(threshold: f64, actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>) -> Self {
+        let action_map = ActionMap { threshold, actions };
 
-        let default_actions: [(ActionEvent, Vec<_>); 8] = ActionEvent::iter()
-            .map(|x| (x, Vec::new()))
-            .collect::<Vec<(ActionEvent, Vec<_>)>>()
-            .try_into()
-            .unwrap();
-
-        ActionMap {
-            threshold: settings.threshold,
-            connection: Rc::new(RefCell::new(connection)),
-            actions: HashMap::from(default_actions),
-        }
+        info!(
+            "Action controller started: {}",
+            action_map._get_status_info()
+        );
+        action_map
     }
 
-    /// Create the individual actions used by this controller.
-    ///
-    /// Parse the command line arguments and add the individual actions to
-    /// the internal structures in this controller.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - action controller.
-    /// * `settings` - application settings.
-    pub fn populate_actions(&mut self, settings: &Settings) {
-        /// Convert an stringified action list into individual actions.
-        ///
-        /// # Arguments
-        ///.
-        /// * `arguments` - list of command line arguments.
-        /// * `connection` - optional i3 connection.
-        fn parse_action_list(
-            arguments: &[StringifiedAction],
-            connection: &Rc<RefCell<Option<I3Connection>>>,
-        ) -> Vec<Box<dyn Action>> {
-            let mut actions_list: Vec<Box<dyn Action>> = vec![];
-
-            let connection_rc = Rc::clone(connection);
-            let connection_option = &*connection_rc.borrow_mut();
-
-            for value in arguments.iter() {
-                // Create the new actions.
-                match ActionType::from_str(&value.type_) {
-                    Ok(ActionType::Command) => {
-                        actions_list.push(Box::new(CommandAction::new(value.command.clone())));
-                    }
-                    Ok(ActionType::I3) => match connection_option {
-                        Some(_) => {
-                            actions_list.push(Box::new(I3Action::new(
-                                value.command.clone(),
-                                Rc::clone(connection),
-                            )));
-                        }
-                        None => {
-                            warn!("ignoring i3 action, as the i3 connection could not be set.");
-                        }
-                    },
-                    Err(_) => {
-                        warn!("Unknown action type: '{}", value.type_);
-                    }
-                }
-            }
-
-            actions_list
-        }
-
-        // Populate the fields for each `ActionEvent`.
-        for action_event in ActionEvent::iter() {
-            if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
-                let parsed_actions = parse_action_list(arguments, &self.connection);
-                self.actions.insert(action_event, parsed_actions);
-            }
-        }
-
+    /// Return the status of the controller in printable form.
+    fn _get_status_info(&self) -> String {
         // Print information.
         for action_event in ActionEvent::iter() {
             debug!(
@@ -163,11 +78,11 @@ impl ActionMap {
             .skip(4)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
             .collect();
-        info!(
-            "Action controller started: {}, {} actions enabled",
+        format!(
+            "{}, {} actions enabled",
             &three_finger_counts.as_str()[0..three_finger_counts.len() - 1],
             &four_finger_counts.as_str()[0..four_finger_counts.len() - 1],
-        );
+        )
     }
 }
 
@@ -241,10 +156,83 @@ impl ActionController for ActionMap {
     }
 }
 
+pub fn extract_action_map(
+    settings: &Settings,
+) -> (
+    HashMap<ActionEvent, Vec<Box<dyn Action>>>,
+    Rc<RefCell<Option<I3Connection>>>,
+) {
+    let mut action_map: HashMap<ActionEvent, Vec<Box<dyn Action>>> = HashMap::new();
+    let connection = Rc::new(RefCell::new(None));
+    let mut connection_exists = false;
+
+    // Create the I3 connection if needed.
+    if settings
+        .actions
+        .values()
+        .flatten()
+        .any(|s| s.type_ == ActionType::I3.to_string())
+    {
+        let new_connection = match I3Connection::connect() {
+            Ok(mut conn) => {
+                info!(
+                    "i3: connection opened (with({:?})",
+                    conn.get_version().unwrap().human_readable
+                );
+                connection_exists = true;
+
+                Some(conn)
+            }
+            Err(error) => {
+                warn!("i3: could not establish a connection: {:?}", error);
+                None
+            }
+        };
+
+        // Update the connection.
+        let connection_option = &mut *connection.borrow_mut();
+        *connection_option = new_connection;
+    }
+
+    // Populate the fields for each `ActionEvent`.
+    for action_event in ActionEvent::iter() {
+        if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
+            let mut actions_list: Vec<Box<dyn Action>> = vec![];
+
+            for value in arguments.iter() {
+                // Create the new actions.
+                match ActionType::from_str(&value.type_) {
+                    Ok(ActionType::Command) => {
+                        actions_list.push(Box::new(CommandAction::new(value.command.clone())))
+                    }
+                    Ok(ActionType::I3) => {
+                        if connection_exists {
+                            actions_list.push(Box::new(I3Action::new(
+                                value.command.clone(),
+                                Rc::clone(&connection),
+                            )));
+                        } else {
+                            warn!("Disabling action as i3 connection could not be established: {value}");
+                        }
+                    }
+                    Err(_) => {
+                        warn!("Unknown action type: '{}", value.type_);
+                    }
+                }
+            }
+
+            action_map.insert(action_event, actions_list);
+        }
+    }
+
+    (action_map, connection)
+}
+
 #[cfg(test)]
 mod test {
     use crate::actions::controller::{ActionController, ActionEvent, ActionMap, Settings};
     use crate::actions::errors::ActionControllerError;
+    use crate::extract_action_map;
     use crate::test_utils::default_test_settings;
 
     #[test]
@@ -252,7 +240,8 @@ mod test {
     fn test_parse_finger_count() {
         // Initialize the command line options and controller.
         let settings: Settings = default_test_settings();
-        let mut action_map: ActionMap = ActionMap::new(&settings);
+        let (actions, _) = extract_action_map(&settings);
+        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
@@ -278,7 +267,8 @@ mod test {
     fn test_parse_threshold() {
         // Initialize the command line options and controller.
         let settings: Settings = default_test_settings();
-        let mut action_map: ActionMap = ActionMap::new(&settings);
+        let (actions, _) = extract_action_map(&settings);
+        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
 
         // Trigger swipe below threshold.
         let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);

@@ -78,6 +78,7 @@ mod test {
     use std::sync::{Arc, Mutex};
 
     use crate::actions::{ActionController, ActionEvent, ActionMap};
+    use crate::extract_action_map;
     use crate::opts::StringifiedAction;
     use crate::settings::Settings;
     use crate::test_utils::{default_test_settings, init_listener};
@@ -142,9 +143,11 @@ mod test {
         let message_log = Arc::new(Mutex::new(vec![]));
         let socket_file = init_listener(Arc::clone(&message_log));
 
+        // Create the controller.
+        let (actions, _) = extract_action_map(&settings);
+        let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+
         // Trigger swipe in the 4 directions.
-        let mut action_map: ActionMap = ActionMap::new(&settings);
-        action_map.populate_actions(&settings);
         action_map.receive_end_event(10.0, 0.0, 3).ok();
         action_map.receive_end_event(-10.0, 0.0, 3).ok();
         action_map.receive_end_event(0.0, 10.0, 3).ok();
@@ -178,10 +181,10 @@ mod test {
             ],
         );
 
-        // Create the action map.
+        // Create the controller.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
-        let mut action_map: ActionMap = ActionMap::new(&settings);
-        action_map.populate_actions(&settings);
+        let (actions, _) = extract_action_map(&settings);
+        let action_map: ActionMap = ActionMap::new(settings.threshold, actions);
 
         // Assert that only the command action is created.
         assert_eq!(

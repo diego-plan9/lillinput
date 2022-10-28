@@ -163,7 +163,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         let mut prune = false;
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
-            if enabled_action_types.contains(&entry.type_) {
+            if !enabled_action_types.contains(&entry.type_) {
                 log_entries.push(LogEntry {
                     level: Level::Warn,
                     message: format!(
