@@ -66,11 +66,11 @@ impl ActionMap {
         }
         let three_finger_counts: String = ActionEvent::iter()
             .take(4)
-            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         let four_finger_counts: String = ActionEvent::iter()
             .skip(4)
-            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap().len()))
+            .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         format!(
             "{}, {} actions enabled",
