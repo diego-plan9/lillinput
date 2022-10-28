@@ -16,11 +16,12 @@ mod actions;
 mod events;
 mod opts;
 mod settings;
+mod utils;
 
-use crate::actions::controller::extract_action_map;
 use crate::actions::{ActionMap, ActionType};
 use crate::events::ActionEvent;
 use crate::opts::Opts;
+use crate::utils::extract_action_map;
 use clap::Parser;
 use events::libinput::initialize_context;
 use events::main_loop;

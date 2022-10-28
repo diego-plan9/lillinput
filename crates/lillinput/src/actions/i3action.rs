@@ -8,11 +8,14 @@ use crate::actions::errors::ActionError;
 use crate::actions::{Action, ActionType};
 use i3ipc::I3Connection;
 
+/// Shared optional `i3` connection.
+pub type SharedConnection = Rc<RefCell<Option<I3Connection>>>;
+
 /// Action that executes `i3` commands.
 #[derive(Debug)]
 pub struct I3Action {
     /// `i3` RPC connection.
-    connection: Rc<RefCell<Option<I3Connection>>>,
+    connection: SharedConnection,
     /// `i3` command to be executed in this action.
     command: String,
 }
