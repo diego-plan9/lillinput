@@ -64,7 +64,7 @@ impl ActionMap {
                         "i3: connection opened (with({:?})",
                         conn.get_version().unwrap().human_readable
                     );
-                    Some(Rc::new(RefCell::new(conn)))
+                    Some(conn)
                 }
                 Err(error) => {
                     info!("i3: could not establish a connection: {:?}", error);
@@ -83,7 +83,7 @@ impl ActionMap {
 
         ActionMap {
             threshold: settings.threshold,
-            connection,
+            connection: Rc::new(RefCell::new(connection)),
             actions: HashMap::from(default_actions),
         }
     }
@@ -106,9 +106,12 @@ impl ActionMap {
         /// * `connection` - optional i3 connection.
         fn parse_action_list(
             arguments: &[StringifiedAction],
-            connection: &Option<Rc<RefCell<I3Connection>>>,
+            connection: &Rc<RefCell<Option<I3Connection>>>,
         ) -> Vec<Box<dyn Action>> {
             let mut actions_list: Vec<Box<dyn Action>> = vec![];
+
+            let connection_rc = Rc::clone(connection);
+            let connection_option = &*connection_rc.borrow_mut();
 
             for value in arguments.iter() {
                 // Create the new actions.
@@ -116,11 +119,11 @@ impl ActionMap {
                     Ok(ActionType::Command) => {
                         actions_list.push(Box::new(CommandAction::new(value.command.clone())));
                     }
-                    Ok(ActionType::I3) => match connection {
-                        Some(conn) => {
+                    Ok(ActionType::I3) => match connection_option {
+                        Some(_) => {
                             actions_list.push(Box::new(I3Action::new(
                                 value.command.clone(),
-                                Rc::clone(conn),
+                                Rc::clone(connection),
                             )));
                         }
                         None => {

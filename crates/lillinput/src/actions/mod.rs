@@ -33,7 +33,7 @@ pub struct ActionMap {
     /// Minimum threshold for displacement changes.
     threshold: f64,
     /// Optional `i3` RPC connection.
-    connection: Option<Rc<RefCell<I3Connection>>>,
+    connection: Rc<RefCell<Option<I3Connection>>>,
     /// Map between events and actions.
     actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
 }

@@ -12,7 +12,7 @@ use i3ipc::I3Connection;
 #[derive(Debug)]
 pub struct I3Action {
     /// `i3` RPC connection.
-    connection: Rc<RefCell<I3Connection>>,
+    connection: Rc<RefCell<Option<I3Connection>>>,
     /// `i3` command to be executed in this action.
     command: String,
 }
@@ -24,7 +24,7 @@ impl I3Action {
     ///
     /// * `command` - `i3` command to be executed in this action.
     /// * `connection` - `i3` RPC connection.
-    pub fn new(command: String, connection: Rc<RefCell<I3Connection>>) -> Self {
+    pub fn new(command: String, connection: Rc<RefCell<Option<I3Connection>>>) -> Self {
         I3Action {
             connection,
             command,
@@ -35,10 +35,20 @@ impl I3Action {
 impl Action for I3Action {
     fn execute_command(&mut self) -> Result<(), ActionError> {
         // Perform the command, if specified.
-        match Rc::clone(&self.connection)
-            .borrow_mut()
-            .run_command(&self.command)
-        {
+        let connection_rc = Rc::clone(&self.connection);
+        let connection_option = &mut *connection_rc.borrow_mut();
+
+        let connection = match connection_option {
+            Some(connection) => connection,
+            None => {
+                return Err(ActionError::ExecutionError {
+                    type_: "i3".into(),
+                    message: "i3 connection is not set".into(),
+                })
+            }
+        };
+
+        match connection.run_command(&self.command) {
             Err(e) => Err(ActionError::ExecutionError {
                 type_: "i3".into(),
                 message: e.to_string(),
