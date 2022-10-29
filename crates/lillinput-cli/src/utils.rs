@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
 
-use crate::actions::commandaction::CommandAction;
-use crate::actions::i3action::{I3Action, SharedConnection};
-use crate::actions::{Action, ActionType};
-use crate::events::ActionEvent;
 use crate::Settings;
 use i3ipc::I3Connection;
+use lillinput::actions::commandaction::CommandAction;
+use lillinput::actions::i3action::{I3Action, SharedConnection};
+use lillinput::actions::{Action, ActionType};
+use lillinput::events::ActionEvent;
 use log::{info, warn};
 use strum::IntoEnumIterator;
 

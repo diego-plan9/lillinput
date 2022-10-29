@@ -12,19 +12,17 @@
     clippy::doc_markdown
 )]
 
-mod actions;
-mod events;
 mod opts;
 mod settings;
 mod utils;
 
-use crate::actions::{ActionMap, ActionType};
-use crate::events::ActionEvent;
 use crate::opts::Opts;
 use crate::utils::extract_action_map;
 use clap::Parser;
-use events::libinput::initialize_context;
-use events::main_loop;
+use lillinput::actions::{ActionMap, ActionType};
+use lillinput::events::libinput::initialize_context;
+use lillinput::events::main_loop;
+use lillinput::events::ActionEvent;
 use log::{error, info};
 use settings::{setup_application, Settings};
 use std::process;
