@@ -1,5 +1,5 @@
 [package]
-name = "lillinput"
+name = "lillinput-cli"
 version = "0.2.1"
 authors = ["Diego M. Rodríguez <diego@moreda.io>"]
 edition = "2021"
