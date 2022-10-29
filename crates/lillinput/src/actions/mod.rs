@@ -28,9 +28,9 @@ pub enum ActionType {
 /// Map between events and actions.
 pub struct ActionMap {
     /// Minimum threshold for displacement changes.
-    threshold: f64,
+    pub threshold: f64,
     /// Map between events and actions.
-    actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
+    pub actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
 }
 
 /// Controller that connects events and actions.
