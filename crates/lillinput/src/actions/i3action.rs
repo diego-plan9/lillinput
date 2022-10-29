@@ -41,6 +41,7 @@ impl Action for I3Action {
         let connection_rc = Rc::clone(&self.connection);
         let connection_option = &mut *connection_rc.borrow_mut();
 
+        // Check if the i3 connection is valid.
         let connection = match connection_option {
             Some(connection) => connection,
             None => {
@@ -78,16 +79,13 @@ impl Action for I3Action {
 mod test {
     use std::cell::RefCell;
     use std::collections::HashMap;
-    use std::env;
     use std::rc::Rc;
     use std::sync::{Arc, Mutex};
 
     use super::I3Action;
+    use crate::actions::errors::ActionError;
     use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
-    use crate::extract_action_map;
-    use crate::opts::StringifiedAction;
-    use crate::settings::Settings;
-    use crate::test_utils::{default_test_settings, init_listener};
+    use crate::test_utils::init_listener;
 
     use i3ipc::I3Connection;
     use serial_test::serial;
@@ -158,30 +156,19 @@ mod test {
     #[serial]
     ///Test graceful handling of unavailable i3 connection.
     fn test_i3_not_available() {
-        // Initialize the command line options.
-        let mut settings: Settings = default_test_settings();
-        settings.enabled_action_types = vec!["i3".to_string()];
-        settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRight.to_string(),
-            vec![
-                StringifiedAction::new("i3", "swipe right"),
-                StringifiedAction::new("command", "touch /tmp/swipe-right"),
-            ],
-        );
+        // Create the action.
+        let mut action = I3Action::new(String::from("swipe right 3"), Rc::new(RefCell::new(None)));
 
-        // Create the controller.
-        env::set_var("I3SOCK", "/tmp/non-existing-socket");
-        let (actions, _) = extract_action_map(&settings);
-        let action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        // Trigger a swipe.
+        let result = action.execute_command();
 
-        // Assert that only the command action is created.
+        // Assert the command is not executed.
         assert_eq!(
-            action_map
-                .actions
-                .get(&ActionEvent::ThreeFingerSwipeRight)
-                .unwrap()
-                .len(),
-            1
+            result,
+            Err(ActionError::ExecutionError {
+                type_: String::from("i3"),
+                message: String::from("i3 connection is not set"),
+            })
         );
     }
 }
