@@ -92,12 +92,12 @@ pub fn extract_action_map(
 mod test {
     use std::env;
 
-    use crate::actions::ActionMap;
-    use crate::events::ActionEvent;
     use crate::extract_action_map;
     use crate::opts::StringifiedAction;
     use crate::settings::Settings;
     use crate::test_utils::default_test_settings;
+    use lillinput::actions::ActionMap;
+    use lillinput::events::ActionEvent;
 
     use serial_test::serial;
 
