@@ -15,7 +15,7 @@ i3ipc = "~0.10"
 input = "~0.7"
 itertools = "~0.10"
 libc = "~0.2"
-log = { version = "~0.4.17", features = ["serde"] }
+log = { version = "~0.4.17" }
 shlex = "~1.1"
 strum = { version = "~0.24", features = ["derive"] }
 strum_macros = "~0.24"

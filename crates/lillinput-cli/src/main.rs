@@ -14,10 +14,9 @@
 
 mod opts;
 mod settings;
-mod utils;
 
 use crate::opts::Opts;
-use crate::utils::extract_action_map;
+use crate::settings::extract_action_map;
 use clap::Parser;
 use lillinput::actions::{ActionMap, ActionType};
 use lillinput::events::libinput::initialize_context;
