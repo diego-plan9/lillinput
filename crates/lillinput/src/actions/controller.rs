@@ -44,6 +44,7 @@ impl ActionMap {
     ///
     /// * `threshold` - Minimum threshold for displacement changes.
     /// * `actions` - List of action for each action event.
+    #[must_use]
     pub fn new(threshold: f64, actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>) -> Self {
         let action_map = ActionMap { threshold, actions };
 

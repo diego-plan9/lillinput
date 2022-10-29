@@ -115,6 +115,11 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 ///
 /// * `message_log` - type of message.
 ///
+/// # Panics
+///
+/// This function will panic if the creation of the temporary socket files or
+/// listener is not successful.
+///
 /// # Returns
 ///
 /// The file with the temporary i3 socket.

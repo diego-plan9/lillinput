@@ -1,11 +1,9 @@
 //! Functionality related to application settings and related tooling.
 
-use std::collections::HashMap;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
-
-
 
 use crate::opts::{Opts, StringifiedAction};
 use config::{Config, ConfigError, File, Map, Source, Value};
@@ -276,7 +274,6 @@ impl Source for Settings {
         Ok(m)
     }
 }
-
 
 /// Generate [`Action`]s from application settings.
 ///
