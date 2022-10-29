@@ -37,6 +37,10 @@ impl LibinputInterface for Interface {
 /// # Arguments
 ///
 /// * `seat_id` - the identifier of the seat.
+///
+/// # Errors
+///
+/// Returns `Err` if `libinput` encountered any errors while initializing.
 pub fn initialize_context(seat_id: &str) -> Result<Libinput, LibinputError> {
     // Create the libinput context.
     let mut input = Libinput::new_with_udev(Interface {});

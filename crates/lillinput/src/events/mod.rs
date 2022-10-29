@@ -82,6 +82,11 @@ fn process_event(
 ///
 /// * `input` - the `libinput` object.
 /// * `action_map` - the action map that will process the event.
+///
+/// # Errors
+///
+/// Returns `Err` if the main loop encountered an error while polling or
+/// dispatching events.
 pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), MainLoopError> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;

@@ -43,6 +43,11 @@ pub trait ActionController {
     /// * `dx` - the current position in the `x` axis.
     /// * `dy` - the current position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the end of swipe event resulted in
+    /// failure or in no [`Action`]s invoked.
     fn receive_end_event(
         &mut self,
         dx: f64,
@@ -58,6 +63,11 @@ pub trait ActionController {
     /// * `dx` - the current position in the `x` axis.
     /// * `dy` - the current position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the swipe event did not result in a
+    /// [`ActionEvent`].
     fn end_event_to_action_event(
         &mut self,
         dx: f64,
@@ -69,8 +79,16 @@ pub trait ActionController {
 /// Handler for a single action triggered by an event.
 pub trait Action: std::fmt::Debug {
     /// Execute the command for this action.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the execution of the command was not successful.
     fn execute_command(&mut self) -> Result<(), ActionError>;
-    /// Format the contents of the action as a String.
+    /// Format the contents of the action as a [`String`].
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the action cannot be formatted as a [`String`].
     fn fmt_command(&self, f: &mut fmt::Formatter) -> fmt::Result;
 }
 

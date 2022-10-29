@@ -1,13 +1,10 @@
 #[cfg(test)]
-use std::collections::HashMap;
 use std::env;
 use std::io::prelude::*;
 use std::os::unix::net::{UnixListener, UnixStream};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use crate::{ActionEvent, Settings};
-use simplelog::LevelFilter;
 use tempfile::{Builder, NamedTempFile};
 
 static MSG_COMMAND: u32 = 0;
@@ -17,26 +14,6 @@ static MSG_VERSION: u32 = 7;
 struct I3IpcMessage {
     message_type: u32,
     message_payload: String,
-}
-
-/// Return an `Settings` with default test arguments.
-pub fn default_test_settings() -> Settings {
-    Settings {
-        enabled_action_types: vec![],
-        actions: HashMap::from([
-            (ActionEvent::ThreeFingerSwipeLeft.to_string(), vec![]),
-            (ActionEvent::ThreeFingerSwipeRight.to_string(), vec![]),
-            (ActionEvent::ThreeFingerSwipeUp.to_string(), vec![]),
-            (ActionEvent::ThreeFingerSwipeDown.to_string(), vec![]),
-            (ActionEvent::FourFingerSwipeLeft.to_string(), vec![]),
-            (ActionEvent::FourFingerSwipeRight.to_string(), vec![]),
-            (ActionEvent::FourFingerSwipeUp.to_string(), vec![]),
-            (ActionEvent::FourFingerSwipeDown.to_string(), vec![]),
-        ]),
-        threshold: 5.0,
-        seat: "seat0".to_string(),
-        verbose: LevelFilter::Info,
-    }
 }
 
 /// Create a new message to be sent to `i3`.
@@ -138,9 +115,15 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 ///
 /// * `message_log` - type of message.
 ///
+/// # Panics
+///
+/// This function will panic if the creation of the temporary socket files or
+/// listener is not successful.
+///
 /// # Returns
 ///
 /// The file with the temporary i3 socket.
+#[must_use]
 pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) -> NamedTempFile {
     let socket_file = Builder::new().tempfile().unwrap();
     let socket_file_name = socket_file.path().file_name().unwrap();

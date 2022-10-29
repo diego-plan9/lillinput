@@ -27,6 +27,7 @@ impl I3Action {
     ///
     /// * `command` - `i3` command to be executed in this action.
     /// * `connection` - `i3` RPC connection.
+    #[must_use]
     pub fn new(command: String, connection: Rc<RefCell<Option<I3Connection>>>) -> Self {
         I3Action {
             connection,
