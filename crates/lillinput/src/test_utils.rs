@@ -123,6 +123,7 @@ fn create_i3_reply(message_type: u32) -> Option<Vec<u8>> {
 /// # Returns
 ///
 /// The file with the temporary i3 socket.
+#[must_use]
 pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) -> NamedTempFile {
     let socket_file = Builder::new().tempfile().unwrap();
     let socket_file_name = socket_file.path().file_name().unwrap();
