@@ -53,8 +53,4 @@ pub enum ProcessorError {
     /// Event displacement is below threshold.
     #[error("event displacement is below threshold ({0})")]
     DisplacementBelowThreshold(f64),
-
-    /// Error while assigning seat to the libinput context.
-    #[error("error while assigning seat to the libinput context")]
-    SeatError,
 }

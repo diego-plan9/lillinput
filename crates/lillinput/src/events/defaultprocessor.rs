@@ -79,7 +79,7 @@ impl Processor for DefaultProcessor {
                     (*dy) += update_event.dy();
                 }
                 GestureSwipeEvent::End(ref _end_event) => {
-                    return match self.end_event_to_action_event(*dx, *dy, event.finger_count()) {
+                    return match self._end_event_to_action_event(*dx, *dy, event.finger_count()) {
                         Ok(event) => Ok(Some(event)),
                         Err(e) => Err(e),
                     };
@@ -92,7 +92,7 @@ impl Processor for DefaultProcessor {
         Ok(None)
     }
 
-    fn end_event_to_action_event(
+    fn _end_event_to_action_event(
         &mut self,
         mut dx: f64,
         mut dy: f64,
@@ -180,17 +180,17 @@ mod test {
         let mut processor = DefaultProcessor::new(5.0, "seat0").unwrap();
 
         // Trigger right swipe with supported (3) fingers count.
-        let action_event = processor.end_event_to_action_event(5.0, 0.0, 3);
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
-        let action_event = processor.end_event_to_action_event(5.0, 0.0, 4);
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 4);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
-        let action_event = processor.end_event_to_action_event(5.0, 0.0, 5);
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 5);
         assert!(action_event.is_err());
         assert!(matches!(
             action_event,
@@ -211,13 +211,13 @@ mod test {
         let mut processor = DefaultProcessor::new(5.0, "seat0").unwrap();
 
         // Trigger swipe below threshold.
-        let action_event = processor.end_event_to_action_event(4.99, 0.0, 3);
+        let action_event = processor._end_event_to_action_event(4.99, 0.0, 3);
         #[allow(clippy::no_effect_underscore_binding)]
         let _expected_err = ProcessorError::DisplacementBelowThreshold(5.0);
         assert!(matches!(action_event, Err(_expected_err)));
 
         // Trigger swipe above threshold.
-        let action_event = processor.end_event_to_action_event(5.0, 0.0, 3);
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();

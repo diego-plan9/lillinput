@@ -5,10 +5,8 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::io::{FromRawFd, IntoRawFd, RawFd};
 use std::path::Path;
 
-use crate::events::errors::LibinputError;
-use input::{Libinput, LibinputInterface};
+use input::LibinputInterface;
 use libc::{O_RDONLY, O_RDWR, O_WRONLY};
-use log::info;
 
 /// Struct for `libinput` interface.
 pub struct Interface;
@@ -30,24 +28,4 @@ impl LibinputInterface for Interface {
             File::from_raw_fd(fd);
         }
     }
-}
-
-/// Return an initialized `libinput` context.
-///
-/// # Arguments
-///
-/// * `seat_id` - the identifier of the seat.
-///
-/// # Errors
-///
-/// Returns `Err` if `libinput` encountered any errors while initializing.
-pub fn initialize_context(seat_id: &str) -> Result<Libinput, LibinputError> {
-    // Create the libinput context.
-    let mut input = Libinput::new_with_udev(Interface {});
-    if input.udev_assign_seat(seat_id).is_err() {
-        return Err(LibinputError::SeatError);
-    }
-
-    info!("Assigned seat {seat_id} to the libinput context.");
-    Ok(input)
 }

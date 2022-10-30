@@ -63,6 +63,19 @@ pub enum Axis {
 
 /// Events processor, converting `libinput` events into [`ActionEvent`]s.
 pub trait Processor {
+    /// Dispatch `libinput` events, converting them to [`ActionEvent`]s.
+    ///
+    /// # Arguments
+    ///
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if an error was encountered while polling of dispatching
+    /// events.
+    fn dispatch(&mut self, dx: &mut f64, dy: &mut f64) -> Result<Vec<ActionEvent>, LibinputError>;
+
     /// Process a single `libinput` [`GestureEvent`].
     ///
     /// # Arguments
@@ -81,7 +94,7 @@ pub trait Processor {
         dy: &mut f64,
     ) -> Result<Option<ActionEvent>, ProcessorError>;
 
-    /// Parse a swipe gesture end event into an action event.
+    /// Finalize a swipe gesture end event into an [`ActionEvent`].
     ///
     /// # Arguments
     ///
@@ -93,23 +106,10 @@ pub trait Processor {
     ///
     /// Returns `Err` if the processing of the swipe event did not result in a
     /// [`ActionEvent`].
-    fn end_event_to_action_event(
+    fn _end_event_to_action_event(
         &mut self,
         dx: f64,
         dy: f64,
         finger_count: i32,
     ) -> Result<ActionEvent, ProcessorError>;
-
-    /// Dispatch the pending `libinput` events, converting them to `ActionEvents`.
-    ///
-    /// # Arguments
-    ///
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
-    ///
-    /// # Errors
-    ///
-    /// Returns `Err` if an error was encountered while polling of dispatching
-    /// events.
-    fn dispatch(&mut self, dx: &mut f64, dy: &mut f64) -> Result<Vec<ActionEvent>, LibinputError>;
 }

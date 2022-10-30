@@ -78,7 +78,7 @@ mod test {
 
         // Trigger a swipe.
         controller
-            .receive_end_event(ActionEvent::ThreeFingerSwipeRight)
+            .process_action_event(ActionEvent::ThreeFingerSwipeRight)
             .ok();
 
         // Assert.

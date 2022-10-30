@@ -33,16 +33,13 @@ impl DefaultController {
         actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
     ) -> Self {
         let controller = DefaultController { processor, actions };
+        controller._log_status_info();
 
-        info!(
-            "Action controller started: {}",
-            controller._get_status_info()
-        );
         controller
     }
 
     /// Return the status of the controller in printable form.
-    fn _get_status_info(&self) -> String {
+    fn _log_status_info(&self) {
         // Print information.
         for action_event in ActionEvent::iter() {
             debug!(
@@ -59,16 +56,16 @@ impl DefaultController {
             .skip(4)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
-        format!(
+        info!(
             "{}, {} actions enabled",
             &three_finger_counts.as_str()[0..three_finger_counts.len() - 1],
             &four_finger_counts.as_str()[0..four_finger_counts.len() - 1],
-        )
+        );
     }
 }
 
 impl Controller for DefaultController {
-    fn receive_end_event(&mut self, action_event: ActionEvent) -> Result<(), ControllerError> {
+    fn process_action_event(&mut self, action_event: ActionEvent) -> Result<(), ControllerError> {
         // Invoke actions.
         let actions = self
             .actions
@@ -91,7 +88,7 @@ impl Controller for DefaultController {
         Ok(())
     }
 
-    fn main_loop(&mut self) -> Result<(), ControllerError> {
+    fn run(&mut self) -> Result<(), ControllerError> {
         // Variables for tracking the cursor position changes.
         let mut dx: f64 = 0.0;
         let mut dy: f64 = 0.0;
@@ -100,7 +97,7 @@ impl Controller for DefaultController {
             let events = self.processor.dispatch(&mut dx, &mut dy)?;
 
             for event in events {
-                match self.receive_end_event(event) {
+                match self.process_action_event(event) {
                     Ok(_) => {}
                     Err(e) => {
                         debug!("Discarding event: {}", e);

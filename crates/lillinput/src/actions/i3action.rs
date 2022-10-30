@@ -141,28 +141,28 @@ mod test {
 
         // Trigger swipe in the 4 directions.
         controller
-            .receive_end_event(ActionEvent::ThreeFingerSwipeRight)
+            .process_action_event(ActionEvent::ThreeFingerSwipeRight)
             .ok();
         controller
-            .receive_end_event(ActionEvent::ThreeFingerSwipeLeft)
+            .process_action_event(ActionEvent::ThreeFingerSwipeLeft)
             .ok();
         controller
-            .receive_end_event(ActionEvent::ThreeFingerSwipeUp)
+            .process_action_event(ActionEvent::ThreeFingerSwipeUp)
             .ok();
         controller
-            .receive_end_event(ActionEvent::ThreeFingerSwipeDown)
+            .process_action_event(ActionEvent::ThreeFingerSwipeDown)
             .ok();
         controller
-            .receive_end_event(ActionEvent::FourFingerSwipeRight)
+            .process_action_event(ActionEvent::FourFingerSwipeRight)
             .ok();
         controller
-            .receive_end_event(ActionEvent::FourFingerSwipeLeft)
+            .process_action_event(ActionEvent::FourFingerSwipeLeft)
             .ok();
         controller
-            .receive_end_event(ActionEvent::FourFingerSwipeUp)
+            .process_action_event(ActionEvent::FourFingerSwipeUp)
             .ok();
         controller
-            .receive_end_event(ActionEvent::FourFingerSwipeDown)
+            .process_action_event(ActionEvent::FourFingerSwipeDown)
             .ok();
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
