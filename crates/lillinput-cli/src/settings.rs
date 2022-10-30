@@ -356,6 +356,7 @@ mod test {
     use super::*;
     use crate::test_utils::default_test_settings;
     use lillinput::controllers::defaultcontroller::DefaultController;
+    use lillinput::events::defaultprocessor::DefaultProcessor;
 
     use serial_test::serial;
 
@@ -377,7 +378,8 @@ mod test {
         // Create the controller.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
         let (actions, _) = extract_action_map(&settings);
-        let controller: DefaultController = DefaultController::new(settings.threshold, actions);
+        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
+        let controller = DefaultController::new(Box::new(processor), actions);
 
         // Assert that only the command action is created.
         assert_eq!(

@@ -40,7 +40,7 @@ pub enum MainLoopError {
 }
 
 /// Errors raised during processing of events in the processor.
-#[derive(Error, Debug, PartialEq)]
+#[derive(Error, Debug)]
 pub enum ProcessorError {
     /// Unsupported finger count.
     #[error("unsupported finger count ({0})")]
@@ -53,4 +53,8 @@ pub enum ProcessorError {
     /// Event displacement is below threshold.
     #[error("event displacement is below threshold ({0})")]
     DisplacementBelowThreshold(f64),
+
+    /// Error while assigning seat to the libinput context.
+    #[error("error while assigning seat to the libinput context")]
+    SeatError,
 }

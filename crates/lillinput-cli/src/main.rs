@@ -18,8 +18,8 @@ mod settings;
 use crate::opts::Opts;
 use crate::settings::{extract_action_map, setup_application};
 use lillinput::controllers::defaultcontroller::DefaultController;
-use lillinput::events::libinput::initialize_context;
-use lillinput::events::main_loop;
+use lillinput::controllers::Controller;
+use lillinput::events::defaultprocessor::DefaultProcessor;
 
 use clap::Parser;
 use log::{error, info};
@@ -34,21 +34,22 @@ fn main() {
     let opts = Opts::parse();
     let settings = setup_application(opts, true);
 
-    // Prepare the action map.
-    let (actions, _) = extract_action_map(&settings);
+    // Create the Processor.
+    let processor = match DefaultProcessor::new(settings.threshold, &settings.seat) {
+        Ok(processor) => processor,
+        Err(e) => {
+            error!("Unable to initialize: {e}");
+            process::exit(1);
+        }
+    };
 
     // Create the controller.
-    let mut controller: DefaultController = DefaultController::new(settings.threshold, actions);
-
-    // Create the libinput object.
-    let input = initialize_context(&settings.seat).unwrap_or_else(|e| {
-        error!("Unable to initialize libinput: {e}");
-        process::exit(1);
-    });
+    let (actions, _) = extract_action_map(&settings);
+    let mut controller: DefaultController = DefaultController::new(Box::new(processor), actions);
 
     // Start the main loop.
     info!("Listening for events ...");
-    if let Err(e) = main_loop(input, &mut controller) {
+    if let Err(e) = controller.main_loop() {
         error!("Unhandled error during the main loop: {}", e);
         process::exit(1);
     }
