@@ -353,12 +353,9 @@ pub fn extract_action_map(
 mod test {
     use std::env;
 
-    use crate::extract_action_map;
-    use crate::opts::StringifiedAction;
-    use crate::settings::Settings;
+    use super::*;
     use crate::test_utils::default_test_settings;
-    use lillinput::actions::ActionMap;
-    use lillinput::events::ActionEvent;
+    use lillinput::controllers::defaultcontroller::DefaultController;
 
     use serial_test::serial;
 
@@ -380,7 +377,7 @@ mod test {
         // Create the controller.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
         let (actions, _) = extract_action_map(&settings);
-        let action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+        let action_map: DefaultController = DefaultController::new(settings.threshold, actions);
 
         // Assert that only the command action is created.
         assert_eq!(

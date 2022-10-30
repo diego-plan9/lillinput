@@ -86,8 +86,8 @@ mod test {
     use super::I3Action;
     use crate::actions::errors::ActionError;
     use crate::actions::Action;
-    use crate::controllers::Controller;
     use crate::controllers::defaultcontroller::DefaultController;
+    use crate::controllers::Controller;
     use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 

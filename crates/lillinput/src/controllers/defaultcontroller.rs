@@ -135,8 +135,8 @@ impl Controller for DefaultController {
 #[cfg(test)]
 mod test {
     use super::DefaultController;
-    use crate::controllers::Controller;
     use crate::controllers::errors::ControllerError;
+    use crate::controllers::Controller;
     use crate::events::ActionEvent;
 
     use std::collections::HashMap;

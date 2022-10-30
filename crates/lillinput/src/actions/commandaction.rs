@@ -51,9 +51,9 @@ mod test {
     use std::path::Path;
 
     use super::CommandAction;
-    use crate::controllers::Controller;
+    use crate::actions::Action;
     use crate::controllers::defaultcontroller::DefaultController;
-    use crate::actions::{Action};
+    use crate::controllers::Controller;
     use crate::events::ActionEvent;
 
     #[test]

@@ -1,7 +1,8 @@
 #[cfg(test)]
 use std::collections::HashMap;
 
-use crate::{ActionEvent, Settings};
+use crate::settings::Settings;
+use lillinput::events::ActionEvent;
 use simplelog::LevelFilter;
 
 /// Return an `Settings` with default test arguments.
