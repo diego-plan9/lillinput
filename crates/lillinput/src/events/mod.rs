@@ -1,20 +1,11 @@
 //! Components for capturing and handling events.
 
+pub mod defaultprocessor;
 pub mod errors;
 pub mod libinput;
 
-use std::os::unix::io::{AsRawFd, RawFd};
-
-use crate::controllers::errors::ControllerError;
-use crate::controllers::Controller;
-use crate::events::errors::{MainLoopError, ProcessEventError};
-use filedescriptor::{poll, pollfd, POLLIN};
-use input::event::gesture::{
-    GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
-};
-use input::event::Event;
-use input::Libinput;
-use log::debug;
+use crate::events::errors::{LibinputError, ProcessorError};
+use input::event::GestureEvent;
 use strum::{Display, EnumString, EnumVariantNames};
 use strum_macros::EnumIter;
 
@@ -51,13 +42,13 @@ pub enum FingerCount {
 }
 
 impl TryFrom<i32> for FingerCount {
-    type Error = ControllerError;
+    type Error = ProcessorError;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
             3 => Ok(FingerCount::ThreeFinger),
             4 => Ok(FingerCount::FourFinger),
-            _ => Err(ControllerError::UnsupportedFingerCount(value)),
+            _ => Err(ProcessorError::UnsupportedFingerCount(value)),
         }
     }
 }
@@ -70,81 +61,55 @@ pub enum Axis {
     Y,
 }
 
-/// Process a single [`GestureEvent`].
-///
-/// # Arguments
-///
-/// * `event` - a gesture event.
-/// * `dx` - the current position in the `x` axis.
-/// * `dy` - the current position in the `y` axis.
-/// * `controller` - the controller that will process the event.
-fn process_event(
-    event: GestureEvent,
-    dx: &mut f64,
-    dy: &mut f64,
-    controller: &mut dyn Controller,
-) -> Result<(), ProcessEventError> {
-    if let GestureEvent::Swipe(event) = event {
-        match event {
-            GestureSwipeEvent::Begin(_begin_event) => {
-                (*dx) = 0.0;
-                (*dy) = 0.0;
-            }
-            GestureSwipeEvent::Update(update_event) => {
-                (*dx) += update_event.dx();
-                (*dy) += update_event.dy();
-            }
-            GestureSwipeEvent::End(ref _end_event) => {
-                controller.receive_end_event(*dx, *dy, event.finger_count())?;
-            }
-            // GestureEvent::Swipe is non-exhaustive.
-            other => return Err(ProcessEventError::UnsupportedSwipeEvent(other)),
-        }
-    }
+/// Events processor, converting `libinput` events into [`ActionEvent`]s.
+pub trait Processor {
+    /// Dispatch `libinput` events, converting them to [`ActionEvent`]s.
+    ///
+    /// # Arguments
+    ///
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if an error was encountered while polling of dispatching
+    /// events.
+    fn dispatch(&mut self, dx: &mut f64, dy: &mut f64) -> Result<Vec<ActionEvent>, LibinputError>;
 
-    Ok(())
-}
+    /// Process a single `libinput` [`GestureEvent`].
+    ///
+    /// # Arguments
+    ///
+    /// * `event` - a gesture event.
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the event failed.
+    fn process_event(
+        &mut self,
+        event: GestureEvent,
+        dx: &mut f64,
+        dy: &mut f64,
+    ) -> Result<Option<ActionEvent>, ProcessorError>;
 
-/// Run the main loop for parsing the `libinput` events.
-///
-/// # Arguments
-///
-/// * `input` - the `libinput` object.
-/// * `controller` - the controller that will process the event.
-///
-/// # Errors
-///
-/// Returns `Err` if the main loop encountered an error while polling or
-/// dispatching events.
-pub fn main_loop(
-    mut input: Libinput,
-    controller: &mut dyn Controller,
-) -> Result<(), MainLoopError> {
-    // Variables for tracking the cursor position changes.
-    let mut dx: f64 = 0.0;
-    let mut dy: f64 = 0.0;
-
-    // Use a raw file descriptor for polling.
-    let raw_fd: RawFd = input.as_raw_fd();
-
-    let mut poll_array = [pollfd {
-        fd: raw_fd,
-        events: POLLIN,
-        revents: 0,
-    }];
-
-    loop {
-        // Block until the descriptor is ready.
-        poll(&mut poll_array, None)?;
-
-        // Dispatch, bubbling up in case of an error.
-        input.dispatch()?;
-        for event in &mut input {
-            if let Event::Gesture(gesture_event) = event {
-                process_event(gesture_event, &mut dx, &mut dy, controller).unwrap_or_else(|e| {
-                    debug!("Discarding event: {}", e);
-                });
-            }
-        }
-    }
+    /// Finalize a swipe gesture end event into an [`ActionEvent`].
+    ///
+    /// # Arguments
+    ///
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    /// * `finger_count` - the number of fingers used for the gesture.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the swipe event did not result in a
+    /// [`ActionEvent`].
+    fn _end_event_to_action_event(
+        &mut self,
+        dx: f64,
+        dy: f64,
+        finger_count: i32,
+    ) -> Result<ActionEvent, ProcessorError>;
 }

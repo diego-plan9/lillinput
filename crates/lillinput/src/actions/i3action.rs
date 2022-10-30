@@ -88,6 +88,7 @@ mod test {
     use crate::actions::Action;
     use crate::controllers::defaultcontroller::DefaultController;
     use crate::controllers::Controller;
+    use crate::events::defaultprocessor::DefaultProcessor;
     use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 
@@ -132,20 +133,37 @@ mod test {
             Box::new(I3Action::new("swipe up 4".into(), Rc::clone(&connection))),
             Box::new(I3Action::new("swipe down 4".into(), Rc::clone(&connection))),
         ];
+        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
         let mut controller = DefaultController::new(
-            5.0,
+            Box::new(processor),
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );
 
         // Trigger swipe in the 4 directions.
-        controller.receive_end_event(10.0, 0.0, 3).ok();
-        controller.receive_end_event(-10.0, 0.0, 3).ok();
-        controller.receive_end_event(0.0, 10.0, 3).ok();
-        controller.receive_end_event(0.0, -10.0, 3).ok();
-        controller.receive_end_event(10.0, 0.0, 4).ok();
-        controller.receive_end_event(-10.0, 0.0, 4).ok();
-        controller.receive_end_event(0.0, 10.0, 4).ok();
-        controller.receive_end_event(0.0, -10.0, 4).ok();
+        controller
+            .process_action_event(ActionEvent::ThreeFingerSwipeRight)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::ThreeFingerSwipeLeft)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::ThreeFingerSwipeUp)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::ThreeFingerSwipeDown)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::FourFingerSwipeRight)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::FourFingerSwipeLeft)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::FourFingerSwipeUp)
+            .ok();
+        controller
+            .process_action_event(ActionEvent::FourFingerSwipeDown)
+            .ok();
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.

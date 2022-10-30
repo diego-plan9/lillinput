@@ -8,11 +8,10 @@ use crate::events::ActionEvent;
 
 /// Controller that connects events and actions.
 pub trait Controller {
-    /// Receive the end of swipe gesture event.
+    /// Process an [`ActionEvent`], invoking the corresponding [`Action`]s.
     ///
     /// # Arguments
     ///
-    /// * `self` - action controller.
     /// * `dx` - the current position in the `x` axis.
     /// * `dy` - the current position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
@@ -21,30 +20,13 @@ pub trait Controller {
     ///
     /// Returns `Err` if the processing of the end of swipe event resulted in
     /// failure or in no [`Action`]s invoked.
-    fn receive_end_event(
-        &mut self,
-        dx: f64,
-        dy: f64,
-        finger_count: i32,
-    ) -> Result<(), ControllerError>;
+    fn process_action_event(&mut self, action_event: ActionEvent) -> Result<(), ControllerError>;
 
-    /// Parse a swipe gesture end event into an action event.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - action controller.
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
-    /// * `finger_count` - the number of fingers used for the gesture.
+    /// Run the main loop for parsing `libinput` events.
     ///
     /// # Errors
     ///
-    /// Returns `Err` if the processing of the swipe event did not result in a
-    /// [`ActionEvent`].
-    fn end_event_to_action_event(
-        &mut self,
-        dx: f64,
-        dy: f64,
-        finger_count: i32,
-    ) -> Result<ActionEvent, ControllerError>;
+    /// Returns `Err` if the main loop encountered an error while polling or
+    /// dispatching events.
+    fn run(&mut self) -> Result<(), ControllerError>;
 }

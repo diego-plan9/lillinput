@@ -54,9 +54,12 @@ mod test {
     use crate::actions::Action;
     use crate::controllers::defaultcontroller::DefaultController;
     use crate::controllers::Controller;
+    use crate::events::defaultprocessor::DefaultProcessor;
     use crate::events::ActionEvent;
+    use serial_test::serial;
 
     #[test]
+    #[serial]
     /// Test the triggering of commands for a single swipe action.
     fn test_command_single_action() {
         // File that will be touched.
@@ -67,13 +70,16 @@ mod test {
         let actions_list: Vec<Box<dyn Action>> = vec![Box::new(CommandAction::new(
             "touch /tmp/swipe-right".into(),
         ))];
+        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
         let mut controller = DefaultController::new(
-            5.0,
+            Box::new(processor),
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );
 
         // Trigger a swipe.
-        controller.receive_end_event(10.0, 0.0, 3).ok();
+        controller
+            .process_action_event(ActionEvent::ThreeFingerSwipeRight)
+            .ok();
 
         // Assert.
         assert!(Path::new(expected_file).exists());
