@@ -2,7 +2,6 @@
 
 use std::io::Error as IoError;
 
-use crate::controllers::errors::ControllerError;
 use filedescriptor::Error as FileDescriptorError;
 use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
@@ -13,6 +12,14 @@ pub enum LibinputError {
     /// Error while assigning seat to the libinput context.
     #[error("error while assigning seat to the libinput context")]
     SeatError,
+
+    /// Unknown error while dispatching libinput event.
+    #[error("unknown error while dispatching libinput event")]
+    DispatchError(#[from] IoError),
+
+    /// Unknown error while polling for the file descriptor.
+    #[error("unknown error while polling the file descriptor")]
+    IOError(#[from] FileDescriptorError),
 }
 
 /// Custom error issued during the main loop.
@@ -32,14 +39,18 @@ pub enum MainLoopError {
     IOError(#[from] FileDescriptorError),
 }
 
-/// Errors raised during the processing of an event.
-#[derive(Error, Debug)]
-pub enum ProcessEventError {
+/// Errors raised during processing of events in the processor.
+#[derive(Error, Debug, PartialEq)]
+pub enum ProcessorError {
+    /// Unsupported finger count.
+    #[error("unsupported finger count ({0})")]
+    UnsupportedFingerCount(i32),
+
     /// Unsupported swipe event.
     #[error("unsupported swipe event ({:?})", .0)]
     UnsupportedSwipeEvent(GestureSwipeEvent),
 
-    /// Action controller was not able to process the event.
-    #[error("acton controller was not able to process the event {0}")]
-    ControllerError(#[from] ControllerError),
+    /// Event displacement is below threshold.
+    #[error("event displacement is below threshold ({0})")]
+    DisplacementBelowThreshold(f64),
 }

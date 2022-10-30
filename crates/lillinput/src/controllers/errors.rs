@@ -1,6 +1,7 @@
 //! Errors related to controller.
 
 use crate::events::ActionEvent;
+use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
 
 /// Errors raised during processing of events in the controller.
@@ -9,6 +10,10 @@ pub enum ControllerError {
     /// Unsupported finger count.
     #[error("unsupported finger count ({0})")]
     UnsupportedFingerCount(i32),
+
+    /// Unsupported swipe event.
+    #[error("unsupported swipe event ({:?})", .0)]
+    UnsupportedSwipeEvent(GestureSwipeEvent),
 
     /// Event displacement is below threshold.
     #[error("event displacement is below threshold ({0})")]

@@ -1,18 +1,15 @@
 //! Components for capturing and handling events.
 
+pub mod defaultprocessor;
 pub mod errors;
 pub mod libinput;
 
 use std::os::unix::io::{AsRawFd, RawFd};
 
-use crate::controllers::errors::ControllerError;
 use crate::controllers::Controller;
-use crate::events::errors::{MainLoopError, ProcessEventError};
+use crate::events::errors::{MainLoopError, ProcessorError};
 use filedescriptor::{poll, pollfd, POLLIN};
-use input::event::gesture::{
-    GestureEvent, GestureEventCoordinates, GestureEventTrait, GestureSwipeEvent,
-};
-use input::event::Event;
+use input::event::{Event, GestureEvent};
 use input::Libinput;
 use log::debug;
 use strum::{Display, EnumString, EnumVariantNames};
@@ -51,13 +48,13 @@ pub enum FingerCount {
 }
 
 impl TryFrom<i32> for FingerCount {
-    type Error = ControllerError;
+    type Error = ProcessorError;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         match value {
             3 => Ok(FingerCount::ThreeFinger),
             4 => Ok(FingerCount::FourFinger),
-            _ => Err(ControllerError::UnsupportedFingerCount(value)),
+            _ => Err(ProcessorError::UnsupportedFingerCount(value)),
         }
     }
 }
@@ -70,39 +67,46 @@ pub enum Axis {
     Y,
 }
 
-/// Process a single [`GestureEvent`].
-///
-/// # Arguments
-///
-/// * `event` - a gesture event.
-/// * `dx` - the current position in the `x` axis.
-/// * `dy` - the current position in the `y` axis.
-/// * `controller` - the controller that will process the event.
-fn process_event(
-    event: GestureEvent,
-    dx: &mut f64,
-    dy: &mut f64,
-    controller: &mut dyn Controller,
-) -> Result<(), ProcessEventError> {
-    if let GestureEvent::Swipe(event) = event {
-        match event {
-            GestureSwipeEvent::Begin(_begin_event) => {
-                (*dx) = 0.0;
-                (*dy) = 0.0;
-            }
-            GestureSwipeEvent::Update(update_event) => {
-                (*dx) += update_event.dx();
-                (*dy) += update_event.dy();
-            }
-            GestureSwipeEvent::End(ref _end_event) => {
-                controller.receive_end_event(*dx, *dy, event.finger_count())?;
-            }
-            // GestureEvent::Swipe is non-exhaustive.
-            other => return Err(ProcessEventError::UnsupportedSwipeEvent(other)),
-        }
-    }
+/// Events processor, converting `libinput` events into [`ActionEvent`]s.
+pub trait Processor {
+    /// Process a single `libinput` [`GestureEvent`].
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - controller.
+    /// * `event` - a gesture event.
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the event failed.
+    fn process_event(
+        &mut self,
+        event: GestureEvent,
+        dx: &mut f64,
+        dy: &mut f64,
+    ) -> Result<(), ProcessorError>;
 
-    Ok(())
+    /// Parse a swipe gesture end event into an action event.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - controller.
+    /// * `dx` - the current position in the `x` axis.
+    /// * `dy` - the current position in the `y` axis.
+    /// * `finger_count` - the number of fingers used for the gesture.
+    ///
+    /// # Errors
+    ///
+    /// Returns `Err` if the processing of the swipe event did not result in a
+    /// [`ActionEvent`].
+    fn end_event_to_action_event(
+        &mut self,
+        dx: f64,
+        dy: f64,
+        finger_count: i32,
+    ) -> Result<ActionEvent, ProcessorError>;
 }
 
 /// Run the main loop for parsing the `libinput` events.
@@ -141,9 +145,11 @@ pub fn main_loop(
         input.dispatch()?;
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
-                process_event(gesture_event, &mut dx, &mut dy, controller).unwrap_or_else(|e| {
-                    debug!("Discarding event: {}", e);
-                });
+                controller
+                    .process_event(gesture_event, &mut dx, &mut dy)
+                    .unwrap_or_else(|e| {
+                        debug!("Discarding event: {}", e);
+                    });
             }
         }
     }

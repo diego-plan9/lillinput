@@ -11,7 +11,7 @@ use libc::{O_RDONLY, O_RDWR, O_WRONLY};
 use log::info;
 
 /// Struct for `libinput` interface.
-struct Interface;
+pub struct Interface;
 
 impl LibinputInterface for Interface {
     #[allow(clippy::bad_bit_mask)]
