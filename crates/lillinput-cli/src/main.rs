@@ -16,14 +16,13 @@ mod opts;
 mod settings;
 
 use crate::opts::Opts;
-use crate::settings::extract_action_map;
-use clap::Parser;
-use lillinput::actions::{ActionMap, ActionType};
+use crate::settings::{extract_action_map, setup_application};
+use lillinput::controllers::defaultcontroller::DefaultController;
 use lillinput::events::libinput::initialize_context;
 use lillinput::events::main_loop;
-use lillinput::events::ActionEvent;
+
+use clap::Parser;
 use log::{error, info};
-use settings::{setup_application, Settings};
 use std::process;
 
 #[cfg(test)]
@@ -32,14 +31,14 @@ mod test_utils;
 /// Main entry point.
 fn main() {
     // Retrieve the application settings and setup logging.
-    let opts: Opts = Opts::parse();
-    let settings: Settings = setup_application(opts, true);
+    let opts = Opts::parse();
+    let settings = setup_application(opts, true);
 
     // Prepare the action map.
     let (actions, _) = extract_action_map(&settings);
 
-    // Create the action map controller.
-    let mut action_map: ActionMap = ActionMap::new(settings.threshold, actions);
+    // Create the controller.
+    let mut controller: DefaultController = DefaultController::new(settings.threshold, actions);
 
     // Create the libinput object.
     let input = initialize_context(&settings.seat).unwrap_or_else(|e| {
@@ -49,7 +48,7 @@ fn main() {
 
     // Start the main loop.
     info!("Listening for events ...");
-    if let Err(e) = main_loop(input, &mut action_map) {
+    if let Err(e) = main_loop(input, &mut controller) {
         error!("Unhandled error during the main loop: {}", e);
         process::exit(1);
     }

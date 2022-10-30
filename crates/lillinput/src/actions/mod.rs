@@ -1,18 +1,12 @@
-//! Traits for actions.
-//!
-//! Provides the interface for defining `Action`s that handle the different
-//! `ActionEvents`.
+//! Building blocks for actions.
 
 pub mod commandaction;
-pub mod controller;
 pub mod errors;
 pub mod i3action;
 
-use std::collections::HashMap;
 use std::fmt;
 
-use crate::actions::errors::{ActionControllerError, ActionError};
-use crate::events::ActionEvent;
+use crate::actions::errors::ActionError;
 use strum::{Display, EnumString, EnumVariantNames};
 
 /// Possible choices for action types.
@@ -23,57 +17,6 @@ pub enum ActionType {
     I3,
     /// Action for executing commands.
     Command,
-}
-
-/// Map between events and actions.
-pub struct ActionMap {
-    /// Minimum threshold for displacement changes.
-    pub threshold: f64,
-    /// Map between events and actions.
-    pub actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>,
-}
-
-/// Controller that connects events and actions.
-pub trait ActionController {
-    /// Receive the end of swipe gesture event.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - action controller.
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
-    /// * `finger_count` - the number of fingers used for the gesture.
-    ///
-    /// # Errors
-    ///
-    /// Returns `Err` if the processing of the end of swipe event resulted in
-    /// failure or in no [`Action`]s invoked.
-    fn receive_end_event(
-        &mut self,
-        dx: f64,
-        dy: f64,
-        finger_count: i32,
-    ) -> Result<(), ActionControllerError>;
-
-    /// Parse a swipe gesture end event into an action event.
-    ///
-    /// # Arguments
-    ///
-    /// * `self` - action controller.
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
-    /// * `finger_count` - the number of fingers used for the gesture.
-    ///
-    /// # Errors
-    ///
-    /// Returns `Err` if the processing of the swipe event did not result in a
-    /// [`ActionEvent`].
-    fn end_event_to_action_event(
-        &mut self,
-        dx: f64,
-        dy: f64,
-        finger_count: i32,
-    ) -> Result<ActionEvent, ActionControllerError>;
 }
 
 /// Handler for a single action triggered by an event.

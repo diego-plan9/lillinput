@@ -85,7 +85,10 @@ mod test {
 
     use super::I3Action;
     use crate::actions::errors::ActionError;
-    use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
+    use crate::actions::Action;
+    use crate::controllers::defaultcontroller::DefaultController;
+    use crate::controllers::Controller;
+    use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 
     use i3ipc::I3Connection;
@@ -129,20 +132,20 @@ mod test {
             Box::new(I3Action::new("swipe up 4".into(), Rc::clone(&connection))),
             Box::new(I3Action::new("swipe down 4".into(), Rc::clone(&connection))),
         ];
-        let mut action_map = ActionMap::new(
+        let mut controller = DefaultController::new(
             5.0,
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );
 
         // Trigger swipe in the 4 directions.
-        action_map.receive_end_event(10.0, 0.0, 3).ok();
-        action_map.receive_end_event(-10.0, 0.0, 3).ok();
-        action_map.receive_end_event(0.0, 10.0, 3).ok();
-        action_map.receive_end_event(0.0, -10.0, 3).ok();
-        action_map.receive_end_event(10.0, 0.0, 4).ok();
-        action_map.receive_end_event(-10.0, 0.0, 4).ok();
-        action_map.receive_end_event(0.0, 10.0, 4).ok();
-        action_map.receive_end_event(0.0, -10.0, 4).ok();
+        controller.receive_end_event(10.0, 0.0, 3).ok();
+        controller.receive_end_event(-10.0, 0.0, 3).ok();
+        controller.receive_end_event(0.0, 10.0, 3).ok();
+        controller.receive_end_event(0.0, -10.0, 3).ok();
+        controller.receive_end_event(10.0, 0.0, 4).ok();
+        controller.receive_end_event(-10.0, 0.0, 4).ok();
+        controller.receive_end_event(0.0, 10.0, 4).ok();
+        controller.receive_end_event(0.0, -10.0, 4).ok();
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.

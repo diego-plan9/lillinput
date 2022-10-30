@@ -1,6 +1,8 @@
 //! Arguments and utils for the `lillinput` binary.
 
-use crate::{ActionEvent, ActionType};
+use lillinput::actions::ActionType;
+use lillinput::events::ActionEvent;
+
 use clap::error::ErrorKind;
 use clap::Parser;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -158,7 +160,6 @@ mod test {
     use super::*;
     use crate::settings::{setup_application, Settings};
     use crate::test_utils::default_test_settings;
-    use crate::{ActionEvent, ActionType, Opts};
     use clap::Parser;
     use simplelog::LevelFilter;
     use std::env;

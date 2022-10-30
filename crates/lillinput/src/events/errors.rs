@@ -2,7 +2,7 @@
 
 use std::io::Error as IoError;
 
-use crate::actions::errors::ActionControllerError;
+use crate::controllers::errors::ControllerError;
 use filedescriptor::Error as FileDescriptorError;
 use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
@@ -41,5 +41,5 @@ pub enum ProcessEventError {
 
     /// Action controller was not able to process the event.
     #[error("acton controller was not able to process the event {0}")]
-    ActionControllerError(#[from] ActionControllerError),
+    ControllerError(#[from] ControllerError),
 }
