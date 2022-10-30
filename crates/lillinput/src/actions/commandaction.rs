@@ -67,13 +67,13 @@ mod test {
         let actions_list: Vec<Box<dyn Action>> = vec![Box::new(CommandAction::new(
             "touch /tmp/swipe-right".into(),
         ))];
-        let mut action_map = DefaultController::new(
+        let mut controller = DefaultController::new(
             5.0,
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );
 
         // Trigger a swipe.
-        action_map.receive_end_event(10.0, 0.0, 3).ok();
+        controller.receive_end_event(10.0, 0.0, 3).ok();
 
         // Assert.
         assert!(Path::new(expected_file).exists());

@@ -37,8 +37,8 @@ fn main() {
     // Prepare the action map.
     let (actions, _) = extract_action_map(&settings);
 
-    // Create the action map controller.
-    let mut action_map: DefaultController = DefaultController::new(settings.threshold, actions);
+    // Create the controller.
+    let mut controller: DefaultController = DefaultController::new(settings.threshold, actions);
 
     // Create the libinput object.
     let input = initialize_context(&settings.seat).unwrap_or_else(|e| {
@@ -48,7 +48,7 @@ fn main() {
 
     // Start the main loop.
     info!("Listening for events ...");
-    if let Err(e) = main_loop(input, &mut action_map) {
+    if let Err(e) = main_loop(input, &mut controller) {
         error!("Unhandled error during the main loop: {}", e);
         process::exit(1);
     }

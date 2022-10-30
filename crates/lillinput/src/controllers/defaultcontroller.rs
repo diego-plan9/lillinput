@@ -1,4 +1,4 @@
-//! Controller for actions.
+//! Default [`Controller`] for actions.
 
 use std::collections::HashMap;
 use std::convert::TryFrom;
@@ -12,7 +12,7 @@ use itertools::Itertools;
 use log::{debug, info, warn};
 use strum::IntoEnumIterator;
 
-/// Map between events and actions.
+/// Controller that maps between events and actions.
 pub struct DefaultController {
     /// Minimum threshold for displacement changes.
     pub threshold: f64,
@@ -29,13 +29,13 @@ impl DefaultController {
     /// * `actions` - List of action for each action event.
     #[must_use]
     pub fn new(threshold: f64, actions: HashMap<ActionEvent, Vec<Box<dyn Action>>>) -> Self {
-        let action_map = DefaultController { threshold, actions };
+        let controller = DefaultController { threshold, actions };
 
         info!(
             "Action controller started: {}",
-            action_map._get_status_info()
+            controller._get_status_info()
         );
-        action_map
+        controller
     }
 
     /// Return the status of the controller in printable form.
@@ -145,20 +145,20 @@ mod test {
     /// Test the handling of an event `finger_count` argument.
     fn test_parse_finger_count() {
         // Initialize the controller.
-        let mut action_map: DefaultController = DefaultController::new(5.0, HashMap::new());
+        let mut controller: DefaultController = DefaultController::new(5.0, HashMap::new());
 
         // Trigger right swipe with supported (3) fingers count.
-        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
+        let action_event = controller.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
 
         // Trigger right swipe with supported (4) fingers count.
-        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 4);
+        let action_event = controller.end_event_to_action_event(5.0, 0.0, 4);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRight,);
 
         // Trigger right swipe with unsupported (5) fingers count.
-        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 5);
+        let action_event = controller.end_event_to_action_event(5.0, 0.0, 5);
         assert!(action_event.is_err());
         assert_eq!(
             action_event,
@@ -170,17 +170,17 @@ mod test {
     /// Test the handling of an event `threshold` argument.
     fn test_parse_threshold() {
         // Initialize the controller.
-        let mut action_map: DefaultController = DefaultController::new(5.0, HashMap::new());
+        let mut controller: DefaultController = DefaultController::new(5.0, HashMap::new());
 
         // Trigger swipe below threshold.
-        let action_event = action_map.end_event_to_action_event(4.99, 0.0, 3);
+        let action_event = controller.end_event_to_action_event(4.99, 0.0, 3);
         assert_eq!(
             action_event,
             Err(ControllerError::DisplacementBelowThreshold(5.0))
         );
 
         // Trigger swipe above threshold.
-        let action_event = action_map.end_event_to_action_event(5.0, 0.0, 3);
+        let action_event = controller.end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.is_ok());
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight,);
     }

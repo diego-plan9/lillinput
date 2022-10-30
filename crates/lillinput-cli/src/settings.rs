@@ -377,11 +377,11 @@ mod test {
         // Create the controller.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
         let (actions, _) = extract_action_map(&settings);
-        let action_map: DefaultController = DefaultController::new(settings.threshold, actions);
+        let controller: DefaultController = DefaultController::new(settings.threshold, actions);
 
         // Assert that only the command action is created.
         assert_eq!(
-            action_map
+            controller
                 .actions
                 .get(&ActionEvent::ThreeFingerSwipeRight)
                 .unwrap()

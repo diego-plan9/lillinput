@@ -77,12 +77,12 @@ pub enum Axis {
 /// * `event` - a gesture event.
 /// * `dx` - the current position in the `x` axis.
 /// * `dy` - the current position in the `y` axis.
-/// * `action_map` - the action map that will process the event.
+/// * `controller` - the controller that will process the event.
 fn process_event(
     event: GestureEvent,
     dx: &mut f64,
     dy: &mut f64,
-    action_map: &mut dyn Controller,
+    controller: &mut dyn Controller,
 ) -> Result<(), ProcessEventError> {
     if let GestureEvent::Swipe(event) = event {
         match event {
@@ -95,7 +95,7 @@ fn process_event(
                 (*dy) += update_event.dy();
             }
             GestureSwipeEvent::End(ref _end_event) => {
-                action_map.receive_end_event(*dx, *dy, event.finger_count())?;
+                controller.receive_end_event(*dx, *dy, event.finger_count())?;
             }
             // GestureEvent::Swipe is non-exhaustive.
             other => return Err(ProcessEventError::UnsupportedSwipeEvent(other)),
@@ -110,7 +110,7 @@ fn process_event(
 /// # Arguments
 ///
 /// * `input` - the `libinput` object.
-/// * `action_map` - the action map that will process the event.
+/// * `controller` - the controller that will process the event.
 ///
 /// # Errors
 ///
@@ -118,7 +118,7 @@ fn process_event(
 /// dispatching events.
 pub fn main_loop(
     mut input: Libinput,
-    action_map: &mut dyn Controller,
+    controller: &mut dyn Controller,
 ) -> Result<(), MainLoopError> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;
@@ -141,7 +141,7 @@ pub fn main_loop(
         input.dispatch()?;
         for event in &mut input {
             if let Event::Gesture(gesture_event) = event {
-                process_event(gesture_event, &mut dx, &mut dy, action_map).unwrap_or_else(|e| {
+                process_event(gesture_event, &mut dx, &mut dy, controller).unwrap_or_else(|e| {
                     debug!("Discarding event: {}", e);
                 });
             }
