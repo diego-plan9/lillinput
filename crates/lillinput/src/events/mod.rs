@@ -5,7 +5,8 @@ pub mod libinput;
 
 use std::os::unix::io::{AsRawFd, RawFd};
 
-use crate::actions::{ActionController, ActionMap};
+use crate::controllers::errors::ControllerError;
+use crate::controllers::Controller;
 use crate::events::errors::{MainLoopError, ProcessEventError};
 use filedescriptor::{poll, pollfd, POLLIN};
 use input::event::gesture::{
@@ -41,6 +42,34 @@ pub enum ActionEvent {
     FourFingerSwipeDown,
 }
 
+/// Possible choices for finger count.
+pub enum FingerCount {
+    /// Three fingers.
+    ThreeFinger = 3,
+    /// Four fingers.
+    FourFinger = 4,
+}
+
+impl TryFrom<i32> for FingerCount {
+    type Error = ControllerError;
+
+    fn try_from(value: i32) -> Result<Self, Self::Error> {
+        match value {
+            3 => Ok(FingerCount::ThreeFinger),
+            4 => Ok(FingerCount::FourFinger),
+            _ => Err(ControllerError::UnsupportedFingerCount(value)),
+        }
+    }
+}
+
+/// Axis of a swipe action.
+pub enum Axis {
+    /// Horizontal (`X`) axis.
+    X,
+    /// Vertical (`Y`) axis.
+    Y,
+}
+
 /// Process a single [`GestureEvent`].
 ///
 /// # Arguments
@@ -53,7 +82,7 @@ fn process_event(
     event: GestureEvent,
     dx: &mut f64,
     dy: &mut f64,
-    action_map: &mut ActionMap,
+    action_map: &mut dyn Controller,
 ) -> Result<(), ProcessEventError> {
     if let GestureEvent::Swipe(event) = event {
         match event {
@@ -87,7 +116,10 @@ fn process_event(
 ///
 /// Returns `Err` if the main loop encountered an error while polling or
 /// dispatching events.
-pub fn main_loop(mut input: Libinput, action_map: &mut ActionMap) -> Result<(), MainLoopError> {
+pub fn main_loop(
+    mut input: Libinput,
+    action_map: &mut dyn Controller,
+) -> Result<(), MainLoopError> {
     // Variables for tracking the cursor position changes.
     let mut dx: f64 = 0.0;
     let mut dy: f64 = 0.0;

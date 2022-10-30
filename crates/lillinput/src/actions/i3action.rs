@@ -85,7 +85,10 @@ mod test {
 
     use super::I3Action;
     use crate::actions::errors::ActionError;
-    use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
+    use crate::actions::Action;
+    use crate::controllers::Controller;
+    use crate::controllers::defaultcontroller::DefaultController;
+    use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 
     use i3ipc::I3Connection;
@@ -129,7 +132,7 @@ mod test {
             Box::new(I3Action::new("swipe up 4".into(), Rc::clone(&connection))),
             Box::new(I3Action::new("swipe down 4".into(), Rc::clone(&connection))),
         ];
-        let mut action_map = ActionMap::new(
+        let mut action_map = DefaultController::new(
             5.0,
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );

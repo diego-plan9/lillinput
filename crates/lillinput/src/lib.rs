@@ -13,6 +13,7 @@
 )]
 
 pub mod actions;
+pub mod controllers;
 pub mod events;
 #[cfg(test)]
 pub mod test_utils;

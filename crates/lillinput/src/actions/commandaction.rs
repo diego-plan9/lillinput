@@ -51,7 +51,10 @@ mod test {
     use std::path::Path;
 
     use super::CommandAction;
-    use crate::actions::{Action, ActionController, ActionEvent, ActionMap};
+    use crate::controllers::Controller;
+    use crate::controllers::defaultcontroller::DefaultController;
+    use crate::actions::{Action};
+    use crate::events::ActionEvent;
 
     #[test]
     /// Test the triggering of commands for a single swipe action.
@@ -64,7 +67,7 @@ mod test {
         let actions_list: Vec<Box<dyn Action>> = vec![Box::new(CommandAction::new(
             "touch /tmp/swipe-right".into(),
         ))];
-        let mut action_map = ActionMap::new(
+        let mut action_map = DefaultController::new(
             5.0,
             HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
         );
