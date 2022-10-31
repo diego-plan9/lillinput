@@ -29,7 +29,10 @@ impl CommandAction {
 impl Action for CommandAction {
     fn execute_command(&mut self) -> Result<(), ActionError> {
         // Perform the command, if specified.
-        let split_commands = split(&self.command).unwrap();
+        let split_commands = split(&self.command).ok_or(ActionError::ExecutionError {
+            type_: "command".into(),
+            message: format!("Unable to parse command: {}", self.command),
+        })?;
         Command::new(&split_commands[0])
             .args(&split_commands[1..])
             .output()

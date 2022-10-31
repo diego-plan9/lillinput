@@ -24,6 +24,7 @@ pub struct StringifiedAction {
 
 impl StringifiedAction {
     /// Return a new [`StringifiedAction`].
+    #[must_use]
     pub fn new(type_: &str, command: &str) -> Self {
         Self {
             type_: type_.to_string(),
@@ -138,6 +139,7 @@ pub struct Opts {
 
 impl Opts {
     /// Return the actions registered with an event.
+    #[must_use]
     pub fn get_actions_for_event(
         &self,
         action_event: ActionEvent,
@@ -232,7 +234,7 @@ mod test {
             "--four-finger-swipe-down",
             "i3:4down",
         ]);
-        let converted_settings: Settings = setup_application(opts, false);
+        let converted_settings: Settings = setup_application(opts, false).unwrap();
 
         // Build expected settings:
         // * config file should be not passed and have no effect on settings.
@@ -308,7 +310,7 @@ four-finger-swipe-down = []
         .unwrap();
 
         let opts: Opts = Opts::parse_from(&["lillinput", "--config-file", &file_path]);
-        let converted_settings: Settings = setup_application(opts, false);
+        let converted_settings: Settings = setup_application(opts, false).unwrap();
 
         // Build expected settings:
         // * values should be read from the config file.
@@ -366,7 +368,7 @@ four-finger-swipe-down = []
         .unwrap();
 
         let opts: Opts = Opts::parse_from(&["lillinput"]);
-        let converted_settings: Settings = setup_application(opts, false);
+        let converted_settings: Settings = setup_application(opts, false).unwrap();
 
         // Build expected settings:
         // * values should be read from the home config file.
@@ -417,7 +419,7 @@ three-finger-swipe-left = ["i3:left_from_config"]
             "--three-finger-swipe-left",
             "i3:left_from_cli",
         ]);
-        let converted_settings: Settings = setup_application(opts, false);
+        let converted_settings: Settings = setup_application(opts, false).unwrap();
 
         // Build expected settings:
         // * values should be merged from:

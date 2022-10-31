@@ -4,16 +4,16 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
+use std::string::ToString;
 
 use crate::opts::{Opts, StringifiedAction};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use i3ipc::I3Connection;
 use lillinput::actions::{Action, ActionType, CommandAction, I3Action, SharedConnection};
 use lillinput::events::ActionEvent;
-use log::{info, warn};
+use log::{info, warn, SetLoggerError};
 use serde::{Deserialize, Serialize};
 use simplelog::{ColorChoice, Config as LogConfig, Level, LevelFilter, TermLogger, TerminalMode};
-use std::string::ToString;
 use strum::IntoEnumIterator;
 
 /// Application settings.
@@ -59,6 +59,7 @@ impl Default for Settings {
 }
 
 /// Log entries emitted during [`setup_application()`].
+#[derive(Clone)]
 struct LogEntry {
     /// Log level for the entry.
     level: Level,
@@ -66,19 +67,28 @@ struct LogEntry {
     message: String,
 }
 
+impl LogEntry {
+    /// Return a new [`LogEntry`] with a `warn` level.
+    fn warn(message: String) -> Self {
+        LogEntry {
+            level: Level::Warn,
+            message,
+        }
+    }
+}
+
 /// Initialize logging, setting the logger and the verbosity.
 ///
 /// # Arguments
 ///
 /// * `verbosity` - verbosity level.
-fn setup_logging(verbosity: LevelFilter) {
+fn setup_logging(verbosity: LevelFilter) -> Result<(), SetLoggerError> {
     TermLogger::init(
         verbosity,
         LogConfig::default(),
         TerminalMode::Mixed,
         ColorChoice::Auto,
     )
-    .unwrap();
 }
 
 /// Setup the application logging and return the application settings.
@@ -91,7 +101,11 @@ fn setup_logging(verbosity: LevelFilter) {
 ///
 /// * `opts` - command line arguments.
 /// * `initialize_logging` - if `true`, initialize logging.
-pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
+///
+/// # Errors
+///
+/// Returns `Err` if the logger could not be set.
+pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Settings, SetLoggerError> {
     // Initialize the variables to keep track of config.
     let mut log_entries: Vec<LogEntry> = Vec::new();
 
@@ -100,17 +114,39 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     // * /etc
     // * XDG_CONFIG_HOME/lillinput
     // * cwd
-    let mut config_home = xdg::BaseDirectories::with_prefix("lillinput")
-        .unwrap()
-        .get_config_home();
-    config_home.push("lillinput.toml");
     let files = match opts.config_file.clone() {
         Some(filename) => vec![File::with_name(&filename).required(false)],
-        None => vec![
-            File::with_name("/etc/lillinput.toml").required(false),
-            File::with_name(&config_home.into_os_string().into_string().unwrap()).required(false),
-            File::with_name("./lillinput.toml").required(false),
-        ],
+        None => {
+            let mut default_files = vec![File::with_name("/etc/lillinput.toml").required(false)];
+
+            match xdg::BaseDirectories::with_prefix("lillinput") {
+                Ok(xdg_dir) => {
+                    let mut config_home = xdg_dir.get_config_home();
+                    config_home.push("lillinput.toml");
+                    match &config_home.into_os_string().into_string() {
+                        Ok(filename) => {
+                            default_files.push(File::with_name(filename).required(false));
+                        }
+                        Err(e) => {
+                            log_entries.push(LogEntry::warn(format!(
+                                "Unable to include xdg config file: {:?}. Skipping it.",
+                                e
+                            )));
+                        }
+                    };
+
+                    default_files.push(File::with_name("./lillinput.toml").required(false));
+                }
+                Err(e) => {
+                    log_entries.push(LogEntry::warn(format!(
+                        "Unable to get xdg base dir: {:?}. Skipping xdg config file.",
+                        e
+                    )));
+                }
+            }
+
+            default_files
+        }
     };
 
     // Special handling of the "verbose" flag. If no command line arguments
@@ -128,35 +164,33 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         };
 
     // Parse the settings, defaulting in case of errors.
-    let mut final_settings: Settings = match Config::builder()
+    let mut final_settings = match Config::builder()
         .add_source(Settings::default())
         .add_source(files)
         .add_source(opts)
         .set_override_option(String::from("verbose"), verbosity_override)
-        .unwrap()
-        .build()
     {
-        Ok(merged_config) => match merged_config.try_deserialize::<Settings>() {
-            Ok(merged_settings) => merged_settings,
+        Ok(final_builder) => match final_builder.build() {
+            Ok(merged_config) => match merged_config.try_deserialize::<Settings>() {
+                Ok(merged_settings) => merged_settings,
+                Err(e) => {
+                    log_entries.push(LogEntry::warn(format!(
+                        "Unable to parse settings: {e}. Reverting to default settings",
+                    )));
+                    Settings::default()
+                }
+            },
             Err(e) => {
-                log_entries.push(LogEntry {
-                    level: Level::Warn,
-                    message: format!(
-                        "Unable to parse settings: {}. Reverting to default settings",
-                        e
-                    ),
-                });
+                log_entries.push(LogEntry::warn(format!(
+                    "Unable to parse settings: {e}. Reverting to default settings",
+                )));
                 Settings::default()
             }
         },
         Err(e) => {
-            log_entries.push(LogEntry {
-                level: Level::Warn,
-                message: format!(
-                    "Unable to parse settings: {}. Reverting to default settings",
-                    e
-                ),
-            });
+            log_entries.push(LogEntry::warn(format!(
+                "Unable to parse settings: {e}. Reverting to default settings",
+            )));
             Settings::default()
         }
     };
@@ -169,13 +203,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         // Check each action string, for debugging purposes.
         for entry in value.iter() {
             if !enabled_action_types.contains(&entry.type_) {
-                log_entries.push(LogEntry {
-                    level: Level::Warn,
-                    message: format!(
-                        "Removing malformed or disabled action in {}: {}",
-                        key, entry
-                    ),
-                });
+                log_entries.push(LogEntry::warn(format!(
+                    "Removing malformed or disabled action in {key}: {entry}",
+                )));
                 prune = true;
             }
         }
@@ -185,9 +215,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
         }
     }
 
-    // Setup logging.
+    // Initialize logging, setting the logger and the verbosity.
     if initialize_logging {
-        setup_logging(final_settings.verbose);
+        setup_logging(final_settings.verbose)?;
     }
 
     // Log any pending error messages.
@@ -200,7 +230,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Settings {
     }
 
     // Return the final settings.
-    final_settings
+    Ok(final_settings)
 }
 
 impl Source for Opts {
@@ -278,6 +308,7 @@ impl Source for Settings {
 /// # Arguments
 ///
 /// * `settings` - application settings.
+#[must_use]
 pub fn extract_action_map(
     settings: &Settings,
 ) -> (HashMap<ActionEvent, Vec<Box<dyn Action>>>, SharedConnection) {
@@ -294,10 +325,15 @@ pub fn extract_action_map(
     {
         let new_connection = match I3Connection::connect() {
             Ok(mut conn) => {
-                info!(
-                    "i3: connection opened (with({:?})",
-                    conn.get_version().unwrap().human_readable
-                );
+                let version = match conn.get_version() {
+                    Ok(version) => version.human_readable,
+                    Err(e) => {
+                        warn!("Unable to read i3 version: {e}");
+                        String::from("unknown")
+                    }
+                };
+
+                info!("i3: connection opened (with version {version})",);
                 connection_exists = true;
 
                 Some(conn)

@@ -12,11 +12,11 @@
     clippy::doc_markdown
 )]
 
-mod opts;
-mod settings;
+pub mod opts;
+pub mod settings;
 
 use crate::opts::Opts;
-use crate::settings::{extract_action_map, setup_application};
+use crate::settings::{extract_action_map, setup_application, Settings};
 use lillinput::controllers::{Controller, DefaultController};
 use lillinput::events::DefaultProcessor;
 
@@ -28,10 +28,16 @@ use std::process;
 mod test_utils;
 
 /// Main entry point.
-fn main() {
+pub fn main() {
     // Retrieve the application settings and setup logging.
     let opts = Opts::parse();
-    let settings = setup_application(opts, true);
+    let settings = match setup_application(opts, true) {
+        Ok(settings) => settings,
+        Err(e) => {
+            error!("Unable to process settings: {e}. Attempting to proceed with defaults ...");
+            Settings::default()
+        }
+    };
 
     // Create the Processor.
     let processor = match DefaultProcessor::new(settings.threshold, &settings.seat) {

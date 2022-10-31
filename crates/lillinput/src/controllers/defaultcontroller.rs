@@ -45,7 +45,11 @@ impl DefaultController {
             debug!(
                 " * {}: {}",
                 action_event,
-                self.actions.get(&action_event).unwrap().iter().format(", ")
+                self.actions
+                    .get(&action_event)
+                    .unwrap_or(&vec![])
+                    .iter()
+                    .format(", ")
             );
         }
         let three_finger_counts: String = ActionEvent::iter()
