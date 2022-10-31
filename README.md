@@ -15,17 +15,17 @@ Since version `0.3.0`, the project is split into two crates:
 
 ### Command-line application
 
-> `libinput-cli`: the command line application.
+> `lillinput-cli`: the command line application.
 
 For the documentation related to the command-line application, please check the
-[README.md for the `libinput-cli` crate].
+[README.md for the `lillinput-cli` crate].
 
 ### Library
 
-> `libinput`: the library providing the building blocks.
+> `lillinput`: the library providing the building blocks.
 
 For the documentation related to the library, please check the
-[README.md for the `libinput` crate].
+[README.md for the `lillinput` crate].
 
 ### Project status
 
@@ -68,8 +68,8 @@ This project is licensed under [BSD-3-Clause].
 [`i3`]: https://i3wm.org/
 [`libinput`]: https://www.freedesktop.org/wiki/Software/libinput/
 [name]: https://en.wikipedia.org/wiki/Lilliput_and_Blefuscu
-[README.md for the `libinput-cli` crate]: crates/lillinput-cli
-[README.md for the `libinput` crate]: crates/lillinput
+[README.md for the `lillinput-cli` crate]: crates/lillinput-cli
+[README.md for the `lillinput` crate]: crates/lillinput
 
 [`i3ipc`]: https://github.com/tmerr/i3ipc-rs
 [`input`]: https://github.com/Smithay/input.rs
