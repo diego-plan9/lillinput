@@ -378,7 +378,7 @@ mod test {
         // Create the controller.
         env::set_var("I3SOCK", "/tmp/non-existing-socket");
         let (actions, _) = extract_action_map(&settings);
-        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
+        let processor = DefaultProcessor::default();
         let controller = DefaultController::new(Box::new(processor), actions);
 
         // Assert that only the command action is created.

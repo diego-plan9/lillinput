@@ -5,8 +5,8 @@ use std::collections::HashMap;
 use crate::actions::Action;
 use crate::controllers::errors::ControllerError;
 use crate::controllers::Controller;
-use crate::events::ActionEvent;
-use crate::events::Processor;
+use crate::events::defaultprocessor::DefaultProcessor;
+use crate::events::{ActionEvent, Processor};
 
 use itertools::Itertools;
 use log::{debug, info, warn};
@@ -61,6 +61,12 @@ impl DefaultController {
             &three_finger_counts.as_str()[0..three_finger_counts.len() - 1],
             &four_finger_counts.as_str()[0..four_finger_counts.len() - 1],
         );
+    }
+}
+
+impl Default for DefaultController {
+    fn default() -> Self {
+        DefaultController::new(Box::new(DefaultProcessor::default()), HashMap::new())
     }
 }
 

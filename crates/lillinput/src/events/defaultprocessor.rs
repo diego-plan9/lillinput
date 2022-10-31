@@ -61,6 +61,12 @@ impl DefaultProcessor {
     }
 }
 
+impl Default for DefaultProcessor {
+    fn default() -> Self {
+        DefaultProcessor::new(5.0, "seat0").unwrap()
+    }
+}
+
 impl Processor for DefaultProcessor {
     fn process_event(
         &mut self,
@@ -177,7 +183,7 @@ mod test {
         let socket_file = init_listener(Arc::clone(&message_log));
 
         // Initialize the processor.
-        let mut processor = DefaultProcessor::new(5.0, "seat0").unwrap();
+        let mut processor = DefaultProcessor::default();
 
         // Trigger right swipe with supported (3) fingers count.
         let action_event = processor._end_event_to_action_event(5.0, 0.0, 3);
@@ -208,7 +214,7 @@ mod test {
         let socket_file = init_listener(Arc::clone(&message_log));
 
         // Initialize the processor.
-        let mut processor = DefaultProcessor::new(5.0, "seat0").unwrap();
+        let mut processor = DefaultProcessor::default();
 
         // Trigger swipe below threshold.
         let action_event = processor._end_event_to_action_event(4.99, 0.0, 3);

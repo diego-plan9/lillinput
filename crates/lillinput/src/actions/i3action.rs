@@ -79,7 +79,6 @@ impl Action for I3Action {
 #[cfg(test)]
 mod test {
     use std::cell::RefCell;
-    use std::collections::HashMap;
     use std::rc::Rc;
     use std::sync::{Arc, Mutex};
 
@@ -88,7 +87,6 @@ mod test {
     use crate::actions::Action;
     use crate::controllers::defaultcontroller::DefaultController;
     use crate::controllers::Controller;
-    use crate::events::defaultprocessor::DefaultProcessor;
     use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 
@@ -116,28 +114,26 @@ mod test {
         let socket_file = init_listener(Arc::clone(&message_log));
 
         // Create the controller.
+        let mut controller = DefaultController::default();
         let connection = Rc::new(RefCell::new(Some(I3Connection::connect().unwrap())));
-        let actions_list: Vec<Box<dyn Action>> = vec![
-            Box::new(I3Action::new(
-                "swipe right 3".into(),
-                Rc::clone(&connection),
-            )),
-            Box::new(I3Action::new("swipe left 3".into(), Rc::clone(&connection))),
-            Box::new(I3Action::new("swipe up 3".into(), Rc::clone(&connection))),
-            Box::new(I3Action::new("swipe down 3".into(), Rc::clone(&connection))),
-            Box::new(I3Action::new(
-                "swipe right 4".into(),
-                Rc::clone(&connection),
-            )),
-            Box::new(I3Action::new("swipe left 4".into(), Rc::clone(&connection))),
-            Box::new(I3Action::new("swipe up 4".into(), Rc::clone(&connection))),
-            Box::new(I3Action::new("swipe down 4".into(), Rc::clone(&connection))),
-        ];
-        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
-        let mut controller = DefaultController::new(
-            Box::new(processor),
-            HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
-        );
+        for (event, command) in [
+            (ActionEvent::ThreeFingerSwipeRight, "swipe right 3"),
+            (ActionEvent::ThreeFingerSwipeLeft, "swipe left 3"),
+            (ActionEvent::ThreeFingerSwipeUp, "swipe up 3"),
+            (ActionEvent::ThreeFingerSwipeDown, "swipe down 3"),
+            (ActionEvent::FourFingerSwipeRight, "swipe right 4"),
+            (ActionEvent::FourFingerSwipeLeft, "swipe left 4"),
+            (ActionEvent::FourFingerSwipeUp, "swipe up 4"),
+            (ActionEvent::FourFingerSwipeDown, "swipe down 4"),
+        ] {
+            controller.actions.insert(
+                event,
+                vec![Box::new(I3Action::new(
+                    String::from(command),
+                    Rc::clone(&connection),
+                ))],
+            );
+        }
 
         // Trigger swipe in the 4 directions.
         controller
