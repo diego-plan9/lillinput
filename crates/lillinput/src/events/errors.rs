@@ -1,4 +1,6 @@
-//! Errors related to events.
+//! Errors related to [`events`].
+//!
+//! [`events`]: crate::events
 
 use std::io::Error as IoError;
 
@@ -27,7 +29,9 @@ pub enum LibinputError {
     IOError(#[from] FileDescriptorError),
 }
 
-/// Errors raised during processing of events in the processor.
+/// Errors raised during processing of events in the [`Processor`].
+///
+/// [`Processor`]: crate::events::Processor
 #[derive(Error, Debug)]
 pub enum ProcessorError {
     /// Unsupported finger count.

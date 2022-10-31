@@ -1,4 +1,4 @@
-//! Building blocks for actions.
+//! Components for representing actions.
 
 pub mod commandaction;
 pub mod errors;

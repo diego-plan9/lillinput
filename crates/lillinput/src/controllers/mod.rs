@@ -1,4 +1,6 @@
-//! Building blocks for mapping [`ActionEvent`]s  to [`Action`]s.
+//! Components for mapping [`ActionEvent`]s  to [`Action`]s.
+//!
+//! [`Action`]: crate::actions::Action
 
 pub mod defaultcontroller;
 pub mod errors;
@@ -14,14 +16,14 @@ pub trait Controller {
     ///
     /// # Arguments
     ///
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
-    /// * `finger_count` - the number of fingers used for the gesture.
+    /// * `action_event` - the [`ActionEvent`] to handle.
     ///
     /// # Errors
     ///
     /// Returns `Err` if the processing of the end of swipe event resulted in
     /// failure or in no [`Action`]s invoked.
+    ///
+    /// [`Action`]: crate::actions::Action
     fn process_action_event(&mut self, action_event: ActionEvent) -> Result<(), ControllerError>;
 
     /// Run the main loop for parsing `libinput` events.
