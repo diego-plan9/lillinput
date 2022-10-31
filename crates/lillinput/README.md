@@ -1,4 +1,4 @@
-# lillinput
+# `lillinput`
 
 [![crates.io]](https://crates.io/crates/lillinput)
 

@@ -1,4 +1,4 @@
-# lillinput
+# `lillinput-cli`
 
 [![crates.io]](https://crates.io/crates/lillinput-cli)
 
