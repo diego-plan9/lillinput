@@ -4,7 +4,9 @@ pub mod defaultprocessor;
 pub mod errors;
 pub mod libinput;
 
-use crate::events::errors::{LibinputError, ProcessorError};
+pub use crate::events::defaultprocessor::DefaultProcessor;
+pub use crate::events::errors::{LibinputError, ProcessorError};
+
 use input::event::GestureEvent;
 use strum::{Display, EnumString, EnumVariantNames};
 use strum_macros::EnumIter;

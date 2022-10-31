@@ -47,14 +47,11 @@ impl Action for CommandAction {
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashMap;
     use std::path::Path;
 
     use super::CommandAction;
     use crate::actions::Action;
-    use crate::controllers::defaultcontroller::DefaultController;
-    use crate::controllers::Controller;
-    use crate::events::defaultprocessor::DefaultProcessor;
+    use crate::controllers::{Controller, DefaultController};
     use crate::events::ActionEvent;
     use serial_test::serial;
 
@@ -70,11 +67,10 @@ mod test {
         let actions_list: Vec<Box<dyn Action>> = vec![Box::new(CommandAction::new(
             "touch /tmp/swipe-right".into(),
         ))];
-        let processor = DefaultProcessor::new(5.0, "seat0").unwrap();
-        let mut controller = DefaultController::new(
-            Box::new(processor),
-            HashMap::from([(ActionEvent::ThreeFingerSwipeRight, actions_list)]),
-        );
+        let mut controller = DefaultController::default();
+        controller
+            .actions
+            .insert(ActionEvent::ThreeFingerSwipeRight, actions_list);
 
         // Trigger a swipe.
         controller

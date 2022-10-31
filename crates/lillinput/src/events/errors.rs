@@ -7,29 +7,17 @@ use input::event::gesture::GestureSwipeEvent;
 use thiserror::Error;
 
 /// Errors raised during `libinput` initialization.
+///
+/// This custom error message captures the errors emitted during the main loop,
+/// some of which wrap over:
+/// * [`filedescriptor::Error`] (during [`filedescriptor::poll`]).
+/// * [`std::io::Error`] (during [`input::Libinput::dispatch`]).
 #[derive(Error, Debug)]
 pub enum LibinputError {
     /// Error while assigning seat to the libinput context.
     #[error("error while assigning seat to the libinput context")]
     SeatError,
 
-    /// Unknown error while dispatching libinput event.
-    #[error("unknown error while dispatching libinput event")]
-    DispatchError(#[from] IoError),
-
-    /// Unknown error while polling for the file descriptor.
-    #[error("unknown error while polling the file descriptor")]
-    IOError(#[from] FileDescriptorError),
-}
-
-/// Custom error issued during the main loop.
-///
-/// This custom error message captures the errors emitted during the main loop,
-/// which wrap over:
-/// * [`filedescriptor::Error`] (during [`filedescriptor::poll`]).
-/// * [`std::io::Error`] (during [`input::Libinput::dispatch`]).
-#[derive(Error, Debug)]
-pub enum MainLoopError {
     /// Unknown error while dispatching libinput event.
     #[error("unknown error while dispatching libinput event")]
     DispatchError(#[from] IoError),

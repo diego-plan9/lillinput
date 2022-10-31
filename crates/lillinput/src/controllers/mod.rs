@@ -3,7 +3,9 @@
 pub mod defaultcontroller;
 pub mod errors;
 
-use crate::controllers::errors::ControllerError;
+pub use crate::controllers::defaultcontroller::DefaultController;
+pub use crate::controllers::errors::ControllerError;
+
 use crate::events::ActionEvent;
 
 /// Controller that connects events and actions.

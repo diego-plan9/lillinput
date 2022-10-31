@@ -17,9 +17,8 @@ mod settings;
 
 use crate::opts::Opts;
 use crate::settings::{extract_action_map, setup_application};
-use lillinput::controllers::defaultcontroller::DefaultController;
-use lillinput::controllers::Controller;
-use lillinput::events::defaultprocessor::DefaultProcessor;
+use lillinput::controllers::{Controller, DefaultController};
+use lillinput::events::DefaultProcessor;
 
 use clap::Parser;
 use log::{error, info};
