@@ -1,8 +1,12 @@
-//! Errors related to events.
+//! Errors related to [`actions`].
+//!
+//! [`actions`]: crate::actions
 
 use thiserror::Error;
 
-/// Errors related to `Actions`.
+/// Errors raised during execution of an [`Action`].
+///
+/// [`Action`]: crate::actions::Action
 #[derive(Error, Debug, PartialEq, Eq)]
 pub enum ActionError {
     /// Command execution resulted in error.

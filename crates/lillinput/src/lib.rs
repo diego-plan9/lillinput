@@ -1,8 +1,11 @@
-//! Connect `libinput` gestures to `i3` and others.
+//! Library for connecting libinput gestures to i3 and others.
 //!
-//! `lillinput` is a small for connecting `libinput` gestures into:
-//! * commands for the `i3` tiling window manager IPC interface
+//! `lillinput` is a small for utility for connecting `libinput` gestures to:
+//! * commands for the `i3` tiling window manager `IPC` interface
 //! * shell commands
+//!
+//! This crate provides the library. See also the [`lillinput-cli`] crate for
+//! the commandline interface.
 
 #![warn(
     missing_docs,
