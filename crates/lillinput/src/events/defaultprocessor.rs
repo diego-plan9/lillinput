@@ -165,9 +165,7 @@ impl Processor for DefaultProcessor {
 #[cfg(test)]
 mod test {
     use super::DefaultProcessor;
-    use crate::events::errors::ProcessorError;
-    use crate::events::ActionEvent;
-    use crate::events::Processor;
+    use crate::events::{ActionEvent, Processor, ProcessorError};
     use crate::test_utils::init_listener;
 
     use std::sync::{Arc, Mutex};

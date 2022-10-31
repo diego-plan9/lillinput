@@ -83,10 +83,8 @@ mod test {
     use std::sync::{Arc, Mutex};
 
     use super::I3Action;
-    use crate::actions::errors::ActionError;
-    use crate::actions::Action;
-    use crate::controllers::defaultcontroller::DefaultController;
-    use crate::controllers::Controller;
+    use crate::actions::{Action, ActionError};
+    use crate::controllers::{Controller, DefaultController};
     use crate::events::ActionEvent;
     use crate::test_utils::init_listener;
 

@@ -51,8 +51,7 @@ mod test {
 
     use super::CommandAction;
     use crate::actions::Action;
-    use crate::controllers::defaultcontroller::DefaultController;
-    use crate::controllers::Controller;
+    use crate::controllers::{Controller, DefaultController};
     use crate::events::ActionEvent;
     use serial_test::serial;
 

@@ -4,9 +4,11 @@ pub mod commandaction;
 pub mod errors;
 pub mod i3action;
 
-use std::fmt;
+pub use crate::actions::commandaction::CommandAction;
+pub use crate::actions::errors::ActionError;
+pub use crate::actions::i3action::{I3Action, SharedConnection};
 
-use crate::actions::errors::ActionError;
+use std::fmt;
 use strum::{Display, EnumString, EnumVariantNames};
 
 /// Possible choices for action types.

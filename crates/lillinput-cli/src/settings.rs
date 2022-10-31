@@ -8,9 +8,7 @@ use std::str::FromStr;
 use crate::opts::{Opts, StringifiedAction};
 use config::{Config, ConfigError, File, Map, Source, Value};
 use i3ipc::I3Connection;
-use lillinput::actions::commandaction::CommandAction;
-use lillinput::actions::i3action::{I3Action, SharedConnection};
-use lillinput::actions::{Action, ActionType};
+use lillinput::actions::{Action, ActionType, CommandAction, I3Action, SharedConnection};
 use lillinput::events::ActionEvent;
 use log::{info, warn};
 use serde::{Deserialize, Serialize};
@@ -355,8 +353,8 @@ mod test {
 
     use super::*;
     use crate::test_utils::default_test_settings;
-    use lillinput::controllers::defaultcontroller::DefaultController;
-    use lillinput::events::defaultprocessor::DefaultProcessor;
+    use lillinput::controllers::DefaultController;
+    use lillinput::events::DefaultProcessor;
 
     use serial_test::serial;
 
