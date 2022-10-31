@@ -1,8 +1,39 @@
-//! Connect `libinput` gestures to `i3` and others.
+//! Application for connecting `libinput` gestures to `i3` and others
 //!
-//! `lillinput` is a small for connecting `libinput` gestures into:
-//! * commands for the `i3` tiling window manager IPC interface
+//! `lillinput` is a small for utility for connecting `libinput` gestures to:
+//! * commands for the `i3` tiling window manager `IPC` interface
 //! * shell commands
+//!
+//! This crate provides the command-line application. See also the
+//! [`lillinput`] crate for the underlying library.
+//!
+//! # Configuring the swipe actions
+//!
+//! Each `--{number}-finger-swipe-{direction}` argument accepts one or several
+//! "actions", in the form `{type}:{command}`. For example, the following
+//! invocation specifies two actions for the "three finger swipe up" gesture:
+//! moving to the next workspace in `i3`, and creating a file.
+//!
+//! ```bash
+//! $ lillinput -e i3 -e command --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-up "command:touch /tmp/myfile"
+//! ```
+//!
+//! Currently, the available action types are `i3` and `command`.
+//!
+//! ### Using a configuration file
+//!
+//! The configuration from the application can be read from a configuration file.
+//! By default, the following sources will be read in order:
+//!
+//! 1. `/etc/lillinput.toml`
+//! 2. `${XDG_HOME}/lillinput/lillinput.toml`
+//! 3. `${CWD}/lillinput.toml`
+//!
+//! Alternatively, a different file can be specified via the `--config-file`
+//! argument. The configuration files can be partial (as in declaring just
+//! specific options rather than the full range of options), and each option can be
+//! overridden individually by later config files or command line arguments,
+//! falling back to their default values if not provided.
 
 #![warn(
     missing_docs,
