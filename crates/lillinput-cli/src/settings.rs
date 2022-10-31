@@ -114,39 +114,38 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
     // * /etc
     // * XDG_CONFIG_HOME/lillinput
     // * cwd
-    let files = match opts.config_file.clone() {
-        Some(filename) => vec![File::with_name(&filename).required(false)],
-        None => {
-            let mut default_files = vec![File::with_name("/etc/lillinput.toml").required(false)];
+    let files = if let Some(filename) = opts.config_file.clone() {
+        vec![File::with_name(&filename).required(false)]
+    } else {
+        let mut default_files = vec![File::with_name("/etc/lillinput.toml").required(false)];
 
-            match xdg::BaseDirectories::with_prefix("lillinput") {
-                Ok(xdg_dir) => {
-                    let mut config_home = xdg_dir.get_config_home();
-                    config_home.push("lillinput.toml");
-                    match &config_home.into_os_string().into_string() {
-                        Ok(filename) => {
-                            default_files.push(File::with_name(filename).required(false));
-                        }
-                        Err(e) => {
-                            log_entries.push(LogEntry::warn(format!(
-                                "Unable to include xdg config file: {:?}. Skipping it.",
-                                e
-                            )));
-                        }
-                    };
+        match xdg::BaseDirectories::with_prefix("lillinput") {
+            Ok(xdg_dir) => {
+                let mut config_home = xdg_dir.get_config_home();
+                config_home.push("lillinput.toml");
+                match &config_home.into_os_string().into_string() {
+                    Ok(filename) => {
+                        default_files.push(File::with_name(filename).required(false));
+                    }
+                    Err(e) => {
+                        log_entries.push(LogEntry::warn(format!(
+                            "Unable to include xdg config file: {:?}. Skipping it.",
+                            e
+                        )));
+                    }
+                };
 
-                    default_files.push(File::with_name("./lillinput.toml").required(false));
-                }
-                Err(e) => {
-                    log_entries.push(LogEntry::warn(format!(
-                        "Unable to get xdg base dir: {:?}. Skipping xdg config file.",
-                        e
-                    )));
-                }
+                default_files.push(File::with_name("./lillinput.toml").required(false));
             }
-
-            default_files
+            Err(e) => {
+                log_entries.push(LogEntry::warn(format!(
+                    "Unable to get xdg base dir: {:?}. Skipping xdg config file.",
+                    e
+                )));
+            }
         }
+
+        default_files
     };
 
     // Special handling of the "verbose" flag. If no command line arguments
