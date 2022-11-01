@@ -47,12 +47,6 @@ impl Default for Settings {
                     ActionEvent::ThreeFingerSwipeRight.to_string(),
                     vec![StringifiedAction::new("i3", "workspace next")],
                 ),
-                (ActionEvent::ThreeFingerSwipeUp.to_string(), vec![]),
-                (ActionEvent::ThreeFingerSwipeDown.to_string(), vec![]),
-                (ActionEvent::FourFingerSwipeLeft.to_string(), vec![]),
-                (ActionEvent::FourFingerSwipeRight.to_string(), vec![]),
-                (ActionEvent::FourFingerSwipeUp.to_string(), vec![]),
-                (ActionEvent::FourFingerSwipeDown.to_string(), vec![]),
             ]),
         }
     }
@@ -213,6 +207,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
             value.retain(|x| enabled_action_types.contains(&x.type_));
         }
     }
+
+    // Prune events that do not have actions.
+    final_settings.actions.retain(|_, v| !v.is_empty());
 
     // Initialize logging, setting the logger and the verbosity.
     if initialize_logging {

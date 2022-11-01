@@ -19,20 +19,36 @@ use strum_macros::EnumIter;
 pub enum ActionEvent {
     /// Three-finger swipe to left.
     ThreeFingerSwipeLeft,
-    /// Three-finger swipe to right.
-    ThreeFingerSwipeRight,
+    /// Three-finger swipe to left-up.
+    ThreeFingerSwipeLeftUp,
     /// Three-finger swipe to up.
     ThreeFingerSwipeUp,
+    /// Three-finger swipe to right-up.
+    ThreeFingerSwipeRightUp,
+    /// Three-finger swipe to right.
+    ThreeFingerSwipeRight,
+    /// Three-finger swipe to right-down.
+    ThreeFingerSwipeRightDown,
     /// Three-finger swipe to down.
     ThreeFingerSwipeDown,
+    /// Three-finger swipe to left-down.
+    ThreeFingerSwipeLeftDown,
     /// Four-finger swipe to left.
     FourFingerSwipeLeft,
-    /// Four-finger swipe to right.
-    FourFingerSwipeRight,
+    /// Four-finger swipe to left-up.
+    FourFingerSwipeLeftUp,
     /// Four-finger swipe to up.
     FourFingerSwipeUp,
+    /// Four-finger swipe to right-up.
+    FourFingerSwipeRightUp,
+    /// Four-finger swipe to right.
+    FourFingerSwipeRight,
+    /// Four-finger swipe to right-down.
+    FourFingerSwipeRightDown,
     /// Four-finger swipe to down.
     FourFingerSwipeDown,
+    /// Four-finger swipe to left-down.
+    FourFingerSwipeLeftDown,
 }
 
 /// Possible choices for finger count.
@@ -100,8 +116,8 @@ pub trait Processor {
     ///
     /// # Arguments
     ///
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
+    /// * `dx` - the final position in the `x` axis.
+    /// * `dy` - the final position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
     ///
     /// # Errors

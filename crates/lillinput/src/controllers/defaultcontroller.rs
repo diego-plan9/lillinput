@@ -53,11 +53,11 @@ impl DefaultController {
             );
         }
         let three_finger_counts: String = ActionEvent::iter()
-            .take(4)
+            .take(8)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         let four_finger_counts: String = ActionEvent::iter()
-            .skip(4)
+            .skip(8)
             .map(|x| format!("{:?}/", self.actions.get(&x).unwrap_or(&vec![]).len()))
             .collect();
         info!(

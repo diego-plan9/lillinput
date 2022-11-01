@@ -9,21 +9,21 @@ gestures into:
 
 ## Usage
 
-Upon invocation, `lillinput` will listen to `libinput` events until stopped. By
-default, the `i3` action will be enabled, with the `workspace next` configured
-for the "three finger right swipe" gesture, and the `workspace prev` for the
-"three finger left swipe" gesture.
+Upon invocation, `lillinput-cli` will listen to `libinput` events until
+stopped. By default, the `i3` action will be enabled, with the `workspace next`
+configured for the "three finger right swipe" gesture, and the `workspace prev`
+for the "three finger left swipe" gesture.
 
 The full list of options can be retrieved via:
 
 ```bash
-$ lillinput --help
+$ lillinput-cli --help
 ```
 
 ```
 ...
 USAGE:
-    lillinput [OPTIONS]
+    lillinput-cli [OPTIONS]
 
 OPTIONS:
     -c, --config-file <CONFIG_FILE>
@@ -38,8 +38,20 @@ OPTIONS:
         --four-finger-swipe-left <FOUR_FINGER_SWIPE_LEFT>
             actions the four-finger swipe left
 
+        --four-finger-swipe-left-down <FOUR_FINGER_SWIPE_LEFT_DOWN>
+            actions the four-finger swipe left-down
+
+        --four-finger-swipe-left-up <FOUR_FINGER_SWIPE_LEFT_UP>
+            actions the four-finger swipe left-up
+
         --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>
             actions the four-finger swipe right
+
+        --four-finger-swipe-right-down <FOUR_FINGER_SWIPE_RIGHT_DOWN>
+            actions the four-finger swipe right-down
+
+        --four-finger-swipe-right-up <FOUR_FINGER_SWIPE_RIGHT_UP>
+            actions the four-finger swipe right-up
 
         --four-finger-swipe-up <FOUR_FINGER_SWIPE_UP>
             actions the four-finger swipe up
@@ -62,8 +74,20 @@ OPTIONS:
         --three-finger-swipe-left <THREE_FINGER_SWIPE_LEFT>
             actions the three-finger swipe left
 
+        --three-finger-swipe-left-down <THREE_FINGER_SWIPE_LEFT_DOWN>
+            actions the three-finger swipe left-down
+
+        --three-finger-swipe-left-up <THREE_FINGER_SWIPE_LEFT_UP>
+            actions the three-finger swipe left-up
+
         --three-finger-swipe-right <THREE_FINGER_SWIPE_RIGHT>
             actions the three-finger swipe right
+
+        --three-finger-swipe-right-down <THREE_FINGER_SWIPE_RIGHT_DOWN>
+            actions the three-finger swipe right-down
+
+        --three-finger-swipe-right-up <THREE_FINGER_SWIPE_RIGHT_UP>
+            actions the three-finger swipe right-up
 
         --three-finger-swipe-up <THREE_FINGER_SWIPE_UP>
             actions the three-finger swipe up

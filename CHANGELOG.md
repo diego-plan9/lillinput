@@ -15,6 +15,12 @@ Types of changes:
 
 ## [UNRELEASED]
 
+### Added
+
+* Add support for diagonal swipes, configurable via the
+  `--{number}-finger-swipe-{direction}` family of arguments, with the new
+  directions being `left-up`, `right-up`, `right-down`, `left-down`. (\#139)
+
 ### Fixed
 
 * The `four_finger_swipe_up` field in `Opts` and corresponding command line
@@ -53,7 +59,7 @@ Types of changes:
 * More information about the enabled actions during startup (as `debug`
   information, requiring the `--verbose` flag). (\#25)
 * Add support for 4-finger swipe, configurable via the
-  `--four-finger-swipe-{direction}-4` family of arguments. (\#32)
+  `--four-finger-swipe-{direction}` family of arguments. (\#32)
 * Settings can now be read from a configuration file using the `--config-file`
   optional argument. If not specified, a `lillinput.toml` file in default
   locations (`/etc`, `$XDG_CONFIG_HOME/lillinput`, `$CWD`) will be used

@@ -114,27 +114,51 @@ pub struct Opts {
     /// actions the three-finger swipe left
     #[clap(long)]
     pub three_finger_swipe_left: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe right
+    /// actions the three-finger swipe left-up
     #[clap(long)]
-    pub three_finger_swipe_right: Option<Vec<StringifiedAction>>,
+    pub three_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
     /// actions the three-finger swipe up
     #[clap(long)]
     pub three_finger_swipe_up: Option<Vec<StringifiedAction>>,
+    /// actions the three-finger swipe right-up
+    #[clap(long)]
+    pub three_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
+    /// actions the three-finger swipe right
+    #[clap(long)]
+    pub three_finger_swipe_right: Option<Vec<StringifiedAction>>,
+    /// actions the three-finger swipe right-down
+    #[clap(long)]
+    pub three_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
     /// actions the three-finger swipe down
     #[clap(long)]
     pub three_finger_swipe_down: Option<Vec<StringifiedAction>>,
+    /// actions the three-finger swipe left-down
+    #[clap(long)]
+    pub three_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe left
     #[clap(long)]
     pub four_finger_swipe_left: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe right
+    /// actions the four-finger swipe left-up
     #[clap(long)]
-    pub four_finger_swipe_right: Option<Vec<StringifiedAction>>,
+    pub four_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe up
     #[clap(long)]
     pub four_finger_swipe_up: Option<Vec<StringifiedAction>>,
+    /// actions the four-finger swipe right-up
+    #[clap(long)]
+    pub four_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
+    /// actions the four-finger swipe right
+    #[clap(long)]
+    pub four_finger_swipe_right: Option<Vec<StringifiedAction>>,
+    /// actions the four-finger swipe right-down
+    #[clap(long)]
+    pub four_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
     /// actions the four-finger swipe down
     #[clap(long)]
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
+    /// actions the four-finger swipe left-down
+    #[clap(long)]
+    pub four_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
 }
 
 impl Opts {
@@ -146,13 +170,21 @@ impl Opts {
     ) -> Option<&Vec<StringifiedAction>> {
         match action_event {
             ActionEvent::ThreeFingerSwipeLeft => self.three_finger_swipe_left.as_ref(),
-            ActionEvent::ThreeFingerSwipeRight => self.three_finger_swipe_right.as_ref(),
+            ActionEvent::ThreeFingerSwipeLeftUp => self.three_finger_swipe_left_up.as_ref(),
             ActionEvent::ThreeFingerSwipeUp => self.three_finger_swipe_up.as_ref(),
+            ActionEvent::ThreeFingerSwipeRightUp => self.three_finger_swipe_right_up.as_ref(),
+            ActionEvent::ThreeFingerSwipeRight => self.three_finger_swipe_right.as_ref(),
+            ActionEvent::ThreeFingerSwipeRightDown => self.three_finger_swipe_right_down.as_ref(),
             ActionEvent::ThreeFingerSwipeDown => self.three_finger_swipe_down.as_ref(),
+            ActionEvent::ThreeFingerSwipeLeftDown => self.three_finger_swipe_left_down.as_ref(),
             ActionEvent::FourFingerSwipeLeft => self.four_finger_swipe_left.as_ref(),
-            ActionEvent::FourFingerSwipeRight => self.four_finger_swipe_right.as_ref(),
+            ActionEvent::FourFingerSwipeLeftUp => self.four_finger_swipe_left_up.as_ref(),
             ActionEvent::FourFingerSwipeUp => self.four_finger_swipe_up.as_ref(),
+            ActionEvent::FourFingerSwipeRightUp => self.four_finger_swipe_right_up.as_ref(),
+            ActionEvent::FourFingerSwipeRight => self.four_finger_swipe_right.as_ref(),
+            ActionEvent::FourFingerSwipeRightDown => self.four_finger_swipe_right_down.as_ref(),
             ActionEvent::FourFingerSwipeDown => self.four_finger_swipe_down.as_ref(),
+            ActionEvent::FourFingerSwipeLeftDown => self.four_finger_swipe_left_down.as_ref(),
         }
     }
 }
@@ -219,20 +251,36 @@ mod test {
             "command:bar",
             "--three-finger-swipe-left",
             "i3:3left",
-            "--three-finger-swipe-right",
-            "i3:3right",
+            "--three-finger-swipe-left-up",
+            "i3:3left-up",
             "--three-finger-swipe-up",
             "i3:3up",
+            "--three-finger-swipe-right-up",
+            "i3:3right-up",
+            "--three-finger-swipe-right",
+            "i3:3right",
+            "--three-finger-swipe-right-down",
+            "i3:3right-down",
             "--three-finger-swipe-down",
             "i3:3down",
+            "--three-finger-swipe-left-down",
+            "i3:3left-down",
             "--four-finger-swipe-left",
             "i3:4left",
-            "--four-finger-swipe-right",
-            "i3:4right",
+            "--four-finger-swipe-left-up",
+            "i3:4left-up",
             "--four-finger-swipe-up",
             "i3:4up",
+            "--four-finger-swipe-right-up",
+            "i3:4right-up",
+            "--four-finger-swipe-right",
+            "i3:4right",
+            "--four-finger-swipe-right-down",
+            "i3:4right-down",
             "--four-finger-swipe-down",
             "i3:4down",
+            "--four-finger-swipe-left-down",
+            "i3:4left-down",
         ]);
         let converted_settings: Settings = setup_application(opts, false).unwrap();
 
@@ -246,38 +294,43 @@ mod test {
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 20.0;
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeLeft.to_string(),
-            vec![StringifiedAction::new("i3", "3left")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRight.to_string(),
-            vec![StringifiedAction::new("i3", "3right")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeUp.to_string(),
-            vec![StringifiedAction::new("i3", "3up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeDown.to_string(),
-            vec![StringifiedAction::new("i3", "3down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeLeft.to_string(),
-            vec![StringifiedAction::new("i3", "4left")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeRight.to_string(),
-            vec![StringifiedAction::new("i3", "4right")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeUp.to_string(),
-            vec![StringifiedAction::new("i3", "4up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeDown.to_string(),
-            vec![StringifiedAction::new("i3", "4down")],
-        );
+        for (event, command) in vec![
+            (ActionEvent::ThreeFingerSwipeLeft.to_string(), "3left"),
+            (ActionEvent::ThreeFingerSwipeLeftUp.to_string(), "3left-up"),
+            (ActionEvent::ThreeFingerSwipeUp.to_string(), "3up"),
+            (
+                ActionEvent::ThreeFingerSwipeRightUp.to_string(),
+                "3right-up",
+            ),
+            (ActionEvent::ThreeFingerSwipeRight.to_string(), "3right"),
+            (
+                ActionEvent::ThreeFingerSwipeRightDown.to_string(),
+                "3right-down",
+            ),
+            (ActionEvent::ThreeFingerSwipeDown.to_string(), "3down"),
+            (
+                ActionEvent::ThreeFingerSwipeLeftDown.to_string(),
+                "3left-down",
+            ),
+            (ActionEvent::FourFingerSwipeLeft.to_string(), "4left"),
+            (ActionEvent::FourFingerSwipeLeftUp.to_string(), "4left-up"),
+            (ActionEvent::FourFingerSwipeUp.to_string(), "4up"),
+            (ActionEvent::FourFingerSwipeRightUp.to_string(), "4right-up"),
+            (ActionEvent::FourFingerSwipeRight.to_string(), "4right"),
+            (
+                ActionEvent::FourFingerSwipeRightDown.to_string(),
+                "4right-down",
+            ),
+            (ActionEvent::FourFingerSwipeDown.to_string(), "4down"),
+            (
+                ActionEvent::FourFingerSwipeLeftDown.to_string(),
+                "4left-down",
+            ),
+        ] {
+            expected_settings
+                .actions
+                .insert(event, vec![StringifiedAction::new("i3", command)]);
+        }
 
         assert_eq!(converted_settings, expected_settings);
     }
@@ -299,12 +352,7 @@ enabled_action_types = ["i3"]
 [actions]
 three-finger-swipe-right = ["i3:foo"]
 three-finger-swipe-left = []
-three-finger-swipe-up = []
-three-finger-swipe-down = []
 four-finger-swipe-right = ["i3:bar", "command:baz"]
-four-finger-swipe-left = []
-four-finger-swipe-up = []
-four-finger-swipe-down = []
 "#
         )
         .unwrap();
@@ -357,12 +405,7 @@ enabled_action_types = ["i3"]
 [actions]
 three-finger-swipe-right = ["i3:foo"]
 three-finger-swipe-left = []
-three-finger-swipe-up = []
-three-finger-swipe-down = []
 four-finger-swipe-right = ["i3:bar", "command:baz"]
-four-finger-swipe-left = []
-four-finger-swipe-up = []
-four-finger-swipe-down = []
 "#
         )
         .unwrap();
