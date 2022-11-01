@@ -94,7 +94,7 @@ impl fmt::Display for StringifiedAction {
 
 /// Connect libinput gestures to i3 and others.
 #[derive(Parser, Debug, Clone)]
-#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
+#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"), name = "lillinput")]
 pub struct Opts {
     /// Configuration file.
     #[clap(short, long)]
