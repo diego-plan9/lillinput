@@ -94,7 +94,7 @@ impl fmt::Display for StringifiedAction {
 
 /// Connect libinput gestures to i3 and others.
 #[derive(Parser, Debug, Clone)]
-#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"), name = "lillinput")]
+#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 pub struct Opts {
     /// Configuration file.
     #[clap(short, long)]
@@ -294,70 +294,43 @@ mod test {
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
         expected_settings.threshold = 20.0;
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeLeft.to_string(),
-            vec![StringifiedAction::new("i3", "3left")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeLeftUp.to_string(),
-            vec![StringifiedAction::new("i3", "3left-up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeUp.to_string(),
-            vec![StringifiedAction::new("i3", "3up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRightUp.to_string(),
-            vec![StringifiedAction::new("i3", "3right-up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRight.to_string(),
-            vec![StringifiedAction::new("i3", "3right")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeRightDown.to_string(),
-            vec![StringifiedAction::new("i3", "3right-down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeDown.to_string(),
-            vec![StringifiedAction::new("i3", "3down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::ThreeFingerSwipeLeftDown.to_string(),
-            vec![StringifiedAction::new("i3", "3left-down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeLeft.to_string(),
-            vec![StringifiedAction::new("i3", "4left")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeLeftUp.to_string(),
-            vec![StringifiedAction::new("i3", "4left-up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeUp.to_string(),
-            vec![StringifiedAction::new("i3", "4up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeRightUp.to_string(),
-            vec![StringifiedAction::new("i3", "4right-up")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeRight.to_string(),
-            vec![StringifiedAction::new("i3", "4right")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeRightDown.to_string(),
-            vec![StringifiedAction::new("i3", "4right-down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeDown.to_string(),
-            vec![StringifiedAction::new("i3", "4down")],
-        );
-        expected_settings.actions.insert(
-            ActionEvent::FourFingerSwipeLeftDown.to_string(),
-            vec![StringifiedAction::new("i3", "4left-down")],
-        );
+        for (event, command) in vec![
+            (ActionEvent::ThreeFingerSwipeLeft.to_string(), "3left"),
+            (ActionEvent::ThreeFingerSwipeLeftUp.to_string(), "3left-up"),
+            (ActionEvent::ThreeFingerSwipeUp.to_string(), "3up"),
+            (
+                ActionEvent::ThreeFingerSwipeRightUp.to_string(),
+                "3right-up",
+            ),
+            (ActionEvent::ThreeFingerSwipeRight.to_string(), "3right"),
+            (
+                ActionEvent::ThreeFingerSwipeRightDown.to_string(),
+                "3right-down",
+            ),
+            (ActionEvent::ThreeFingerSwipeDown.to_string(), "3down"),
+            (
+                ActionEvent::ThreeFingerSwipeLeftDown.to_string(),
+                "3left-down",
+            ),
+            (ActionEvent::FourFingerSwipeLeft.to_string(), "4left"),
+            (ActionEvent::FourFingerSwipeLeftUp.to_string(), "4left-up"),
+            (ActionEvent::FourFingerSwipeUp.to_string(), "4up"),
+            (ActionEvent::FourFingerSwipeRightUp.to_string(), "4right-up"),
+            (ActionEvent::FourFingerSwipeRight.to_string(), "4right"),
+            (
+                ActionEvent::FourFingerSwipeRightDown.to_string(),
+                "4right-down",
+            ),
+            (ActionEvent::FourFingerSwipeDown.to_string(), "4down"),
+            (
+                ActionEvent::FourFingerSwipeLeftDown.to_string(),
+                "4left-down",
+            ),
+        ] {
+            expected_settings
+                .actions
+                .insert(event, vec![StringifiedAction::new("i3", command)]);
+        }
 
         assert_eq!(converted_settings, expected_settings);
     }

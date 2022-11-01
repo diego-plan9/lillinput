@@ -9,21 +9,21 @@ gestures into:
 
 ## Usage
 
-Upon invocation, `lillinput` will listen to `libinput` events until stopped. By
-default, the `i3` action will be enabled, with the `workspace next` configured
-for the "three finger right swipe" gesture, and the `workspace prev` for the
-"three finger left swipe" gesture.
+Upon invocation, `lillinput-cli` will listen to `libinput` events until
+stopped. By default, the `i3` action will be enabled, with the `workspace next`
+configured for the "three finger right swipe" gesture, and the `workspace prev`
+for the "three finger left swipe" gesture.
 
 The full list of options can be retrieved via:
 
 ```bash
-$ lillinput --help
+$ lillinput-cli --help
 ```
 
 ```
 ...
 USAGE:
-    lillinput [OPTIONS]
+    lillinput-cli [OPTIONS]
 
 OPTIONS:
     -c, --config-file <CONFIG_FILE>

@@ -9,10 +9,6 @@ license = "BSD-3-Clause"
 keywords = ["i3", "touchpad", "x11", "libinput", "gestures"]
 categories = ["command-line-utilities", "gui"]
 
-[[bin]]
-name = "lillinput"
-path = "src/main.rs"
-
 [dependencies]
 clap = { version = "~3.2.17", features = ["derive"] }
 clap-verbosity-flag = "~1.0.1"
