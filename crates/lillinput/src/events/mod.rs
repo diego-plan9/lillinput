@@ -116,8 +116,8 @@ pub trait Processor {
     ///
     /// # Arguments
     ///
-    /// * `dx` - the current position in the `x` axis.
-    /// * `dy` - the current position in the `y` axis.
+    /// * `dx` - the final position in the `x` axis.
+    /// * `dy` - the final position in the `y` axis.
     /// * `finger_count` - the number of fingers used for the gesture.
     ///
     /// # Errors
