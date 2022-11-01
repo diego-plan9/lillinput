@@ -2,6 +2,11 @@
 
 [![crates.io]](https://crates.io/crates/lillinput-cli)
 
+`lillinput-cli` is the commandline application for connecting [`libinput`]
+gestures into:
+* commands for the [`i3`] tiling window manager `IPC` interface
+* shell commands
+
 ## Usage
 
 Upon invocation, `lillinput` will listen to `libinput` events until stopped. By

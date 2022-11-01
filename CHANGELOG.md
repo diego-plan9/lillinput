@@ -28,6 +28,10 @@ Types of changes:
 * The verbosity is now specified via the `--verbose` and `--quiet` flags, from
   a default verbosity of `INFO`, and if used in a configuration file it must be
   specified as a string instead of an integer. (\#83)
+* The crate has been split into two crates: a library providing the building
+  blocks (crate `lillinput`), and the commandline application (crate
+  `lillinput-cli`). Most of the internal components have been renamed, moved or
+  updated in the process. (\#111)
 
 ## [0.2.1] - 2022-02-15
 
