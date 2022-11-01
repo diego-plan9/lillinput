@@ -8,7 +8,7 @@
 
 `lillinput` is a small utility written in Rust for connecting [`libinput`]
 gestures into:
-* commands for the [`i3`] tiling window manager IPC interface
+* commands for the [`i3`] tiling window manager `IPC` interface
 * shell commands
 
 Since version `0.3.0`, the project is split into two crates:
@@ -16,6 +16,12 @@ Since version `0.3.0`, the project is split into two crates:
 ### Command-line application
 
 > `lillinput-cli`: the command line application.
+
+#### Example usage
+
+```bash
+$ lillinput -e i3 -e command --three-finger-swipe-up "i3:workspace next" --three-finger-swipe-down "command:touch /tmp/myfile"
+```
 
 For the documentation related to the command-line application, please check the
 [README.md for the `lillinput-cli` crate].

@@ -11,7 +11,7 @@ use input::event::GestureEvent;
 use strum::{Display, EnumString, EnumVariantNames};
 use strum_macros::EnumIter;
 
-/// High-level events that can trigger an action.
+/// High-level application events that can trigger an action.
 #[derive(
     Copy, Clone, Display, EnumIter, EnumString, EnumVariantNames, Eq, Hash, PartialEq, Debug,
 )]
