@@ -90,21 +90,30 @@ mod test {
 
     use i3ipc::I3Connection;
     use serial_test::serial;
+    use strum::IntoEnumIterator;
 
     #[test]
     #[serial]
-    /// Test the triggering of commands for the 4x2 swipe actions.
+    /// Test the triggering of commands for the 8x2 swipe actions.
     fn test_i3_swipe_actions() {
-        // Create the expected commands (version + 4 swipes).
+        // Create the expected commands (8x2 swipes).
         let expected_commands = vec![
-            "swipe right 3",
             "swipe left 3",
+            "swipe left up 3",
             "swipe up 3",
+            "swipe right up 3",
+            "swipe right 3",
+            "swipe right down 3",
             "swipe down 3",
-            "swipe right 4",
+            "swipe left down 3",
             "swipe left 4",
+            "swipe left up 4",
             "swipe up 4",
+            "swipe right up 4",
+            "swipe right 4",
+            "swipe right down 4",
             "swipe down 4",
+            "swipe left down 4",
         ];
 
         // Create the listener and the shared storage for the commands.
@@ -115,14 +124,22 @@ mod test {
         let mut controller = DefaultController::default();
         let connection = Rc::new(RefCell::new(Some(I3Connection::connect().unwrap())));
         for (event, command) in [
-            (ActionEvent::ThreeFingerSwipeRight, "swipe right 3"),
             (ActionEvent::ThreeFingerSwipeLeft, "swipe left 3"),
+            (ActionEvent::ThreeFingerSwipeLeftUp, "swipe left up 3"),
             (ActionEvent::ThreeFingerSwipeUp, "swipe up 3"),
+            (ActionEvent::ThreeFingerSwipeRightUp, "swipe right up 3"),
+            (ActionEvent::ThreeFingerSwipeRight, "swipe right 3"),
+            (ActionEvent::ThreeFingerSwipeRightDown, "swipe right down 3"),
             (ActionEvent::ThreeFingerSwipeDown, "swipe down 3"),
-            (ActionEvent::FourFingerSwipeRight, "swipe right 4"),
+            (ActionEvent::ThreeFingerSwipeLeftDown, "swipe left down 3"),
             (ActionEvent::FourFingerSwipeLeft, "swipe left 4"),
+            (ActionEvent::FourFingerSwipeLeftUp, "swipe left up 4"),
             (ActionEvent::FourFingerSwipeUp, "swipe up 4"),
+            (ActionEvent::FourFingerSwipeRightUp, "swipe right up 4"),
+            (ActionEvent::FourFingerSwipeRight, "swipe right 4"),
+            (ActionEvent::FourFingerSwipeRightDown, "swipe right down 4"),
             (ActionEvent::FourFingerSwipeDown, "swipe down 4"),
+            (ActionEvent::FourFingerSwipeLeftDown, "swipe left down 4"),
         ] {
             controller.actions.insert(
                 event,
@@ -133,36 +150,15 @@ mod test {
             );
         }
 
-        // Trigger swipe in the 4 directions.
-        controller
-            .process_action_event(ActionEvent::ThreeFingerSwipeRight)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::ThreeFingerSwipeLeft)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::ThreeFingerSwipeUp)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::ThreeFingerSwipeDown)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::FourFingerSwipeRight)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::FourFingerSwipeLeft)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::FourFingerSwipeUp)
-            .ok();
-        controller
-            .process_action_event(ActionEvent::FourFingerSwipeDown)
-            .ok();
+        // Trigger swipe in the 8x2 directions.
+        for event in ActionEvent::iter() {
+            controller.process_action_event(event).ok();
+        }
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
 
         // Assert over the expected messages.
         let messages = message_log.lock().unwrap();
-        assert_eq!(messages.len(), 8);
+        assert_eq!(messages.len(), 16);
         for (message, expected_command) in messages.iter().zip(expected_commands.iter()) {
             assert_eq!(message, expected_command);
         }
