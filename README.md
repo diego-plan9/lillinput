@@ -1,10 +1,12 @@
 # `lillinput`
 
-[![crates.io]](https://crates.io/crates/lillinput)
 [![license]](LICENSE)
 [![build status]](https://github.com/diego-plan9/lillinput/actions/workflows/default.yml)
 
 ## About
+
+
+<img src="doc/assets/logo.svg" width="100px" alt="lillinput logo">
 
 `lillinput` is a small utility written in Rust for connecting [`libinput`]
 gestures into:
