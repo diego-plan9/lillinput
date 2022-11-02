@@ -40,7 +40,7 @@ For the documentation related to the command-line application, please check the
 For the documentation related to the library, please check the
 [README.md for the `lillinput` crate].
 
-### Project status
+## Project status
 
 Please be aware that this project is in beta, and was started for scratching
 a specific itch - allowing three-finger swipe for changing between workspaces
