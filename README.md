@@ -5,7 +5,7 @@
 
 ## About
 
-<img src="doc/assets/logo.svg" width="100px" align="right" alt="lillinput logo">
+<img src="doc/assets/logo.svg" width="64px" alt="lillinput logo">
 
 `lillinput` is a small utility written in Rust for connecting [`libinput`]
 gestures into:

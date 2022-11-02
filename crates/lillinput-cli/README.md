@@ -2,6 +2,8 @@
 
 [![crates.io]](https://crates.io/crates/lillinput-cli)
 
+<img src="../../doc/assets/logo.svg" width="64px" alt="lillinput logo">
+
 `lillinput-cli` is the commandline application for connecting [`libinput`]
 gestures into:
 * commands for the [`i3`] tiling window manager `IPC` interface
