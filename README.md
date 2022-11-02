@@ -17,6 +17,8 @@ Since version `0.3.0`, the project is split into two crates:
 
 ### Command-line application
 
+[![crates.io cli]](https://crates.io/crates/lillinput-cli)
+
 > `lillinput-cli`: the command line application.
 
 #### Example usage
@@ -29,6 +31,8 @@ For the documentation related to the command-line application, please check the
 [README.md for the `lillinput-cli` crate].
 
 ### Library
+
+[![crates.io lib]](https://crates.io/crates/lillinput)
 
 > `lillinput`: the library providing the building blocks.
 
@@ -86,6 +90,7 @@ This project is licensed under [BSD-3-Clause].
 [`fusuma`]: https://github.com/iberianpig/fusuma
 [`geebar-libinput`]: https://github.com/Coffee2CodeNL/gebaar-libinput
 
-[crates.io]: https://img.shields.io/crates/v/lillinput
+[crates.io cli]: https://img.shields.io/crates/v/lillinput-cli
+[crates.io lib]: https://img.shields.io/crates/v/lillinput
 [license]: https://img.shields.io/crates/l/lillinput
 [build status]: https://github.com/diego-plan9/lillinput/actions/workflows/default.yml/badge.svg
