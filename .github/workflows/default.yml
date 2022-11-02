@@ -13,29 +13,49 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies for clippy
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: cargo check
-        uses:
-          - actions/checkout@v3
-          - dtoolnay/rust-toolchain@stable
+        uses: dtoolnay/rust-toolchain@stable
         run: cargo check
 
   test:
+    needs: [fmt, lints]
     name: Test Suite
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies for clippy
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: cargo test
-        uses:
-          - actions/checkout@v3
-          - dtoolnay/rust-toolchain@stable
+        uses: dtoolnay/rust-toolchain@stable
         run: cargo test
 
+  fmt:
+    needs: [check]
+    name: Check format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: dtoolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
   lints:
+    needs: [check]
     name: Lints
     runs-on: ubuntu-latest
     steps:
@@ -45,10 +65,7 @@ jobs:
       - name: Install stable toolchain
         uses: dtoolnay/rust-toolchain@stable
         with:
-          components: rustfmt, clippy
-
-      - name: Run cargo fmt
-        run: cargo fmt --all -- --check
+          components: clippy
 
       - name: Install dependencies for clippy
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
