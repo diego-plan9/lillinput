@@ -9,68 +9,55 @@ on:
 name: CI
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-
   test:
-    name: Test Suite
+    needs: [fmt, lints]
+    name: Run test suite
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - name: Checkout sources
+        uses: actions/checkout@v3
 
-  lints:
-    name: Lints
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cargo test
+        run: cargo test
+
+  fmt:
+    name: Check format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
 
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+          components: rustfmt
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+        run: cargo fmt --all -- --check
+
+  lints:
+    name: Check linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          command: fmt
-          args: --all -- --check
+          components: clippy
 
       - name: Install dependencies for clippy
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings -W clippy::pedantic
+        run: cargo clippy -- -D warnings -W clippy::pedantic
 
       - name: Run cargo clippy (tests)
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --tests -- -D warnings -W clippy::pedantic
+        run: cargo clippy --tests -- -D warnings -W clippy::pedantic
