@@ -9,25 +9,9 @@ on:
 name: CI
 
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
-
-      - name: Install stable toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: cargo check
-        run: cargo check
-
   test:
     needs: [fmt, lints]
-    name: Test Suite
+    name: Run test suite
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -43,7 +27,6 @@ jobs:
         run: cargo test
 
   fmt:
-    needs: [check]
     name: Check format
     runs-on: ubuntu-latest
     steps:
@@ -59,8 +42,7 @@ jobs:
         run: cargo fmt --all -- --check
 
   lints:
-    needs: [check]
-    name: Lints
+    name: Check linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
