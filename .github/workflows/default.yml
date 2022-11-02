@@ -20,7 +20,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: Install stable toolchain
-        uses: dtoolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: cargo check
         run: cargo check
@@ -37,7 +37,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: Install stable toolchain
-        uses: dtoolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@stable
 
       - name: cargo test
         run: cargo test
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install stable toolchain
-        uses: dtoolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
 
@@ -67,7 +67,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install stable toolchain
-        uses: dtoolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
 
