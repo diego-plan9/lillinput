@@ -17,9 +17,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: cargo check
-      - uses: actions/checkout@v3
-      - uses: dtoolnay/rust-toolchain@stable
-      - run: cargo check
+        uses:
+          - actions/checkout@v3
+          - dtoolnay/rust-toolchain@stable
+        run: cargo check
 
   test:
     name: Test Suite
@@ -29,9 +30,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: cargo test
-      - uses: actions/checkout@v3
-      - uses: dtoolnay/rust-toolchain@stable
-      - run: cargo test
+        uses:
+          - actions/checkout@v3
+          - dtoolnay/rust-toolchain@stable
+        run: cargo test
 
   lints:
     name: Lints
