@@ -44,8 +44,10 @@ For the documentation related to the library, please check the
 
 Please be aware that this project is in beta, and was started for scratching
 a specific itch - allowing three-finger swipe for changing between workspaces
-in `i3` under a personal setup. It aims to stay small (hence the [name]) and
-biased towards custom needs (and a bit of a Rust playground).
+in `i3` under a custom setup. It aims to stay small (hence the project [name]
+and its "three-fingers-captured-by-fierce-tiny-island-inhabitants" [logo], a
+homage to [Gulliver's Travels]) and biased towards custom needs (and a bit of a
+personal Rust playground).
 
 ## Compiling
 
@@ -80,12 +82,16 @@ This project is licensed under [BSD-3-Clause].
 [BSD-3-Clause]: LICENSE
 [`i3`]: https://i3wm.org/
 [`libinput`]: https://www.freedesktop.org/wiki/Software/libinput/
-[name]: https://en.wikipedia.org/wiki/Lilliput_and_Blefuscu
+
 [README.md for the `lillinput-cli` crate]: crates/lillinput-cli
 [README.md for the `lillinput` crate]: crates/lillinput
 
 [`i3ipc`]: https://github.com/tmerr/i3ipc-rs
 [`input`]: https://github.com/Smithay/input.rs
+
+[Gulliver's Travels]: https://en.wikipedia.org/wiki/Gulliver%27s_Travels
+[name]: https://en.wikipedia.org/wiki/Lilliput_and_Blefuscu
+[logo]: doc/assets/logo.svg
 
 [`libinput-gestures`]: https://github.com/bulletmark/libinput-gestures
 [`fusuma`]: https://github.com/iberianpig/fusuma
