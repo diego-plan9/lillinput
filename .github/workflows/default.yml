@@ -52,13 +52,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install libudev-dev libinput-dev
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings -W clippy::pedantic
+        run: cargo clippy -- -D warnings -W clippy::pedantic
 
       - name: Run cargo clippy (tests)
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --tests -- -D warnings -W clippy::pedantic
+        run: cargo clippy --tests -- -D warnings -W clippy::pedantic
