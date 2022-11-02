@@ -3,7 +3,7 @@ on:
     tags:
     - 'lillinput-cli/v[0-9]+.[0-9]+.[0-9]+*'
 
-name: Cargo release
+name: Cargo release (cli)
 
 jobs:
   release:
