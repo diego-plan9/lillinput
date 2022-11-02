@@ -5,8 +5,7 @@
 
 ## About
 
-
-<img src="doc/assets/logo.svg" width="100px" alt="lillinput logo">
+<img src="doc/assets/logo.svg" width="100px" align="right" alt="lillinput logo">
 
 `lillinput` is a small utility written in Rust for connecting [`libinput`]
 gestures into:
@@ -18,6 +17,7 @@ Since version `0.3.0`, the project is split into two crates:
 ### Command-line application
 
 [![crates.io cli]](https://crates.io/crates/lillinput-cli)
+[![docs.rs cli]](https://docs.rs/lillinput-cli)
 
 > `lillinput-cli`: the command line application.
 
@@ -33,6 +33,7 @@ For the documentation related to the command-line application, please check the
 ### Library
 
 [![crates.io lib]](https://crates.io/crates/lillinput)
+[![docs.rs lib]](https://docs.rs/lillinput)
 
 > `lillinput`: the library providing the building blocks.
 
@@ -94,3 +95,5 @@ This project is licensed under [BSD-3-Clause].
 [crates.io lib]: https://img.shields.io/crates/v/lillinput
 [license]: https://img.shields.io/crates/l/lillinput
 [build status]: https://github.com/diego-plan9/lillinput/actions/workflows/default.yml/badge.svg
+[docs.rs cli]: https://img.shields.io/docsrs/lilllinput-cli
+[docs.rs lib]: https://img.shields.io/docsrs/lilllinput
