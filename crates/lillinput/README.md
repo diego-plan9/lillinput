@@ -2,6 +2,9 @@
 
 [![crates.io]](https://crates.io/crates/lillinput)
 
+
+<img src="../../doc/assets/logo.svg" width="64px" alt="lillinput logo">
+
 The `lillinput` library provides the building blocks for connecting
 `libinput` events with different actions.
 
