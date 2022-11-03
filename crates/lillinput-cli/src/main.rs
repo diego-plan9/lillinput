@@ -86,7 +86,7 @@ pub fn main() {
     // Start the main loop.
     info!("Listening for events ...");
     if let Err(e) = controller.run() {
-        error!("Unhandled error during the main loop: {}", e);
+        error!("Unhandled error during the main loop: {e}");
         process::exit(1);
     }
 }

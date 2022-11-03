@@ -183,7 +183,7 @@ impl Processor for DefaultProcessor {
 
                 match result {
                     Err(e) => {
-                        debug!("Discarding event: {}", e);
+                        debug!("Discarding event: {e}");
                     }
                     Ok(None) => {}
                     Ok(Some(action_event)) => action_events.push(action_event),

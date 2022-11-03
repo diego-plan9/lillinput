@@ -83,15 +83,14 @@ impl Controller for DefaultController {
             .ok_or(ControllerError::NoActionsRegistered(action_event))?;
 
         debug!(
-            "Received end event: {}, triggering {} actions",
-            action_event,
+            "Received end event: {action_event}, triggering {} actions",
             actions.len()
         );
 
         for action in actions.iter_mut() {
             match action.execute_command() {
                 Ok(_) => (),
-                Err(e) => warn!("Error execution action {action}: {}", e),
+                Err(e) => warn!("Error execution action {action}: {e}"),
             }
         }
 
@@ -110,7 +109,7 @@ impl Controller for DefaultController {
                 match self.process_action_event(event) {
                     Ok(_) => {}
                     Err(e) => {
-                        debug!("Discarding event: {}", e);
+                        debug!("Discarding event: {e}");
                     }
                 }
             }

@@ -133,8 +133,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
             }
             Err(e) => {
                 log_entries.push(LogEntry::warn(format!(
-                    "Unable to get xdg base dir: {:?}. Skipping xdg config file.",
-                    e
+                    "Unable to get xdg base dir: {e}. Skipping xdg config file.",
                 )));
             }
         }
@@ -255,7 +254,7 @@ impl Source for Opts {
             let actions = self.get_actions_for_event(action_event);
             actions.map(|x| {
                 m.insert(
-                    String::from(&format!("actions.{}", action_event)),
+                    String::from(&format!("actions.{action_event}")),
                     Value::from(x.iter().map(ToString::to_string).collect::<Vec<String>>()),
                 )
             });
@@ -285,7 +284,7 @@ impl Source for Settings {
         m.insert(String::from("threshold"), Value::from(self.threshold));
         for (action_event, actions) in &self.actions {
             m.insert(
-                String::from(&format!("actions.{}", action_event)),
+                String::from(&format!("actions.{action_event}")),
                 Value::from(
                     actions
                         .iter()
@@ -335,7 +334,7 @@ pub fn extract_action_map(
                 Some(conn)
             }
             Err(error) => {
-                warn!("i3: could not establish a connection: {:?}", error);
+                warn!("i3: could not establish a connection: {error}");
                 None
             }
         };
