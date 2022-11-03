@@ -89,7 +89,7 @@ events from the `Processor` and invoking `Action`s depending on the events
 received:
 
 ```mermaid
-%%{init: {'sequence': { 'mirrorActors': false}}}%%
+%%{init: {'sequence': { 'mirrorActors': false, `0.`0.'actorMargin': 100, 'messageFontSize': 14}}}%%
 
 sequenceDiagram
     autonumber
