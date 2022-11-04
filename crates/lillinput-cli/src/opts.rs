@@ -407,6 +407,7 @@ verbose = "DEBUG"
 seat = "some.seat"
 threshold = 42.0
 enabled_action_types = ["i3"]
+invert_x = true
 
 [actions]
 three-finger-swipe-right = ["i3:foo"]
@@ -427,6 +428,7 @@ four-finger-swipe-right = ["i3:bar", "command:baz"]
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
+        expected_settings.invert_x = true;
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvent::ThreeFingerSwipeRight.to_string(),
