@@ -35,31 +35,37 @@ OPTIONS:
             enabled action types [possible values: i3, command]
 
         --four-finger-swipe-down <FOUR_FINGER_SWIPE_DOWN>
-            actions the four-finger swipe down
+            actions for the "four-finger swipe down" event
 
         --four-finger-swipe-left <FOUR_FINGER_SWIPE_LEFT>
-            actions the four-finger swipe left
+            actions for the "four-finger swipe left" event
 
         --four-finger-swipe-left-down <FOUR_FINGER_SWIPE_LEFT_DOWN>
-            actions the four-finger swipe left-down
+            actions for the "four-finger swipe left-down" event
 
         --four-finger-swipe-left-up <FOUR_FINGER_SWIPE_LEFT_UP>
-            actions the four-finger swipe left-up
+            actions for the "four-finger swipe left-up" event
 
         --four-finger-swipe-right <FOUR_FINGER_SWIPE_RIGHT>
-            actions the four-finger swipe right
+            actions for the "four-finger swipe right" event
 
         --four-finger-swipe-right-down <FOUR_FINGER_SWIPE_RIGHT_DOWN>
-            actions the four-finger swipe right-down
+            actions for the "four-finger swipe right-down" event
 
         --four-finger-swipe-right-up <FOUR_FINGER_SWIPE_RIGHT_UP>
-            actions the four-finger swipe right-up
+            actions for the "four-finger swipe right-up" event
 
         --four-finger-swipe-up <FOUR_FINGER_SWIPE_UP>
-            actions the four-finger swipe up
+            actions for the "four-finger swipe up" event
 
     -h, --help
             Print help information
+
+        --invert-x <INVERT_X>
+            invert the X axis (considering positive displacement as "left")
+
+        --invert-y <INVERT_Y>
+            invert the Y axis (considering positive displacement as "up")
 
     -q, --quiet
             Less output per occurrence
@@ -71,28 +77,28 @@ OPTIONS:
             minimum threshold for displacement changes
 
         --three-finger-swipe-down <THREE_FINGER_SWIPE_DOWN>
-            actions the three-finger swipe down
+            actions for the "three-finger swipe down" event
 
         --three-finger-swipe-left <THREE_FINGER_SWIPE_LEFT>
-            actions the three-finger swipe left
+            actions for the "three-finger swipe left" event
 
         --three-finger-swipe-left-down <THREE_FINGER_SWIPE_LEFT_DOWN>
-            actions the three-finger swipe left-down
+            actions for the "three-finger swipe left-down" event
 
         --three-finger-swipe-left-up <THREE_FINGER_SWIPE_LEFT_UP>
-            actions the three-finger swipe left-up
+            actions for the "three-finger swipe left-up" event
 
         --three-finger-swipe-right <THREE_FINGER_SWIPE_RIGHT>
-            actions the three-finger swipe right
+            actions for the "three-finger swipe right" event
 
         --three-finger-swipe-right-down <THREE_FINGER_SWIPE_RIGHT_DOWN>
-            actions the three-finger swipe right-down
+            actions for the "three-finger swipe right-down" event
 
         --three-finger-swipe-right-up <THREE_FINGER_SWIPE_RIGHT_UP>
-            actions the three-finger swipe right-up
+            actions for the "three-finger swipe right-up" event
 
         --three-finger-swipe-up <THREE_FINGER_SWIPE_UP>
-            actions the three-finger swipe up
+            actions for the "three-finger swipe up" event
 
     -v, --verbose
             More output per occurrence

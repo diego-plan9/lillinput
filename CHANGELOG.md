@@ -20,6 +20,8 @@ Types of changes:
 * Add support for diagonal swipes, configurable via the
   `--{number}-finger-swipe-{direction}` family of arguments, with the new
   directions being `left-up`, `right-up`, `right-down`, `left-down`. (\#139)
+* Two new arguments (`--invert-x`, `--invert-y`) can be used for inverting the
+  interpretation of the displacements in the `X` and `Y` axis. (\#145)
 
 ### Fixed
 

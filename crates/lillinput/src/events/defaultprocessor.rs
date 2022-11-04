@@ -23,6 +23,12 @@ pub struct DefaultProcessor {
     pub input: Libinput,
     /// File descriptor poll structure.
     pub poll_array: Vec<pollfd>,
+    /// Whether positive displacement on the `X` axis should be interpreted as
+    /// "left".
+    pub invert_x: bool,
+    /// Whether positive displacement on the `Y` axis should be interpreted as
+    /// "up".
+    pub invert_y: bool,
 }
 
 impl DefaultProcessor {
@@ -32,11 +38,20 @@ impl DefaultProcessor {
     ///
     /// * `threshold` - Minimum threshold for displacement changes.
     /// * `seat_id` - `libinput` seat id.
+    /// * `invert_x` - Whether positive displacement on the `X` axis should be
+    ///   interpreted as "left".
+    /// * `invert_y` - Whether positive displacement on the `Y` axis should be
+    ///   interpreted as "up".
     ///
     /// # Errors
     ///
     /// Return `Err` if the `libinput` initialization failed.
-    pub fn new(threshold: f64, seat_id: &str) -> Result<Self, LibinputError> {
+    pub fn new(
+        threshold: f64,
+        seat_id: &str,
+        invert_x: bool,
+        invert_y: bool,
+    ) -> Result<Self, LibinputError> {
         // Create the libinput context.
         let mut input = Libinput::new_with_udev(Interface {});
         input
@@ -58,13 +73,15 @@ impl DefaultProcessor {
             threshold,
             input,
             poll_array,
+            invert_x,
+            invert_y,
         })
     }
 }
 
 impl Default for DefaultProcessor {
     fn default() -> Self {
-        DefaultProcessor::new(5.0, "seat0").unwrap()
+        DefaultProcessor::new(5.0, "seat0", false, false).unwrap()
     }
 }
 
@@ -101,8 +118,8 @@ impl Processor for DefaultProcessor {
 
     fn _end_event_to_action_event(
         &mut self,
-        dx: f64,
-        dy: f64,
+        mut dx: f64,
+        mut dy: f64,
         finger_count: i32,
     ) -> Result<ActionEvent, ProcessorError> {
         /// Return the octant for the given displacement.
@@ -118,7 +135,7 @@ impl Processor for DefaultProcessor {
         /// with `0` being the left direction and increasing clock-wise.
         fn get_event_octant(dx: f64, dy: f64) -> i8 {
             // Get the angle, scaled to `[0..1]`.
-            let mut angle = dy.atan2(-dx);
+            let mut angle = -dy.atan2(-dx);
             if angle < 0.0 {
                 angle += 2.0 * PI;
             };
@@ -145,6 +162,12 @@ impl Processor for DefaultProcessor {
         };
 
         // Determine the `ActionEvent` for the event.
+        if self.invert_x {
+            dx = -dx;
+        }
+        if self.invert_y {
+            dy = -dy;
+        }
         Ok(match (get_event_octant(dx, dy), finger_count_as_enum) {
             (0, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeLeft,
             (1, FingerCount::ThreeFinger) => ActionEvent::ThreeFingerSwipeLeftUp,
@@ -183,7 +206,7 @@ impl Processor for DefaultProcessor {
 
                 match result {
                     Err(e) => {
-                        debug!("Discarding event: {e}");
+                        debug!("Discarding event: {}", e);
                     }
                     Ok(None) => {}
                     Ok(Some(action_event)) => action_events.push(action_event),
@@ -262,7 +285,7 @@ mod test {
 
     #[test]
     #[serial]
-    /// Test the handling of an event `threshold` argument.
+    /// Test the handling of different directions.
     fn test_multiple_directions() {
         // Create the listener and the shared storage for the commands.
         let message_log = Arc::new(Mutex::new(vec![]));
@@ -275,36 +298,90 @@ mod test {
         // Trigger swipes for directions at the edges of the threshold.
         let action_event = processor._end_event_to_action_event(-5.0, 0.0, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeft);
-        let action_event = processor._end_event_to_action_event(-s, s, 3);
+        let action_event = processor._end_event_to_action_event(-s, -s, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeftUp);
-        let action_event = processor._end_event_to_action_event(0.0, 5.0, 3);
+        let action_event = processor._end_event_to_action_event(0.0, -5.0, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeUp);
-        let action_event = processor._end_event_to_action_event(s, s, 3);
+        let action_event = processor._end_event_to_action_event(s, -s, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRightUp);
         let action_event = processor._end_event_to_action_event(5.0, 0.0, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight);
-        let action_event = processor._end_event_to_action_event(s, -s, 3);
+        let action_event = processor._end_event_to_action_event(s, s, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRightDown);
-        let action_event = processor._end_event_to_action_event(0.0, -5.0, 3);
+        let action_event = processor._end_event_to_action_event(0.0, 5.0, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeDown);
-        let action_event = processor._end_event_to_action_event(-s, -s, 3);
+        let action_event = processor._end_event_to_action_event(-s, s, 3);
         assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeftDown);
 
         let action_event = processor._end_event_to_action_event(-5.0, 0.0, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeft);
-        let action_event = processor._end_event_to_action_event(-s, s, 4);
+        let action_event = processor._end_event_to_action_event(-s, -s, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeftUp);
-        let action_event = processor._end_event_to_action_event(0.0, 5.0, 4);
+        let action_event = processor._end_event_to_action_event(0.0, -5.0, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeUp);
-        let action_event = processor._end_event_to_action_event(s, s, 4);
+        let action_event = processor._end_event_to_action_event(s, -s, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRightUp);
         let action_event = processor._end_event_to_action_event(5.0, 0.0, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRight);
-        let action_event = processor._end_event_to_action_event(s, -s, 4);
+        let action_event = processor._end_event_to_action_event(s, s, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRightDown);
+        let action_event = processor._end_event_to_action_event(0.0, 5.0, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeDown);
+        let action_event = processor._end_event_to_action_event(-s, s, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeftDown);
+
+        std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();
+    }
+
+    #[test]
+    #[serial]
+    /// Test the handling of different inverted directions.
+    fn test_multiple_directions_inverted() {
+        // Create the listener and the shared storage for the commands.
+        let message_log = Arc::new(Mutex::new(vec![]));
+        let socket_file = init_listener(Arc::clone(&message_log));
+
+        // Initialize the processor.
+        let mut processor = DefaultProcessor {
+            invert_x: true,
+            invert_y: true,
+            ..Default::default()
+        };
+
+        let s = 5.0f64.powi(2) / 2.0;
+        // Trigger swipes for directions at the edges of the threshold.
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeft);
+        let action_event = processor._end_event_to_action_event(s, s, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeftUp);
+        let action_event = processor._end_event_to_action_event(0.0, 5.0, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeUp);
+        let action_event = processor._end_event_to_action_event(-s, s, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRightUp);
+        let action_event = processor._end_event_to_action_event(-5.0, 0.0, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRight);
+        let action_event = processor._end_event_to_action_event(-s, -s, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeRightDown);
+        let action_event = processor._end_event_to_action_event(0.0, -5.0, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeDown);
+        let action_event = processor._end_event_to_action_event(s, -s, 3);
+        assert!(action_event.unwrap() == ActionEvent::ThreeFingerSwipeLeftDown);
+
+        let action_event = processor._end_event_to_action_event(5.0, 0.0, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeft);
+        let action_event = processor._end_event_to_action_event(s, s, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeftUp);
+        let action_event = processor._end_event_to_action_event(0.0, 5.0, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeUp);
+        let action_event = processor._end_event_to_action_event(-s, s, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRightUp);
+        let action_event = processor._end_event_to_action_event(-5.0, 0.0, 4);
+        assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRight);
+        let action_event = processor._end_event_to_action_event(-s, -s, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeRightDown);
         let action_event = processor._end_event_to_action_event(0.0, -5.0, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeDown);
-        let action_event = processor._end_event_to_action_event(-s, -s, 4);
+        let action_event = processor._end_event_to_action_event(s, -s, 4);
         assert!(action_event.unwrap() == ActionEvent::FourFingerSwipeLeftDown);
 
         std::fs::remove_file(socket_file.path().file_name().unwrap()).ok();

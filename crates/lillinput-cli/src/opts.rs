@@ -111,54 +111,60 @@ pub struct Opts {
     /// minimum threshold for displacement changes
     #[clap(short, long)]
     pub threshold: Option<f64>,
-    /// actions the three-finger swipe left
+    /// actions for the "three-finger swipe left" event
     #[clap(long)]
     pub three_finger_swipe_left: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe left-up
+    /// actions for the "three-finger swipe left-up" event
     #[clap(long)]
     pub three_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe up
+    /// actions for the "three-finger swipe up" event
     #[clap(long)]
     pub three_finger_swipe_up: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe right-up
+    /// actions for the "three-finger swipe right-up" event
     #[clap(long)]
     pub three_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe right
+    /// actions for the "three-finger swipe right" event
     #[clap(long)]
     pub three_finger_swipe_right: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe right-down
+    /// actions for the "three-finger swipe right-down" event
     #[clap(long)]
     pub three_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe down
+    /// actions for the "three-finger swipe down" event
     #[clap(long)]
     pub three_finger_swipe_down: Option<Vec<StringifiedAction>>,
-    /// actions the three-finger swipe left-down
+    /// actions for the "three-finger swipe left-down" event
     #[clap(long)]
     pub three_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe left
+    /// actions for the "four-finger swipe left" event
     #[clap(long)]
     pub four_finger_swipe_left: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe left-up
+    /// actions for the "four-finger swipe left-up" event
     #[clap(long)]
     pub four_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe up
+    /// actions for the "four-finger swipe up" event
     #[clap(long)]
     pub four_finger_swipe_up: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe right-up
+    /// actions for the "four-finger swipe right-up" event
     #[clap(long)]
     pub four_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe right
+    /// actions for the "four-finger swipe right" event
     #[clap(long)]
     pub four_finger_swipe_right: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe right-down
+    /// actions for the "four-finger swipe right-down" event
     #[clap(long)]
     pub four_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe down
+    /// actions for the "four-finger swipe down" event
     #[clap(long)]
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
-    /// actions the four-finger swipe left-down
+    /// actions for the "four-finger swipe left-down" event
     #[clap(long)]
     pub four_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
+    /// invert the X axis (considering positive displacement as "left")
+    #[clap(long)]
+    pub invert_x: Option<bool>,
+    /// invert the Y axis (considering positive displacement as "up")
+    #[clap(long)]
+    pub invert_y: Option<bool>,
 }
 
 impl Opts {
@@ -401,6 +407,7 @@ verbose = "DEBUG"
 seat = "some.seat"
 threshold = 42.0
 enabled_action_types = ["i3"]
+invert_x = true
 
 [actions]
 three-finger-swipe-right = ["i3:foo"]
@@ -421,6 +428,7 @@ four-finger-swipe-right = ["i3:bar", "command:baz"]
         expected_settings.verbose = LevelFilter::Debug;
         expected_settings.seat = String::from("some.seat");
         expected_settings.enabled_action_types = vec![ActionType::I3.to_string()];
+        expected_settings.invert_x = true;
         expected_settings.threshold = 42.0;
         expected_settings.actions.insert(
             ActionEvent::ThreeFingerSwipeRight.to_string(),

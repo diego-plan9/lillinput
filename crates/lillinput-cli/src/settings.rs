@@ -29,6 +29,10 @@ pub struct Settings {
     pub threshold: f64,
     /// List of action for each action event.
     pub actions: HashMap<String, Vec<StringifiedAction>>,
+    /// Invert the `X` axis (considering positive displacement as "left")
+    pub invert_x: bool,
+    /// Invert the `Y` axis (considering positive displacement as "up")
+    pub invert_y: bool,
 }
 
 impl Default for Settings {
@@ -48,6 +52,8 @@ impl Default for Settings {
                     vec![StringifiedAction::new("i3", "workspace next")],
                 ),
             ]),
+            invert_x: false,
+            invert_y: false,
         }
     }
 }
@@ -260,6 +266,13 @@ impl Source for Opts {
             });
         }
 
+        self.invert_x
+            .as_ref()
+            .map(|x| m.insert(String::from("invert_x"), Value::from(*x)));
+        self.invert_y
+            .as_ref()
+            .map(|x| m.insert(String::from("invert_y"), Value::from(*x)));
+
         Ok(m)
     }
 }
@@ -293,6 +306,8 @@ impl Source for Settings {
                 ),
             );
         }
+        m.insert(String::from("invert_x"), Value::from(self.invert_x));
+        m.insert(String::from("invert_y"), Value::from(self.invert_y));
 
         Ok(m)
     }

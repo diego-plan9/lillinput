@@ -12,5 +12,7 @@ pub fn default_test_settings() -> Settings {
         threshold: 5.0,
         seat: "seat0".to_string(),
         verbose: LevelFilter::Info,
+        invert_x: false,
+        invert_y: false,
     }
 }
