@@ -71,7 +71,12 @@ pub fn main() {
     };
 
     // Create the Processor.
-    let processor = match DefaultProcessor::new(settings.threshold, &settings.seat) {
+    let processor = match DefaultProcessor::new(
+        settings.threshold,
+        &settings.seat,
+        settings.invert_x,
+        settings.invert_y,
+    ) {
         Ok(processor) => processor,
         Err(e) => {
             error!("Unable to initialize: {e}");
