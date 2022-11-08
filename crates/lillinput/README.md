@@ -1,7 +1,7 @@
 # `lillinput`
 
 [![crates.io]](https://crates.io/crates/lillinput)
-
+[![docs.rs lib]](https://docs.rs/lillinput)
 
 <img src="../../doc/assets/logo.svg" width="64px" alt="lillinput logo">
 
@@ -138,3 +138,4 @@ This project is licensed under [BSD-3-Clause].
 [`thiserror`]: https://github.com/dtolnay/thiserror
 
 [crates.io]: https://img.shields.io/crates/v/lillinput
+[docs.rs lib]: https://img.shields.io/docsrs/lillinput
