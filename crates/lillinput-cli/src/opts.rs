@@ -41,7 +41,7 @@ impl StringifiedAction {
 #[allow(clippy::from_over_into)]
 impl Into<String> for StringifiedAction {
     fn into(self) -> String {
-        format!("{}", self)
+        format!("{self}")
     }
 }
 

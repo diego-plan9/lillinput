@@ -149,7 +149,7 @@ pub fn init_listener(message_log: Arc<Mutex<Vec<String>>>) -> NamedTempFile {
                     }
                 }
             }
-            Err(e) => println!("accept function failed: {:?}", e),
+            Err(e) => println!("accept function failed: {e:?}"),
         };
     });
 
