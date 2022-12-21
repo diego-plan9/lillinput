@@ -70,6 +70,7 @@ impl DefaultController {
 
 impl Default for DefaultController {
     fn default() -> Self {
+        #[allow(clippy::box_default)]
         DefaultController::new(Box::new(DefaultProcessor::default()), HashMap::new())
     }
 }
