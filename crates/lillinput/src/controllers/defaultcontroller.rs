@@ -70,7 +70,7 @@ impl DefaultController {
 
 impl Default for DefaultController {
     fn default() -> Self {
-        DefaultController::new(Box::new(DefaultProcessor::default()), HashMap::new())
+        DefaultController::new(Box::default(), HashMap::new())
     }
 }
 
