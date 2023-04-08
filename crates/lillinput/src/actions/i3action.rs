@@ -43,15 +43,12 @@ impl Action for I3Action {
         let connection_option = &mut *connection_rc.borrow_mut();
 
         // Check if the i3 connection is valid.
-        let connection = match connection_option {
-            Some(connection) => connection,
-            None => {
+        let Some(connection) = connection_option else {
                 return Err(ActionError::ExecutionError {
                     type_: "i3".into(),
                     message: "i3 connection is not set".into(),
                 })
-            }
-        };
+            };
 
         match connection.run_command(&self.command) {
             Err(e) => Err(ActionError::ExecutionError {
