@@ -128,9 +128,9 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
                         default_files.push(File::with_name(filename).required(false));
                     }
                     Err(e) => {
-                        log_entries.push(LogEntry::warn(
+                        log_entries.push(LogEntry::warn(format!(
                             "Unable to include xdg config file: {e}. Skipping it.",
-                        ));
+                        )));
                     }
                 };
 
