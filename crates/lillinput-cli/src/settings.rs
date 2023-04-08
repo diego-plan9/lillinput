@@ -129,8 +129,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
                     }
                     Err(e) => {
                         log_entries.push(LogEntry::warn(format!(
-                            "Unable to include xdg config file: {:?}. Skipping it.",
-                            e
+                            "Unable to include xdg config file: {e:?}. Skipping it.",
                         )));
                     }
                 };

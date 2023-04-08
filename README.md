@@ -60,7 +60,7 @@ sudo aptitude install libudev-dev libinput-dev
 
 ## Related projects
 
-This create relies heavily on the wonderful work on the [`input`] and [`i3ipc`]
+This crate relies heavily on the wonderful work on the [`input`] and [`i3ipc`]
 crates (among others) - kudos to their maintainers for making them available.
 
 Outside rust, the following projects provide a more complete solution for using
