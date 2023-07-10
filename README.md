@@ -72,7 +72,8 @@ Outside rust, the following projects provide a more complete solution for using
 
 ## Contributing
 
-Any contribution is welcome, please issue or PR away!
+Any contribution is welcome, please issue or PR away! Please refer to the
+[CONTRIBUTING.md] document for more details.
 
 ## License
 
@@ -84,6 +85,7 @@ This project is licensed under [BSD-3-Clause].
 
 [README.md for the `lillinput-cli` crate]: crates/lillinput-cli
 [README.md for the `lillinput` crate]: crates/lillinput
+[CONTRIBUTING.md]: CONTRIBUTING.md
 
 [`i3ipc`]: https://github.com/tmerr/i3ipc-rs
 [`input`]: https://github.com/Smithay/input.rs
