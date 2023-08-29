@@ -363,7 +363,7 @@ pub fn extract_action_map(
         if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
             let mut actions_list: Vec<Box<dyn Action>> = vec![];
 
-            for value in &*arguments {
+            for value in arguments {
                 // Create the new actions.
                 match ActionType::from_str(&value.type_) {
                     Ok(ActionType::Command) => {
