@@ -198,7 +198,7 @@ pub fn setup_application(opts: Opts, initialize_logging: bool) -> Result<Setting
     for (key, value) in &mut final_settings.actions {
         let mut prune = false;
         // Check each action string, for debugging purposes.
-        for entry in value.iter() {
+        for entry in &*value {
             if !enabled_action_types.contains(&entry.type_) {
                 log_entries.push(LogEntry::warn(format!(
                     "Removing malformed or disabled action in {key}: {entry}",
@@ -363,7 +363,7 @@ pub fn extract_action_map(
         if let Some(arguments) = settings.actions.get(&action_event.to_string()) {
             let mut actions_list: Vec<Box<dyn Action>> = vec![];
 
-            for value in arguments.iter() {
+            for value in arguments {
                 // Create the new actions.
                 match ActionType::from_str(&value.type_) {
                     Ok(ActionType::Command) => {

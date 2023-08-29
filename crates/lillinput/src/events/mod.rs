@@ -8,8 +8,7 @@ pub use crate::events::defaultprocessor::DefaultProcessor;
 pub use crate::events::errors::{LibinputError, ProcessorError};
 
 use input::event::GestureEvent;
-use strum::{Display, EnumString, EnumVariantNames};
-use strum_macros::EnumIter;
+use strum::{Display, EnumIter, EnumString, EnumVariantNames};
 
 /// High-level application events that can trigger an action.
 #[derive(
