@@ -16,10 +16,9 @@ config = "0.13"
 i3ipc = "0.10"
 lillinput = { path = "../lillinput", version = "0.3.0" }
 log = { version = "0.4.20", features = ["serde"] }
-serde = { version = "~1.0", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
 simplelog = "0.12"
-strum = { version = "~0.24", features = ["derive"] }
-strum_macros = "~0.24"
+strum = { version = "0.25", features = ["derive"] }
 xdg = "2.5"
 
 [dev-dependencies]
