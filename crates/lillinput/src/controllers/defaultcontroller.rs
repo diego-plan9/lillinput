@@ -88,7 +88,7 @@ impl Controller for DefaultController {
             actions.len()
         );
 
-        for action in actions.iter_mut() {
+        for action in &mut *actions {
             match action.execute_command() {
                 Ok(_) => (),
                 Err(e) => warn!("Error execution action {action}: {e}"),

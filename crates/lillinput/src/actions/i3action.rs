@@ -44,11 +44,11 @@ impl Action for I3Action {
 
         // Check if the i3 connection is valid.
         let Some(connection) = connection_option else {
-                return Err(ActionError::ExecutionError {
-                    type_: "i3".into(),
-                    message: "i3 connection is not set".into(),
-                })
-            };
+            return Err(ActionError::ExecutionError {
+                type_: "i3".into(),
+                message: "i3 connection is not set".into(),
+            })
+        };
 
         match connection.run_command(&self.command) {
             Err(e) => Err(ActionError::ExecutionError {
