@@ -47,7 +47,7 @@ impl Action for I3Action {
             return Err(ActionError::ExecutionError {
                 type_: "i3".into(),
                 message: "i3 connection is not set".into(),
-            })
+            });
         };
 
         match connection.run_command(&self.command) {
