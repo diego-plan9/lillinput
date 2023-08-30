@@ -94,76 +94,76 @@ impl fmt::Display for StringifiedAction {
 
 /// Connect libinput gestures to i3 and others.
 #[derive(Parser, Debug, Clone)]
-#[clap(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
+#[command(version = env!("CARGO_PKG_VERSION"), author = env!("CARGO_PKG_AUTHORS"))]
 pub struct Opts {
     /// Configuration file.
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub config_file: Option<String>,
     /// Level of verbosity (additive, can be used up to 3 times)
-    #[clap(flatten)]
+    #[command(flatten)]
     pub verbose: Verbosity<InfoLevel>,
     /// libinput seat
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub seat: Option<String>,
     /// enabled action types
-    #[clap(short, long, possible_values = ActionType::VARIANTS)]
+    #[arg(short, long, value_parser = clap::builder::PossibleValuesParser::new(ActionType::VARIANTS))]
     pub enabled_action_types: Option<Vec<String>>,
     /// minimum threshold for displacement changes
-    #[clap(short, long)]
+    #[arg(short, long)]
     pub threshold: Option<f64>,
     /// actions for the "three-finger swipe left" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_left: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe left-up" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe up" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_up: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe right-up" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe right" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_right: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe right-down" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe down" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_down: Option<Vec<StringifiedAction>>,
     /// actions for the "three-finger swipe left-down" event
-    #[clap(long)]
+    #[arg(long)]
     pub three_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe left" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_left: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe left-up" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_left_up: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe up" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_up: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe right-up" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_right_up: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe right" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_right: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe right-down" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_right_down: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe down" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_down: Option<Vec<StringifiedAction>>,
     /// actions for the "four-finger swipe left-down" event
-    #[clap(long)]
+    #[arg(long)]
     pub four_finger_swipe_left_down: Option<Vec<StringifiedAction>>,
     /// invert the X axis (considering positive displacement as "left")
-    #[clap(long)]
+    #[arg(long)]
     pub invert_x: Option<bool>,
     /// invert the Y axis (considering positive displacement as "up")
-    #[clap(long)]
+    #[arg(long)]
     pub invert_y: Option<bool>,
 }
 
